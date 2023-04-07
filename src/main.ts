@@ -1,4 +1,4 @@
-import {app, BrowserWindow} from 'electron'
+import { app, BrowserWindow } from 'electron'
 import path from 'path'
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
@@ -16,7 +16,9 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
-    }
+    },
+    titleBarStyle: 'hidden',
+    trafficLightPosition: { x: 14, y: 14 }
   })
 
   // and load the index.html of the app.

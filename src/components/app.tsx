@@ -12,14 +12,13 @@ export const App: FC = () => {
     <div className="absolute bottom-0 left-0 right-0 top-0">
       <div className="flex h-full">
         <div className="flex h-full w-full flex-1 flex-col">
-          <div className="flex-none border-b">
+          <div className="flex-none border-b" style={{WebkitAppRegion: 'drag'}}>
             <div className="flex items-center px-3">
               <div className="flex-none" />
               <div className="flex-1 p-3 text-center text-gray-500">
-                My First GPT-3 Conversation
-                <span className="text-gray-700">.chat</span>
+                GPT-3.5
               </div>
-              <div className="flex-none">
+              <div className="flex-none" style={{WebkitAppRegion: 'none'}}>
                 <button onClick={() => setShowInfoPanel(!showInfoPanel)}>
                   <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path
