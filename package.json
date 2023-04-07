@@ -1,6 +1,6 @@
 {
   "name": "chat",
-  "productName": "chat",
+  "productName": "Chat",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",

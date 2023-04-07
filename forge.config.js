@@ -1,5 +1,7 @@
 module.exports = {
-  packagerConfig: {},
+  packagerConfig: {
+    icon: 'icons/chat.icns'
+  },
   rebuildConfig: {},
   makers: [
     {
