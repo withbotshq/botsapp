@@ -12,5 +12,8 @@
     "**/Thumbs.db": true,
     "**/.vite": true,
     "**/node_modules": true
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
   }
 }
