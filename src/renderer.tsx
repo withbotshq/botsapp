@@ -26,8 +26,16 @@
  * ```
  */
 
+import {assert} from '@jclem/assert'
+import React, {StrictMode} from 'react'
+import ReactDOM from 'react-dom/client'
+import {App} from './components/app'
 import './index.css'
 
-console.log(
-  '👋 This message is being logged by "renderer.js", included via Vite'
+const root = assert(document.getElementById('root'))
+
+ReactDOM.createRoot(root).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
 )
