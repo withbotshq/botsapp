@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  @apply bg-gray-950;
+  @apply text-base;
+  @apply text-white;
+}
+
+th,
+td {
+  @apply border;
+  @apply p-1;
+}
