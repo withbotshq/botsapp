@@ -13,3 +13,7 @@ td {
   @apply border;
   @apply p-1;
 }
+
+.app-region {
+  -webkit-app-region: drag;
+}
