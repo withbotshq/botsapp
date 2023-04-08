@@ -1,5 +1,6 @@
-import { app, BrowserWindow } from 'electron'
+import {app, BrowserWindow, ipcMain} from 'electron'
 import path from 'path'
+import {listMessages, runMigrations} from './db/db'
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
 declare const MAIN_WINDOW_VITE_NAME: string
@@ -12,13 +13,13 @@ if (require('electron-squirrel-startup')) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
+    width: 400,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     },
     titleBarStyle: 'hidden',
-    trafficLightPosition: { x: 14, y: 14 }
+    trafficLightPosition: {x: 14, y: 14}
   })
 
   // and load the index.html of the app.
@@ -37,7 +38,11 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', () => {
+  runMigrations()
+  ipcMain.handle('messages:list', listMessages)
+  createWindow()
+})
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

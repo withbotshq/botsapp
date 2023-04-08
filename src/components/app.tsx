@@ -1,4 +1,4 @@
-import {FC, useState} from 'react'
+import {FC, useEffect, useState} from 'react'
 import {Message, initialMessages} from '../models/message'
 import {ChatSettings} from './chat-settings'
 import {MessageComposer} from './message-composer'
@@ -7,6 +7,15 @@ import {MessageList} from './message-list'
 export const App: FC = () => {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [showInfoPanel, setShowInfoPanel] = useState<boolean>(false)
+
+  useEffect(() => {
+    async function test() {
+      const m = await api.listMessages()
+      console.log('messages', m)
+    }
+
+    test()
+  }, [])
 
   return (
     <div className="absolute bottom-0 left-0 right-0 top-0">
