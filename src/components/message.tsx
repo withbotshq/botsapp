@@ -3,24 +3,13 @@ import ReactMarkdown from 'react-markdown'
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 import remarkGfm from 'remark-gfm'
 import {Message} from '../db/schema'
-import {User, getUserByID} from '../models/user'
 import oneDark from '../one-dark'
-
-const userColor = (user: User): string | undefined => {
-  const colors: {[key: string]: string} = {
-    '1': 'bg-blue-500',
-    '2': 'bg-purple-500',
-    '3': 'bg-green-500'
-  }
-
-  return colors[user.id]
-}
 
 export const MessageRenderer: FC<{message: Message}> = ({message}) => {
   return (
     <span
-      className={`rounded-full text-white ${!message.special && 'px-3 py-1'} ${
-        !message.special && (userColor(getUserByID('1')) || 'bg-gray-500')
+      className={`rounded-full text-white px-3 py-1 ${
+        message.role === 'user' ? 'bg-blue-500' : 'bg-gray-500'
       }`}
     >
       <ReactMarkdown

@@ -48,8 +48,8 @@ app.on('ready', () => {
   runMigrations()
   ipcMain.handle('chats:create', createChat)
   ipcMain.handle('chats:list', listChats)
-  ipcMain.handle('messages:create', (event, chatId, text) =>
-    createMessage(chatId, text)
+  ipcMain.handle('messages:create', (event, chatId, role, content) =>
+    createMessage(chatId, role, content)
   )
   ipcMain.handle('messages:list', (event, chatId) => listMessages(chatId))
   createWindow()

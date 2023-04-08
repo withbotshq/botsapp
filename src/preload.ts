@@ -8,8 +8,12 @@ const api = {
   createChat: (): Promise<Chat> => ipcRenderer.invoke('chats:create'),
   listChats: (): Promise<Chat[]> => ipcRenderer.invoke('chats:list'),
 
-  createMessage: (chatId: number, text: string): Promise<Message> =>
-    ipcRenderer.invoke('messages:create', chatId, text),
+  createMessage: (
+    chatId: number,
+    role: string,
+    content: string
+  ): Promise<Message> =>
+    ipcRenderer.invoke('messages:create', chatId, role, content),
   listMessages: (chatId: number): Promise<Message[]> =>
     ipcRenderer.invoke('messages:list', chatId)
 }

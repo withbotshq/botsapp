@@ -49,16 +49,12 @@ export function runMigrations() {
 
 export function createChat(): Chat {
   const chat: Chat = {
-    id: databaseState.nextChatId,
+    id: getNextChatId(),
     name: null,
     ...timestamps(true)
   }
 
-  // First, update the database state.
-  databaseState.nextChatId++
-  writeDatabaseState(databaseState)
-
-  // Next, write the chat state to disk.
+  // First, write the chat state to disk.
   writeChatState(chat.id, {messages: []})
 
   // Finally, update the index.
@@ -72,19 +68,20 @@ export function listChats(): Chat[] {
   return chatsIndex.chats
 }
 
-export function createMessage(chatId: number, content: string): Message {
+export function createMessage(
+  chatId: number,
+  role: 'user' | 'assistant' | 'system',
+  content: string
+): Message {
   const message: Message = {
-    id: databaseState.nextMessageId,
+    id: getNextMessageId(),
+    role,
     chatId,
     content,
     ...timestamps(true)
   }
 
-  // First, update the database state.
-  databaseState.nextMessageId++
-  writeDatabaseState(databaseState)
-
-  // Next, read the chat state from disk.
+  // First, read the chat state from disk.
   const chatState = readChatState(chatId)
 
   // Next, update the chat state.
@@ -154,4 +151,18 @@ function writeJSONFile(path: string, content: any): void {
 
 function toJSON(value: any): any {
   return JSON.stringify(value, null, '\t')
+}
+
+function getNextChatId(): number {
+  const nextId = databaseState.nextChatId
+  databaseState.nextChatId++
+  writeDatabaseState(databaseState)
+  return nextId
+}
+
+function getNextMessageId(): number {
+  const nextId = databaseState.nextMessageId
+  databaseState.nextMessageId++
+  writeDatabaseState(databaseState)
+  return nextId
 }

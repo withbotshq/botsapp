@@ -1,12 +1,10 @@
 import {FC} from 'react'
 import {Message} from '../db/schema'
-import {getUserByID} from '../models/user'
 import {MessageRenderer} from './message'
 import {ScrollContainer} from './scroll-container'
 
 const isMe = (message: Message) => {
-  const u = getUserByID('1')
-  return u.username === 'nat'
+  return message.role === 'user'
 }
 
 export const MessageList: FC<{messages: Message[]}> = ({messages}) => {
@@ -25,7 +23,7 @@ export const MessageList: FC<{messages: Message[]}> = ({messages}) => {
           >
             <img
               className="h-7 w-7 rounded-full"
-              src={getUserByID(1).avatarUrl}
+              src={'https://github.com/nat.png'}
             />
 
             <MessageRenderer message={message} />

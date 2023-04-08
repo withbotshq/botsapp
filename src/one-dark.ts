@@ -1,3 +1,5 @@
+import {CSSProperties} from 'react'
+
 export default {
   'code[class*="language-"]': {
     // background: "hsl(220, 13%, 18%)",
@@ -510,4 +512,4 @@ export default {
   '.prism-previewer-easing.prism-previewer-easing line': {
     stroke: 'hsl(220, 14%, 71%)'
   }
-}
+} as {[key: string]: CSSProperties}

@@ -32,7 +32,7 @@ export const Main: FC = () => {
 
   const sendMessage = useMutation({
     mutationFn: (content: string) =>
-      api.createMessage(assert(currentChat).id, content),
+      api.createMessage(assert(currentChat).id, 'user', content),
     onSuccess: (message) => {
       queryClient.invalidateQueries(['messages', currentChat?.id])
     }

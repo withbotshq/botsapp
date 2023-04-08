@@ -12,6 +12,7 @@ export type Chat = InferModel<typeof chats>
 
 export const messages = sqliteTable('messages', {
   id: integer('id').primaryKey(),
+  role: text('role').notNull(),
   content: text('content').notNull(),
   chatId: integer('chat_id')
     .references(() => chats.id)
