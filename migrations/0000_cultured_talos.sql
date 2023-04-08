@@ -1,4 +1,4 @@
-CREATE TABLE `conversations` (
+CREATE TABLE `chats` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`name` text,
 	`created_at` integer NOT NULL,
@@ -8,8 +8,8 @@ CREATE TABLE `conversations` (
 CREATE TABLE `messages` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`content` text NOT NULL,
-	`conversation_id` integer NOT NULL,
+	`chat_id` integer NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL,
-	FOREIGN KEY (`conversation_id`) REFERENCES `conversations`(`id`)
+	FOREIGN KEY (`chat_id`) REFERENCES `chats`(`id`)
 );

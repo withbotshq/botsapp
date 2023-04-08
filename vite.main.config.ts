@@ -4,7 +4,7 @@ import {defineConfig} from 'vite'
 export default defineConfig({
   build: {
     commonjsOptions: {
-      // For SQLite3
+      // For better-sqlite3
       ignoreDynamicRequires: true
     }
   }

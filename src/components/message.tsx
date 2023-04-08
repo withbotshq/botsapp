@@ -2,7 +2,7 @@ import {FC} from 'react'
 import ReactMarkdown from 'react-markdown'
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 import remarkGfm from 'remark-gfm'
-import {Message} from '../models/message'
+import {Message} from '../db/schema'
 import {User, getUserByID} from '../models/user'
 import oneDark from '../one-dark'
 
@@ -20,8 +20,7 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
   return (
     <span
       className={`rounded-full text-white ${!message.special && 'px-3 py-1'} ${
-        !message.special &&
-        (userColor(getUserByID(message.author)) || 'bg-gray-500')
+        !message.special && (userColor(getUserByID('1')) || 'bg-gray-500')
       }`}
     >
       <ReactMarkdown

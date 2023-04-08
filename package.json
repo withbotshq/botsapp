@@ -9,7 +9,9 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "migrate:generate": "drizzle-kit generate:sqlite --out migrations --schema src/db/schema.ts --breakpoints",
+    "migrate:up": "drizzle-kit up:sqlite --out migrations"
   },
   "keywords": [],
   "author": {
@@ -40,6 +42,7 @@
   },
   "dependencies": {
     "@jclem/assert": "^1.1.0",
+    "@tanstack/react-query": "^4.28.0",
     "better-sqlite3": "^8.2.0",
     "drizzle-orm": "^0.23.8",
     "electron-squirrel-startup": "^1.0.0",

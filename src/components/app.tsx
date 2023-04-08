@@ -1,75 +1,13 @@
-import { FC, useEffect, useState } from "react";
-import { Message, initialMessages } from "../models/message";
-import { ChatList } from "./chat-list";
-import { ChatSettings } from "./chat-settings";
-import { MessageComposer } from "./message-composer";
-import { MessageList } from "./message-list";
-import { TitleBar } from "./title-bar";
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import {FC} from 'react'
+import {Main} from './main'
+
+const queryClient = new QueryClient()
 
 export const App: FC = () => {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [showInfoPanel, setShowInfoPanel] = useState<boolean>(false);
-  const [showChatList, setShowChatList] = useState<boolean>(true);
-
-  useEffect(() => {
-    async function test() {
-      const m = await api.listMessages();
-      console.log("messages", m);
-    }
-
-    test();
-  }, []);
-
   return (
-    <div className="absolute bottom-0 left-0 right-0 top-0">
-      <div className="flex h-full">
-        {showChatList && (
-          <div className="w-1/3 border-r">
-            {/* FIXME: Remove the hard-coded margin here */}
-            <div className="mt-16">
-              <ChatList />
-            </div>
-          </div>
-        )}
-
-        <div className="flex h-full w-full flex-1 flex-col">
-          <div className="app-region-drag flex-none border-b">
-            <TitleBar
-              showChatList={showChatList}
-              setShowChatList={setShowChatList}
-              showInfoPanel={showInfoPanel}
-              setShowInfoPanel={setShowInfoPanel}
-            />
-          </div>
-
-          {/* FIXME: Ideally, the `overflow-hidden` isn't necessary here. This should be the concern of the `ScrollContainer` */}
-          <div className="flex flex-1 flex-col overflow-hidden">
-            <MessageList messages={messages} />
-
-            <div className="flex-none border-t p-3">
-              <MessageComposer
-                onSubmit={(content) =>
-                  setMessages([
-                    ...messages,
-                    {
-                      id: String(messages.length + 1),
-                      author: "1",
-                      content,
-                      special: false,
-                    },
-                  ])
-                }
-              />
-            </div>
-          </div>
-        </div>
-
-        {showInfoPanel && (
-          <div className="w-1/3 border-l">
-            <ChatSettings />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+    <QueryClientProvider client={queryClient}>
+      <Main />
+    </QueryClientProvider>
+  )
+}

@@ -1,6 +1,12 @@
 import {app, BrowserWindow, ipcMain} from 'electron'
 import path from 'path'
-import {listMessages, runMigrations} from './db/db'
+import {
+  createChat,
+  createMessage,
+  listChats,
+  listMessages,
+  runMigrations
+} from './db/db'
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
 declare const MAIN_WINDOW_VITE_NAME: string
@@ -40,7 +46,12 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   runMigrations()
-  ipcMain.handle('messages:list', listMessages)
+  ipcMain.handle('chats:create', createChat)
+  ipcMain.handle('chats:list', listChats)
+  ipcMain.handle('messages:create', (event, chatId, text) =>
+    createMessage(chatId, text)
+  )
+  ipcMain.handle('messages:list', (event, chatId) => listMessages(chatId))
   createWindow()
 })
 

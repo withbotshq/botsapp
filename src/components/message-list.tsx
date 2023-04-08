@@ -1,11 +1,11 @@
 import {FC} from 'react'
-import {Message} from '../models/message'
+import {Message} from '../db/schema'
 import {getUserByID} from '../models/user'
 import {MessageRenderer} from './message'
 import {ScrollContainer} from './scroll-container'
 
 const isMe = (message: Message) => {
-  const u = getUserByID(message.author)
+  const u = getUserByID('1')
   return u.username === 'nat'
 }
 
@@ -16,7 +16,7 @@ export const MessageList: FC<{messages: Message[]}> = ({messages}) => {
         className="flex flex-col gap-2 p-3"
         style={{WebkitOverflowScrolling: 'touch'}}
       >
-        {messages.map(message => (
+        {messages.map((message) => (
           <div
             className={`flex gap-2 ${
               isMe(message) ? 'flex-row-reverse items-end' : 'items-start'
@@ -25,7 +25,7 @@ export const MessageList: FC<{messages: Message[]}> = ({messages}) => {
           >
             <img
               className="h-7 w-7 rounded-full"
-              src={getUserByID(message.author).avatarUrl}
+              src={getUserByID(1).avatarUrl}
             />
 
             <MessageRenderer message={message} />

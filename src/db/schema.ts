@@ -1,18 +1,20 @@
 import {InferModel} from 'drizzle-orm'
 import {integer, sqliteTable, text} from 'drizzle-orm/sqlite-core'
 
-export const conversations = sqliteTable('conversations', {
+export const chats = sqliteTable('chats', {
   id: integer('id').primaryKey(),
   name: text('name'),
   createdAt: integer('created_at', {mode: 'timestamp'}).notNull(),
   updatedAt: integer('updated_at', {mode: 'timestamp'}).notNull()
 })
 
+export type Chat = InferModel<typeof chats>
+
 export const messages = sqliteTable('messages', {
   id: integer('id').primaryKey(),
   content: text('content').notNull(),
-  conversationId: integer('conversation_id')
-    .references(() => conversations.id)
+  chatId: integer('chat_id')
+    .references(() => chats.id)
     .notNull(),
   createdAt: integer('created_at', {mode: 'timestamp'}).notNull(),
   updatedAt: integer('updated_at', {mode: 'timestamp'}).notNull()
