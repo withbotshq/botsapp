@@ -7,7 +7,12 @@ interface Props {
   showInfoPanel: boolean;
 }
 
-const TitleBar: FC<Props> = ({ showInfoPanel, setShowInfoPanel }) => {
+const TitleBar: FC<Props> = ({
+  showChatList,
+  showInfoPanel,
+  setShowChatList,
+  setShowInfoPanel,
+}) => {
   return (
     <div className="flex items-center px-3">
       <div className="flex-none">
@@ -17,7 +22,7 @@ const TitleBar: FC<Props> = ({ showInfoPanel, setShowInfoPanel }) => {
           <div className="app-region-none">
             <button
               className="block"
-              onClick={() => setShowInfoPanel(!showInfoPanel)}
+              onClick={() => setShowChatList(!showChatList)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
