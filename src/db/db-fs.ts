@@ -63,7 +63,7 @@ export function createChat(): Chat {
 
   // Finally, update the index.
   chatsIndex.chats.push(chat)
-  writeChatsState(chatsIndex)
+  writeChatsIndex(chatsIndex)
 
   return chat
 }
@@ -96,7 +96,7 @@ export function createMessage(chatId: number, content: string): Message {
   // Finally, update the index.
   const chat = assert(chatsIndex.chats.find((chat) => chat.id === chatId))
   chat.updatedAt = message.createdAt
-  writeChatsState(chatsIndex)
+  writeChatsIndex(chatsIndex)
 
   return message
 }
@@ -135,7 +135,7 @@ function writeDatabaseState(state: DatabaseState): DatabaseState {
   return state
 }
 
-function writeChatsState(state: ChatsIndex): ChatsIndex {
+function writeChatsIndex(state: ChatsIndex): ChatsIndex {
   writeJSONFile(chatsIndexPath, state)
   return state
 }
