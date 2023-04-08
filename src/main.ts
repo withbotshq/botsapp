@@ -6,7 +6,7 @@ import {
   listChats,
   listMessages,
   runMigrations
-} from './db/db'
+} from './db/db-fs'
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
 declare const MAIN_WINDOW_VITE_NAME: string
