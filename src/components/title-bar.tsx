@@ -14,7 +14,7 @@ const TitleBar: FC<Props> = ({ showInfoPanel, setShowInfoPanel }) => {
         <div className="flex gap-3">
           <div className="w-[55px]" />
 
-          <div className="app-region">
+          <div className="app-region-none">
             <button
               className="block"
               onClick={() => setShowInfoPanel(!showInfoPanel)}
@@ -39,7 +39,7 @@ const TitleBar: FC<Props> = ({ showInfoPanel, setShowInfoPanel }) => {
         </div>
       </div>
       <div className="flex-1 p-3 text-center text-gray-500">GPT-3.5</div>
-      <div className="app-region flex-none">
+      <div className="app-region-none flex-none">
         <button
           className="block"
           onClick={() => setShowInfoPanel(!showInfoPanel)}

@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .app-region-drag {
+    -webkit-app-region: drag;
+  }
+
+  .app-region-none {
+    -webkit-app-region: none;
+  }
+}
+
 body {
   @apply bg-gray-950;
   @apply text-base;
@@ -12,8 +22,4 @@ th,
 td {
   @apply border;
   @apply p-1;
-}
-
-.app-region {
-  -webkit-app-region: drag;
 }

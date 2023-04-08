@@ -23,7 +23,7 @@ export const App: FC = () => {
     <div className="absolute bottom-0 left-0 right-0 top-0">
       <div className="flex h-full">
         <div className="flex h-full w-full flex-1 flex-col">
-          <div className="app-region flex-none border-b">
+          <div className="app-region-drag flex-none border-b">
             <TitleBar
               showChatList={showChatList}
               setShowChatList={setShowChatList}
