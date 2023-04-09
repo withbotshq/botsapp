@@ -1,7 +1,8 @@
 import {assert} from '@jclem/assert'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {FC, useState} from 'react'
-import type {Chat} from '../db/schema'
+import {IpcRendererEvent} from 'electron'
+import {FC, useEffect, useState} from 'react'
+import type {Chat, Message} from '../db/schema'
 import {ChatList} from './chat-list'
 import {ChatSettings} from './chat-settings'
 import {MessageComposer} from './message-composer'
@@ -17,6 +18,12 @@ export const Main: FC = () => {
   const messagesQuery = useQuery({
     queryKey: ['messages', currentChat?.id],
     queryFn: () => api.listMessages(assert(currentChat?.id)),
+    enabled: currentChat != null
+  })
+
+  const partialMessageQuery = useQuery({
+    queryKey: ['partial-message', currentChat?.id],
+    queryFn: () => api.getPartialMessage(assert(currentChat?.id)),
     enabled: currentChat != null
   })
 
@@ -36,6 +43,27 @@ export const Main: FC = () => {
     onSuccess: (message) => {
       queryClient.invalidateQueries(['messages', currentChat?.id])
     }
+  })
+
+  useEffect(() => {
+    const onMessage = (event: IpcRendererEvent, message: Message) => {
+      queryClient.invalidateQueries(['messages', message.chatId])
+      queryClient.invalidateQueries(['partial-message', message.chatId])
+    }
+
+    api.onMessage(onMessage)
+
+    return () => api.offMessage(onMessage)
+  }, [])
+
+  useEffect(() => {
+    const onMessageChunk = (event: IpcRendererEvent, chatId: number) => {
+      queryClient.invalidateQueries(['partial-message', chatId])
+    }
+
+    api.onMessageChunk(onMessageChunk)
+
+    return () => api.offMessageChunk(onMessageChunk)
   })
 
   return (
@@ -67,7 +95,11 @@ export const Main: FC = () => {
           {/* FIXME: Ideally, the `overflow-hidden` isn't necessary here. This should be the concern of the `ScrollContainer` */}
           {currentChat ? (
             <div className="flex flex-1 flex-col overflow-hidden">
-              <MessageList key={currentChat.id} messages={messages} />
+              <MessageList
+                key={currentChat.id}
+                messages={messages}
+                partialMessageChunks={partialMessageQuery.data ?? null}
+              />
 
               <div className="flex-none border-t p-3">
                 <MessageComposer

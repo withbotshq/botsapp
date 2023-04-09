@@ -1,7 +1,7 @@
 import {assert} from '@jclem/assert'
 import {BrowserWindow} from 'electron'
 import {z} from 'zod'
-import {listMessages} from '../../db/db'
+import {createMessage, listMessages} from '../../db/db'
 import {Message} from '../../db/schema'
 import {config} from '../config/config'
 
@@ -39,18 +39,66 @@ const CompletionChunk = z.object({
 
 type CompletionChunk = z.infer<typeof CompletionChunk>
 
-export class ChatController {
-  #abortController: AbortController | null = null
+type PartialMessage = {
+  abortController: AbortController
+  chunks: string[]
+}
 
-  abortMessage() {
-    this.#abortController?.abort()
+export class ChatController {
+  #partialMessages: Map<
+    number,
+    {
+      abortController: AbortController
+      chunks: string[]
+    }
+  > = new Map()
+
+  #windows: Set<BrowserWindow> = new Set()
+
+  getPartialMessage(chatId: number) {
+    return this.#partialMessages.get(chatId)?.chunks ?? null
   }
 
-  async sendMessage(message: Message, window: BrowserWindow) {
+  addBrowserWindow(window: BrowserWindow) {
+    window.on('closed', () => this.removeBrowserWindow(window))
+    this.#windows.add(window)
+  }
+
+  removeBrowserWindow(window: BrowserWindow) {
+    this.#windows.delete(window)
+  }
+
+  /**
+   * Abort the current message streaming for the given chat.
+   *
+   * This will persist the current message chunks and stop the streaming.
+   *
+   * @param chatId The ID of the chat to abort.
+   */
+  abortMessageForChat(chatId: number) {
+    if (!this.#partialMessages.has(chatId)) {
+      console.warn('No partial message to abort for chat', chatId)
+      return
+    }
+
+    this.#completePartialMessage(chatId, {abort: true})
+  }
+
+  async sendMessage(message: Message) {
     // Includes the new message already.
     const messageHistory = listMessages(message.chatId)
 
-    this.#abortController = new AbortController()
+    if (this.#partialMessages.has(message.chatId)) {
+      console.warn('Already streaming a message for chat', message.chatId)
+      return
+    }
+
+    const partialMessage: PartialMessage = {
+      abortController: new AbortController(),
+      chunks: []
+    }
+
+    this.#partialMessages.set(message.chatId, partialMessage)
 
     // TODO: Handle no API key being set, yet.
     const resp = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -59,7 +107,7 @@ export class ChatController {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${assert(config.openAIAPIKey)}`
       },
-      signal: this.#abortController.signal,
+      signal: partialMessage.abortController.signal,
       body: JSON.stringify({
         model: 'gpt-4',
         messages: messageHistory.map((m) => ({
@@ -80,8 +128,6 @@ export class ChatController {
     const bodyReader = assert(resp.body).getReader()
     const decoder = new TextDecoder()
 
-    const chunks = []
-
     while (true) {
       const {value, done} = await bodyReader.read()
       if (done) break
@@ -100,11 +146,39 @@ export class ChatController {
         const choice = chunk.choices.at(0)
 
         if (choice && isContentChoice(choice)) {
-          chunks.push(choice.delta.content)
-          window.webContents.send('chat:message-chunk', choice.delta.content)
+          partialMessage.chunks.push(choice.delta.content)
+
+          this.#windows.forEach((window) => {
+            window.webContents.send(
+              'chat:message-chunk',
+              message.chatId,
+              choice.delta.content
+            )
+          })
         }
       }
     }
+
+    this.#completePartialMessage(message.chatId)
+  }
+
+  #completePartialMessage(chatId: number, opts: {abort?: boolean} = {}) {
+    const partialMessage = assert(this.#partialMessages.get(chatId))
+    this.#partialMessages.delete(chatId)
+
+    if (opts.abort) {
+      partialMessage?.abortController.abort()
+    }
+
+    const message = createMessage(
+      chatId,
+      'assistant',
+      partialMessage?.chunks.join('')
+    )
+
+    this.#windows.forEach((window) => {
+      window.webContents.send('chat:message', message)
+    })
   }
 }
 

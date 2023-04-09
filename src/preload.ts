@@ -26,16 +26,31 @@ const api = {
     ipcRenderer.invoke('messages:list', chatId),
 
   // Chat coordination
+  getPartialMessage: (chatId: number): Promise<string[] | null> =>
+    ipcRenderer.invoke('messages:get-partial', chatId),
+
   onMessageChunk: (
-    callback: (event: IpcRendererEvent, chunk: string) => void
+    callback: (event: IpcRendererEvent, chatId: number, chunk: string) => void
   ): void => {
     ipcRenderer.on('chat:message-chunk', callback)
   },
 
   offMessageChunk: (
-    callback: (event: IpcRendererEvent, chunk: string) => void
+    callback: (event: IpcRendererEvent, chatId: number, chunk: string) => void
   ): void => {
     ipcRenderer.off('chat:message-chunk', callback)
+  },
+
+  onMessage: (
+    callback: (event: IpcRendererEvent, message: Message) => void
+  ): void => {
+    ipcRenderer.on('chat:message', callback)
+  },
+
+  offMessage: (
+    callback: (event: IpcRendererEvent, message: Message) => void
+  ): void => {
+    ipcRenderer.off('chat:message', callback)
   }
 }
 
