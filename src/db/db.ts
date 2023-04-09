@@ -1,54 +1,157 @@
-import Database from 'better-sqlite3'
-import {drizzle} from 'drizzle-orm/better-sqlite3'
-import {migrate} from 'drizzle-orm/better-sqlite3/migrator'
-import {desc, eq} from 'drizzle-orm/expressions'
+import {assert} from '@jclem/assert'
 import {app} from 'electron'
+import fs from 'fs'
 import path from 'path'
-import {Chat, Message, chats, messages} from './schema'
+import {readJSONFile, toJSON, writeJSONFile} from '../main/fsutil'
+import {Chat, Message} from './schema'
 
-const dbPath = path.join(app.getPath('userData'), 'data.db')
-const nativeBindingPath = path.join(
-  app.getAppPath(),
-  'node_modules/better-sqlite3/build/Release/better_sqlite3'
-)
+const dataPath = path.join(app.getPath('userData'), 'data')
+const databaseStatePath = path.join(dataPath, 'database.json')
+const chatsIndexPath = path.join(dataPath, 'chats.json')
+const chatStatesPath = path.join(dataPath, 'chats')
 
-const sqlite = new Database(dbPath, {
-  verbose: console.log,
-  nativeBinding: nativeBindingPath
-})
+if (!fs.existsSync(dataPath)) {
+  const initialDatabaseState: DatabaseState = {
+    version: 0,
+    nextChatId: 1,
+    nextMessageId: 1
+  }
 
-const db = drizzle(sqlite)
+  const initialChatsIndex: ChatsIndex = {
+    chats: []
+  }
+
+  fs.mkdirSync(dataPath)
+  fs.writeFileSync(databaseStatePath, toJSON(initialDatabaseState))
+  fs.writeFileSync(chatsIndexPath, toJSON(initialChatsIndex))
+  fs.mkdirSync(chatStatesPath)
+}
+
+interface DatabaseState {
+  version: number
+  nextChatId: number
+  nextMessageId: number
+}
+
+interface ChatsIndex {
+  chats: Chat[]
+}
+
+interface ChatState {
+  messages: Message[]
+}
+
+const databaseState = readJSONFile(databaseStatePath) as DatabaseState
+const chatsIndex = readJSONFile(chatsIndexPath) as ChatsIndex
 
 export function runMigrations() {
-  migrate(db, {migrationsFolder: path.join(app.getAppPath(), 'migrations')})
+  return
 }
 
 export function createChat(): Chat {
-  return db.insert(chats).values(timestamps(true)).returning().get()
+  const chat: Chat = {
+    id: getNextChatId(),
+    name: null,
+    ...timestamps(true)
+  }
+
+  // First, write the chat state to disk.
+  writeChatState(chat.id, {messages: []})
+
+  // Finally, update the index.
+  chatsIndex.chats.push(chat)
+  writeChatsIndex(chatsIndex)
+
+  return chat
 }
 
 export function listChats(): Chat[] {
-  return db.select().from(chats).orderBy(desc(chats.updatedAt)).all()
+  return chatsIndex.chats
 }
 
-export function createMessage(chatId: number, content: string): Message {
-  return db
-    .insert(messages)
-    .values({...timestamps(true), chatId, content})
-    .returning()
-    .get()
+export function createMessage(
+  chatId: number,
+  role: 'user' | 'assistant' | 'system',
+  content: string
+): Message {
+  const message: Message = {
+    id: getNextMessageId(),
+    role,
+    chatId,
+    content,
+    ...timestamps(true)
+  }
+
+  // First, read the chat state from disk.
+  const chatState = readChatState(chatId)
+
+  // Next, update the chat state.
+  chatState.messages.push(message)
+
+  // Next, write the chat state to disk.
+  writeChatState(chatId, chatState)
+
+  // Finally, update the index.
+  const chat = assert(chatsIndex.chats.find((chat) => chat.id === chatId))
+  chat.updatedAt = message.createdAt
+  writeChatsIndex(chatsIndex)
+
+  return message
 }
 
 export function listMessages(chatId: number): Message[] {
-  return db.select().from(messages).where(eq(messages.chatId, chatId)).all()
+  const chatState = readChatState(chatId)
+  return chatState.messages
 }
 
-function timestamps(creating: true): {createdAt: Date; updatedAt: Date}
-function timestamps(creating: false): {updatedAt: Date}
+function timestamps(creating: true): {createdAt: number; updatedAt: number}
+function timestamps(creating: false): {updatedAt: number}
 function timestamps(creating: boolean) {
   if (creating) {
-    return {createdAt: new Date(), updatedAt: new Date()}
+    return {createdAt: Date.now(), updatedAt: Date.now()}
   } else {
-    return {updatedAt: new Date()}
+    return {updatedAt: Date.now()}
   }
+}
+
+function writeChatState(chatId: number, state: ChatState): ChatState {
+  writeJSONFile(
+    path.join(chatStatesPath, `${getChatIdString(chatId)}.json`),
+    state
+  )
+  return state
+}
+
+function readChatState(chatId: number): ChatState {
+  return readJSONFile(
+    path.join(chatStatesPath, `${getChatIdString(chatId)}.json`)
+  ) as ChatState
+}
+
+function writeDatabaseState(state: DatabaseState): DatabaseState {
+  writeJSONFile(databaseStatePath, state)
+  return state
+}
+
+function writeChatsIndex(state: ChatsIndex): ChatsIndex {
+  writeJSONFile(chatsIndexPath, state)
+  return state
+}
+
+function getChatIdString(id: number): string {
+  return id.toString().padStart(4, '0')
+}
+
+function getNextChatId(): number {
+  const nextId = databaseState.nextChatId
+  databaseState.nextChatId++
+  writeDatabaseState(databaseState)
+  return nextId
+}
+
+function getNextMessageId(): number {
+  const nextId = databaseState.nextMessageId
+  databaseState.nextMessageId++
+  writeDatabaseState(databaseState)
+  return nextId
 }

@@ -67,7 +67,7 @@ export const Main: FC = () => {
           {/* FIXME: Ideally, the `overflow-hidden` isn't necessary here. This should be the concern of the `ScrollContainer` */}
           {currentChat ? (
             <div className="flex flex-1 flex-col overflow-hidden">
-              <MessageList messages={messages} />
+              <MessageList key={currentChat.id} messages={messages} />
 
               <div className="flex-none border-t p-3">
                 <MessageComposer

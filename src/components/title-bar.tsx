@@ -1,17 +1,17 @@
-import { FC } from "react";
+import {FC} from 'react'
 
 interface Props {
-  setShowChatList: (showChatList: boolean) => void;
-  setShowInfoPanel: (showInfoPanel: boolean) => void;
-  showChatList: boolean;
-  showInfoPanel: boolean;
+  setShowChatList: (showChatList: boolean) => void
+  setShowInfoPanel: (showInfoPanel: boolean) => void
+  showChatList: boolean
+  showInfoPanel: boolean
 }
 
 const TitleBar: FC<Props> = ({
   showChatList,
   showInfoPanel,
   setShowChatList,
-  setShowInfoPanel,
+  setShowInfoPanel
 }) => {
   return (
     <div className="flex items-center px-3">
@@ -43,7 +43,7 @@ const TitleBar: FC<Props> = ({
           </div>
         </div>
       </div>
-      <div className="flex-1 p-3 text-center text-gray-500">GPT-3.5</div>
+      <div className="flex-1 p-3 text-center text-gray-500">GPT-4</div>
       <div className="app-region-none flex-none">
         <button
           className="block"
@@ -100,7 +100,7 @@ const TitleBar: FC<Props> = ({
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export { TitleBar };
+export {TitleBar}

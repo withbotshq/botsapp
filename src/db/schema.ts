@@ -1,24 +1,21 @@
-import {InferModel} from 'drizzle-orm'
-import {integer, sqliteTable, text} from 'drizzle-orm/sqlite-core'
+import {z} from 'zod'
 
-export const chats = sqliteTable('chats', {
-  id: integer('id').primaryKey(),
-  name: text('name'),
-  createdAt: integer('created_at', {mode: 'timestamp'}).notNull(),
-  updatedAt: integer('updated_at', {mode: 'timestamp'}).notNull()
+export const Chat = z.object({
+  id: z.number(),
+  name: z.string().nullable(),
+  createdAt: z.number(),
+  updatedAt: z.number()
 })
 
-export type Chat = InferModel<typeof chats>
+export type Chat = z.infer<typeof Chat>
 
-export const messages = sqliteTable('messages', {
-  id: integer('id').primaryKey(),
-  role: text('role').notNull(),
-  content: text('content').notNull(),
-  chatId: integer('chat_id')
-    .references(() => chats.id)
-    .notNull(),
-  createdAt: integer('created_at', {mode: 'timestamp'}).notNull(),
-  updatedAt: integer('updated_at', {mode: 'timestamp'}).notNull()
+export const Message = z.object({
+  id: z.number(),
+  role: z.string(),
+  content: z.string(),
+  chatId: z.number(),
+  createdAt: z.number(),
+  updatedAt: z.number()
 })
 
-export type Message = InferModel<typeof messages>
+export type Message = z.infer<typeof Message>

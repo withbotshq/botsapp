@@ -8,7 +8,7 @@ import oneDark from '../one-dark'
 export const MessageRenderer: FC<{message: Message}> = ({message}) => {
   return (
     <span
-      className={`rounded-full text-white px-3 py-1 ${
+      className={`rounded-2xl text-white px-3 py-1 ${
         message.role === 'user' ? 'bg-blue-500' : 'bg-gray-500'
       }`}
     >
@@ -16,12 +16,12 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
         components={{
           code({node, inline, className, children, ...props}) {
             const match = /language-(\w+)/.exec(className || '')
-            const language = match![1]
+            const language = match?.[1]
 
             return !inline && match ? (
               <div className="rounded border">
                 <div className="flex justify-between bg-gray-900 px-2 py-1">
-                  <div>{language}</div>
+                  <div>{language ?? ''}</div>
 
                   <div>
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24">

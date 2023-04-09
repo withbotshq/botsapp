@@ -1,10 +1,18 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
-import {contextBridge, ipcRenderer} from 'electron'
+import {IpcRendererEvent, contextBridge, ipcRenderer} from 'electron'
 import {Chat, Message} from './db/schema'
 
 const api = {
+  // Configuration
+  getOpenAIAPIKey: (): Promise<string> =>
+    ipcRenderer.invoke('config:getOpenAIAPIKey'),
+
+  setOpenAIAPIKey: (key: string): void =>
+    ipcRenderer.send('config:setOpenAIAPIKey', key),
+
+  // Database
   createChat: (): Promise<Chat> => ipcRenderer.invoke('chats:create'),
   listChats: (): Promise<Chat[]> => ipcRenderer.invoke('chats:list'),
 
@@ -15,7 +23,20 @@ const api = {
   ): Promise<Message> =>
     ipcRenderer.invoke('messages:create', chatId, role, content),
   listMessages: (chatId: number): Promise<Message[]> =>
-    ipcRenderer.invoke('messages:list', chatId)
+    ipcRenderer.invoke('messages:list', chatId),
+
+  // Chat coordination
+  onMessageChunk: (
+    callback: (event: IpcRendererEvent, chunk: string) => void
+  ): void => {
+    ipcRenderer.on('chat:message-chunk', callback)
+  },
+
+  offMessageChunk: (
+    callback: (event: IpcRendererEvent, chunk: string) => void
+  ): void => {
+    ipcRenderer.off('chat:message-chunk', callback)
+  }
 }
 
 export type API = typeof api

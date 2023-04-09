@@ -6,7 +6,9 @@ import {
   listChats,
   listMessages,
   runMigrations
-} from './db/db-fs'
+} from './db/db'
+import {ChatController} from './main/chat/controller'
+import {config, setOpenAIAPIKey} from './main/config/config'
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
 declare const MAIN_WINDOW_VITE_NAME: string
@@ -39,20 +41,29 @@ const createWindow = () => {
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
+
+  return mainWindow
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+  const chatController = new ChatController()
+
+  let mainWindow: BrowserWindow
+
   runMigrations()
+  ipcMain.on('config:setOpenAIAPIKey', (event, key) => setOpenAIAPIKey(key))
+  ipcMain.handle('config:getOpenAIAPIKey', () => config.openAIAPIKey)
   ipcMain.handle('chats:create', createChat)
   ipcMain.handle('chats:list', listChats)
-  ipcMain.handle('messages:create', (event, chatId, role, content) =>
-    createMessage(chatId, role, content)
-  )
+  ipcMain.handle('messages:create', (event, chatId, role, content) => {
+    const message = createMessage(chatId, role, content)
+    chatController.sendMessage(message, mainWindow)
+  })
   ipcMain.handle('messages:list', (event, chatId) => listMessages(chatId))
-  createWindow()
+  mainWindow = createWindow()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
