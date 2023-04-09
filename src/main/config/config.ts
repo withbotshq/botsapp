@@ -6,7 +6,7 @@ import {readJSONFile, writeJSONFile} from '../fsutil'
 
 const Config = z.object({
   openAIAPIKey: z.preprocess(
-    (v) => (typeof v === 'string' ? v : null),
+    v => (typeof v === 'string' ? v : null),
     z.string().nullable()
   )
 })

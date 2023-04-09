@@ -13,7 +13,7 @@ const ChatList: FC<Props> = ({activeChatId, onCreateChat, onSelectChat}) => {
   const query = useQuery({
     queryKey: ['chats'],
     queryFn: api.listChats,
-    onSuccess: (chats) => {
+    onSuccess: chats => {
       if (!activeChatId && chats.length > 0) {
         onSelectChat(chats[0])
       }
@@ -28,16 +28,16 @@ const ChatList: FC<Props> = ({activeChatId, onCreateChat, onSelectChat}) => {
 
   useEffect(() => {
     if (activeChatId) {
-      setIsUnread((u) => ({...u, [activeChatId]: false}))
+      setIsUnread(u => ({...u, [activeChatId]: false}))
     }
   }, [activeChatId])
 
   useEffect(() => {
     const onMessage = (event: IpcRendererEvent, {chatId}: Message) => {
       if (chatId === activeChatId) {
-        setIsUnread((u) => ({...u, [chatId]: false}))
+        setIsUnread(u => ({...u, [chatId]: false}))
       } else {
-        setIsUnread((u) => ({...u, [chatId]: true}))
+        setIsUnread(u => ({...u, [chatId]: true}))
       }
     }
 
@@ -48,7 +48,7 @@ const ChatList: FC<Props> = ({activeChatId, onCreateChat, onSelectChat}) => {
 
   useEffect(() => {
     const onMessageChunk = (event: IpcRendererEvent, chatId: number) => {
-      setIsTyping((t) => ({...t, [chatId]: true}))
+      setIsTyping(t => ({...t, [chatId]: true}))
       const timeout = typingTimeouts.get(chatId)
 
       if (timeout) {
@@ -58,7 +58,7 @@ const ChatList: FC<Props> = ({activeChatId, onCreateChat, onSelectChat}) => {
       typingTimeouts.set(
         chatId,
         setTimeout(() => {
-          setIsTyping((t) => ({...t, [chatId]: false}))
+          setIsTyping(t => ({...t, [chatId]: false}))
           typingTimeouts.delete(chatId)
         }, 250)
       )
@@ -74,7 +74,7 @@ const ChatList: FC<Props> = ({activeChatId, onCreateChat, onSelectChat}) => {
       {chats ? (
         <>
           {chats.length > 0 ? (
-            chats.map((chat) => (
+            chats.map(chat => (
               <button
                 onClick={() => onSelectChat(chat)}
                 className={`flex align-middle justify-between border-b p-3 hover:bg-gray-900 text-left ${

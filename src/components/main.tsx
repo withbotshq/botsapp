@@ -31,7 +31,7 @@ export const Main: FC = () => {
 
   const createChat = useMutation({
     mutationFn: () => api.createChat(),
-    onSuccess: (chat) => {
+    onSuccess: chat => {
       queryClient.invalidateQueries(['chats'])
       setCurrentChat(chat)
     }
@@ -103,7 +103,7 @@ export const Main: FC = () => {
 
               <div className="flex-none border-t p-3">
                 <MessageComposer
-                  onSubmit={(content) => sendMessage.mutate(content)}
+                  onSubmit={content => sendMessage.mutate(content)}
                 />
               </div>
             </div>

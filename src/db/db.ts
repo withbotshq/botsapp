@@ -92,7 +92,7 @@ export function createMessage(
   writeChatState(chatId, chatState)
 
   // Finally, update the index.
-  const chat = assert(chatsIndex.chats.find((chat) => chat.id === chatId))
+  const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
   chat.updatedAt = message.createdAt
   writeChatsIndex(chatsIndex)
 

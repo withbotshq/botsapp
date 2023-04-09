@@ -26,7 +26,7 @@ const ChatSettings: FC = () => {
           type="password"
           placeholder="API Key"
           value={apiKeyQuery.data ?? ''}
-          onChange={(e) => setApiKey.mutate(e.target.value)}
+          onChange={e => setApiKey.mutate(e.target.value)}
         />
       </div>
       <div className="mb-4">
@@ -42,7 +42,7 @@ const ChatSettings: FC = () => {
       <h3 className="text-xs font-bold uppercase text-gray-500">Plugins</h3>
 
       <div className="flex flex-col">
-        {plugins.map((plugin) => (
+        {plugins.map(plugin => (
           <div key={plugin.name} className="border-b py-2">
             <div className="flex gap-2">
               {plugin.avatarUrl ? (

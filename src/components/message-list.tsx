@@ -31,7 +31,7 @@ export const MessageList: FC<Props> = ({messages, partialMessageChunks}) => {
         style={{WebkitOverflowScrolling: 'touch'}}
       >
         {(partialMessage ? [...messages, partialMessage] : messages).map(
-          (message) => (
+          message => (
             <div
               className={`flex gap-2 ${
                 isMe(message) ? 'flex-row-reverse items-end' : 'items-start'
