@@ -110,7 +110,7 @@ export class ChatController {
       signal: partialMessage.abortController.signal,
       body: JSON.stringify({
         model: 'gpt-4',
-        messages: messageHistory.map((m) => ({
+        messages: messageHistory.map(m => ({
           role: m.role,
           content: m.content
         })),
@@ -128,13 +128,14 @@ export class ChatController {
     const bodyReader = assert(resp.body).getReader()
     const decoder = new TextDecoder()
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const {value, done} = await bodyReader.read()
       if (done) break
       const chunk = decoder.decode(value)
       const lines = chunk
         .split('\n\n')
-        .map((line) => line.slice('data: '.length).trim())
+        .map(line => line.slice('data: '.length).trim())
         .filter(Boolean)
 
       for (const line of lines) {
@@ -148,7 +149,7 @@ export class ChatController {
         if (choice && isContentChoice(choice)) {
           partialMessage.chunks.push(choice.delta.content)
 
-          this.#windows.forEach((window) => {
+          this.#windows.forEach(window => {
             window.webContents.send(
               'chat:message-chunk',
               message.chatId,
@@ -176,26 +177,14 @@ export class ChatController {
       partialMessage?.chunks.join('')
     )
 
-    this.#windows.forEach((window) => {
+    this.#windows.forEach(window => {
       window.webContents.send('chat:message', message)
     })
   }
 }
 
-function isRoleChoice(
-  choice: RoleChoice | ContentChoice | StopChoice
-): choice is RoleChoice {
-  return choice.delta.hasOwnProperty('role')
-}
-
 function isContentChoice(
   choice: RoleChoice | ContentChoice | StopChoice
 ): choice is ContentChoice {
-  return choice.delta.hasOwnProperty('content')
-}
-
-function isStopChoice(
-  choice: RoleChoice | ContentChoice | StopChoice
-): choice is StopChoice {
-  return choice.finish_reason !== null
+  return Reflect.has(choice.delta, 'content')
 }

@@ -1,3 +1,4 @@
+import {assert} from '@jclem/assert'
 import {FC, PropsWithChildren, useEffect, useRef} from 'react'
 
 export const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
@@ -5,10 +6,13 @@ export const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
   const innerDiv = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const outerHeight = outerDiv.current!.clientHeight
-    const innerHeight = innerDiv.current!.clientHeight
+    const outerDivEl = assert(outerDiv.current)
+    const innerDivEl = assert(innerDiv.current)
 
-    outerDiv.current!.scrollTo({
+    const outerHeight = outerDivEl.clientHeight
+    const innerHeight = innerDivEl.clientHeight
+
+    outerDivEl.scrollTo({
       top: innerHeight - outerHeight,
       left: 0,
       behavior: 'smooth'

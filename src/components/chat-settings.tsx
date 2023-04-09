@@ -3,7 +3,7 @@ import {FC, useState} from 'react'
 import {Plugin, initialPlugins} from '../models/plugin'
 
 const ChatSettings: FC = () => {
-  const [plugins, setPlugins] = useState<Plugin[]>(initialPlugins)
+  const [plugins] = useState<Plugin[]>(initialPlugins)
   const queryClient = useQueryClient()
 
   const apiKeyQuery = useQuery({
@@ -43,7 +43,7 @@ const ChatSettings: FC = () => {
 
       <div className="flex flex-col">
         {plugins.map((plugin) => (
-          <div className="border-b py-2">
+          <div key={plugin.name} className="border-b py-2">
             <div className="flex gap-2">
               {plugin.avatarUrl ? (
                 <img className="h-6 w-6 rounded" src={plugin.avatarUrl} />

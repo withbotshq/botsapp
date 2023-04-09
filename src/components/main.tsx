@@ -40,7 +40,7 @@ export const Main: FC = () => {
   const sendMessage = useMutation({
     mutationFn: (content: string) =>
       api.createMessage(assert(currentChat).id, 'user', content),
-    onSuccess: (message) => {
+    onSuccess: () => {
       queryClient.invalidateQueries(['messages', currentChat?.id])
     }
   })
@@ -54,7 +54,7 @@ export const Main: FC = () => {
     api.onMessage(onMessage)
 
     return () => api.offMessage(onMessage)
-  }, [])
+  }, [queryClient])
 
   useEffect(() => {
     const onMessageChunk = (event: IpcRendererEvent, chatId: number) => {
@@ -64,7 +64,7 @@ export const Main: FC = () => {
     api.onMessageChunk(onMessageChunk)
 
     return () => api.offMessageChunk(onMessageChunk)
-  }, [])
+  }, [queryClient])
 
   return (
     <div className="absolute bottom-0 left-0 right-0 top-0">

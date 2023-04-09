@@ -14,7 +14,7 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
     >
       <ReactMarkdown
         components={{
-          code({node, inline, className, children, ...props}) {
+          code({inline, className, children, ...props}) {
             const match = /language-(\w+)/.exec(className || '')
             const language = match?.[1]
 
@@ -39,11 +39,12 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
                 <div>
                   <SyntaxHighlighter
                     {...props}
-                    children={String(children).replace(/\n$/, '')}
                     language={language}
                     PreTag="div"
                     style={oneDark}
-                  />
+                  >
+                    {String(children).replace(/\n$/, '')}
+                  </SyntaxHighlighter>
                 </div>
               </div>
             ) : (
@@ -57,9 +58,10 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
             <pre className="whitespace-normal font-sans" {...props} />
           )
         }}
-        children={message.content}
         remarkPlugins={[remarkGfm]}
-      />
+      >
+        {message.content}
+      </ReactMarkdown>
     </span>
   )
 }

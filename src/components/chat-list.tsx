@@ -67,7 +67,7 @@ const ChatList: FC<Props> = ({activeChatId, onCreateChat, onSelectChat}) => {
     api.onMessageChunk(onMessageChunk)
 
     return () => api.offMessageChunk(onMessageChunk)
-  }, [])
+  }, [typingTimeouts])
 
   return (
     <div className="flex flex-col">
