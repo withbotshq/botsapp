@@ -2,7 +2,7 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 import {IpcRendererEvent, contextBridge, ipcRenderer} from 'electron'
-import {Chat, Message} from './db/schema'
+import {Chat, Message} from './main/db/schema'
 
 const api = {
   // Configuration

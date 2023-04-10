@@ -1,9 +1,9 @@
 import {assert} from '@jclem/assert'
 import {BrowserWindow} from 'electron'
 import {z} from 'zod'
-import {createMessage, listMessages} from '../../db/db'
-import {Message} from '../../db/schema'
 import {config} from '../config/config'
+import {createMessage, listMessages} from '../db/db'
+import {Message} from '../db/schema'
 
 const RoleChoice = z.object({
   delta: z.object({role: z.string()}),

@@ -1,7 +1,7 @@
 import {useQuery} from '@tanstack/react-query'
 import {IpcRendererEvent} from 'electron'
 import {FC, useEffect, useMemo, useState} from 'react'
-import {Chat, Message} from '../db/schema'
+import {Chat, Message} from '../main/db/schema'
 
 interface Props {
   activeChatId: number | null

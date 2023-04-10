@@ -1,14 +1,14 @@
 import {app, BrowserWindow, ipcMain} from 'electron'
 import path from 'path'
+import {ChatController} from './main/chat/controller'
+import {config, setOpenAIAPIKey} from './main/config/config'
 import {
   createChat,
   createMessage,
   listChats,
   listMessages,
   runMigrations
-} from './db/db'
-import {ChatController} from './main/chat/controller'
-import {config, setOpenAIAPIKey} from './main/config/config'
+} from './main/db/db'
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
 declare const MAIN_WINDOW_VITE_NAME: string

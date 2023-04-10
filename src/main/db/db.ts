@@ -2,7 +2,7 @@ import {assert} from '@jclem/assert'
 import {app} from 'electron'
 import fs from 'fs'
 import path from 'path'
-import {readJSONFile, toJSON, writeJSONFile} from '../main/fsutil'
+import {readJSONFile, toJSON, writeJSONFile} from '../fsutil'
 import {Chat, Message} from './schema'
 
 const dataPath = path.join(app.getPath('userData'), 'data')
