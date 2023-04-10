@@ -1,4 +1,4 @@
-const NewChatIcon = () => (
+const SnippetIcon = () => (
   <svg
     width="24"
     height="24"
@@ -30,4 +30,4 @@ const NewChatIcon = () => (
   </svg>
 )
 
-export default NewChatIcon
+export default SnippetIcon
