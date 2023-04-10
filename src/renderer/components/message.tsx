@@ -2,7 +2,7 @@ import {FC} from 'react'
 import ReactMarkdown from 'react-markdown'
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 import remarkGfm from 'remark-gfm'
-import {Message} from '../main/db/schema'
+import {Message} from '../../main/db/schema'
 import oneDark from '../one-dark'
 
 export const MessageRenderer: FC<{message: Message}> = ({message}) => {

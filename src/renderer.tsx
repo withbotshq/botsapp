@@ -29,8 +29,8 @@
 import {assert} from '@jclem/assert'
 import {StrictMode} from 'react'
 import ReactDOM from 'react-dom/client'
-import {App} from './components/app'
-import './index.css'
+import {App} from './renderer/components/app'
+import './renderer/index.css'
 
 const root = assert(document.getElementById('root'))
 

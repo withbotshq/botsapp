@@ -1,5 +1,5 @@
 import {FC} from 'react'
-import {Message} from '../main/db/schema'
+import {Message} from '../../main/db/schema'
 import {MessageRenderer} from './message'
 import {ScrollContainer} from './scroll-container'
 
