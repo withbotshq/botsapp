@@ -69,6 +69,15 @@ export function listChats(): Chat[] {
   return chatsIndex.chats
 }
 
+export function deleteChat(chatId: number): void {
+  // First, delete the chat state from disk.
+  fs.unlinkSync(path.join(chatStatesPath, `${getChatIdString(chatId)}.json`))
+
+  // Next, update the index.
+  chatsIndex.chats = chatsIndex.chats.filter(chat => chat.id !== chatId)
+  writeChatsIndex(chatsIndex)
+}
+
 export function createMessage(
   chatId: number,
   role: 'user' | 'assistant' | 'system',

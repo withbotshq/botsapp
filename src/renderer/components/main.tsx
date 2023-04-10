@@ -67,6 +67,19 @@ export const Main: FC = () => {
     return () => api.offMessageChunk(onMessageChunk)
   }, [queryClient])
 
+  useEffect(() => {
+    const onChatDeleted = (event: IpcRendererEvent, chatId: number) => {
+      queryClient.invalidateQueries(['chats'])
+      if (currentChat?.id === chatId) {
+        setCurrentChat(null)
+      }
+    }
+
+    api.onChatDeleted(onChatDeleted)
+
+    return () => api.offChatDeleted(onChatDeleted)
+  })
+
   return (
     <AppWindow>
       <AppWindow.Left>

@@ -51,6 +51,24 @@ const api = {
     callback: (event: IpcRendererEvent, message: Message) => void
   ): void => {
     ipcRenderer.off('chat:message', callback)
+  },
+
+  // Context menus
+  showChatListContextMenu: (chatId: number): void => {
+    ipcRenderer.send('chat-list:show-context-menu', chatId)
+  },
+
+  // Other events
+  onChatDeleted: (
+    callback: (event: IpcRendererEvent, chatId: number) => void
+  ): void => {
+    ipcRenderer.on('chat:deleted', callback)
+  },
+
+  offChatDeleted: (
+    callback: (event: IpcRendererEvent, chatId: number) => void
+  ): void => {
+    ipcRenderer.off('chat:deleted', callback)
   }
 }
 

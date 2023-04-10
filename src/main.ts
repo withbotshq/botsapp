@@ -1,14 +1,16 @@
-import {app, BrowserWindow, ipcMain} from 'electron'
+import {app, BrowserWindow, ipcMain, Menu} from 'electron'
 import path from 'path'
 import {ChatController} from './main/chat/controller'
 import {config, setOpenAIAPIKey} from './main/config/config'
 import {
   createChat,
   createMessage,
+  deleteChat,
   listChats,
   listMessages,
   runMigrations
 } from './main/db/db'
+import {WindowController} from './main/window-controller'
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
 declare const MAIN_WINDOW_VITE_NAME: string
@@ -19,10 +21,11 @@ if (require('electron-squirrel-startup')) {
 }
 
 const chatController = new ChatController()
+const windowController = new WindowController()
 
 const createWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  const window = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -34,9 +37,9 @@ const createWindow = () => {
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
+    window.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
   } else {
-    mainWindow.loadFile(
+    window.loadFile(
       path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
     )
   }
@@ -44,7 +47,11 @@ const createWindow = () => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
-  return mainWindow
+  // Register the window.
+  chatController.addBrowserWindow(window)
+  windowController.addBrowserWindow(window)
+
+  return window
 }
 
 // This method will be called when Electron has finished
@@ -64,7 +71,26 @@ app.on('ready', () => {
     return chatController.getPartialMessage(chatId)
   })
   ipcMain.handle('messages:list', (event, chatId) => listMessages(chatId))
-  chatController.addBrowserWindow(createWindow())
+  ipcMain.on('chat-list:show-context-menu', (event, chatId) => {
+    const template = [
+      {
+        label: 'Delete chat',
+        click: () => {
+          deleteChat(chatId)
+          windowController.windows.forEach(window =>
+            window.webContents.send('chat:deleted', chatId)
+          )
+        }
+      }
+    ]
+
+    const menu = Menu.buildFromTemplate(template)
+    menu.popup({
+      window: BrowserWindow.fromWebContents(event.sender) ?? undefined
+    })
+  })
+
+  createWindow()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -80,7 +106,7 @@ app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    chatController.addBrowserWindow(createWindow())
+    createWindow()
   }
 })
 

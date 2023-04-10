@@ -19,6 +19,10 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
     }
   })
 
+  const onContextMenu = (chatId: number) => {
+    api.showChatListContextMenu(chatId)
+  }
+
   const chats = query.data
 
   const [isUnread, setIsUnread] = useState<{[key: number]: boolean}>({})
@@ -75,6 +79,7 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
           {chats.length > 0 ? (
             chats.map(chat => (
               <button
+                onContextMenu={() => onContextMenu(chat.id)}
                 onClick={() => onSelectChat(chat)}
                 className={`flex align-middle justify-between border-b p-3 hover:bg-gray-900 text-left ${
                   chat.id === activeChatId ? 'bg-gray-900' : ''
