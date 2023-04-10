@@ -70,10 +70,10 @@ export const Main: FC = () => {
   return (
     <AppWindow>
       <AppWindow.Left>
-        <div className="border-b h-[44px] flex justify-between items-center pl-[15px] pr-2">
+        <div className="border-b h-[44px] flex justify-between items-center pl-[15px] pr-2 app-region-drag">
           <div className="w-[52px] h-[12px]" />
 
-          <div>
+          <div className="app-region-none">
             <button
               className="block rounded text-gray-400 hover:bg-gray-800"
               onClick={() => createChat.mutate()}
