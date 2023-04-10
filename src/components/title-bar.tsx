@@ -1,48 +1,13 @@
 import {FC} from 'react'
 
 interface Props {
-  setShowChatList: (showChatList: boolean) => void
   setShowInfoPanel: (showInfoPanel: boolean) => void
-  showChatList: boolean
   showInfoPanel: boolean
 }
 
-const TitleBar: FC<Props> = ({
-  showChatList,
-  showInfoPanel,
-  setShowChatList,
-  setShowInfoPanel
-}) => {
+const TitleBar: FC<Props> = ({showInfoPanel, setShowInfoPanel}) => {
   return (
     <div className="flex items-center px-3">
-      <div className="flex-none">
-        <div className="flex gap-3">
-          <div className="w-[55px]" />
-
-          <div className="app-region-none">
-            <button
-              className="block"
-              onClick={() => setShowChatList(!showChatList)}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                  d="M12.75 4.75h4.5a2 2 0 0 1 2 2v10.5a2 2 0 0 1-2 2h-4.5m-8-2V6.75a2 2 0 0 1 2-2h2.5v14.5h-2.5a2 2 0 0 1-2-2Z"
-                ></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
       <div className="flex-1 p-3 text-center text-gray-500">GPT-4</div>
       <div className="app-region-none flex-none">
         <button

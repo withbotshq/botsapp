@@ -3,8 +3,10 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {IpcRendererEvent} from 'electron'
 import {FC, useEffect, useState} from 'react'
 import type {Chat, Message} from '../db/schema'
+import {AppWindow} from './app-window'
 import {ChatList} from './chat-list'
 import {ChatSettings} from './chat-settings'
+import {NewChatIcon} from './icons/new-chat-icon'
 import {MessageComposer} from './message-composer'
 import {MessageList} from './message-list'
 import {TitleBar} from './title-bar'
@@ -12,7 +14,6 @@ import {TitleBar} from './title-bar'
 export const Main: FC = () => {
   const [currentChat, setCurrentChat] = useState<Chat | null>(null)
   const [showInfoPanel, setShowInfoPanel] = useState<boolean>(false)
-  const [showChatList, setShowChatList] = useState<boolean>(true)
   const queryClient = useQueryClient()
 
   const messagesQuery = useQuery({
@@ -67,26 +68,33 @@ export const Main: FC = () => {
   }, [queryClient])
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 top-0">
-      <div className="flex h-full">
-        {showChatList && (
-          <div className="w-1/3 border-r">
-            {/* FIXME: Remove the hard-coded margin here */}
-            <div className="mt-16">
-              <ChatList
-                activeChatId={currentChat?.id ?? null}
-                onCreateChat={() => createChat.mutate()}
-                onSelectChat={setCurrentChat}
-              />
-            </div>
-          </div>
-        )}
+    <AppWindow>
+      <AppWindow.Left>
+        <div className="border-b h-[44px] flex justify-between items-center pl-[15px] pr-2">
+          <div className="w-[52px] h-[12px]" />
 
-        <div className="flex h-full w-full flex-1 flex-col">
+          <div>
+            <button
+              className="block rounded text-gray-400 hover:bg-gray-800"
+              onClick={() => createChat.mutate()}
+            >
+              <NewChatIcon />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-hidden">
+          <ChatList
+            activeChatId={currentChat?.id ?? null}
+            onSelectChat={setCurrentChat}
+          />
+        </div>
+      </AppWindow.Left>
+
+      <AppWindow.Right>
+        <div className="flex flex-col h-full">
           <div className="app-region-drag flex-none border-b">
             <TitleBar
-              showChatList={showChatList}
-              setShowChatList={setShowChatList}
               showInfoPanel={showInfoPanel}
               setShowInfoPanel={setShowInfoPanel}
             />
@@ -118,14 +126,14 @@ export const Main: FC = () => {
               </button>
             </div>
           )}
-        </div>
 
-        {showInfoPanel && (
-          <div className="w-1/3 border-l">
-            <ChatSettings />
-          </div>
-        )}
-      </div>
-    </div>
+          {showInfoPanel && (
+            <div className="w-1/3 border-l">
+              <ChatSettings />
+            </div>
+          )}
+        </div>
+      </AppWindow.Right>
+    </AppWindow>
   )
 }
