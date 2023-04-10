@@ -5,11 +5,10 @@ import {Chat, Message} from '../db/schema'
 
 interface Props {
   activeChatId: number | null
-  onCreateChat: () => void
   onSelectChat: (chat: Chat) => void
 }
 
-const ChatList: FC<Props> = ({activeChatId, onCreateChat, onSelectChat}) => {
+const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
   const query = useQuery({
     queryKey: ['chats'],
     queryFn: api.listChats,
@@ -70,7 +69,7 @@ const ChatList: FC<Props> = ({activeChatId, onCreateChat, onSelectChat}) => {
   }, [typingTimeouts])
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full overflow-scroll">
       {chats ? (
         <>
           {chats.length > 0 ? (
@@ -96,12 +95,6 @@ const ChatList: FC<Props> = ({activeChatId, onCreateChat, onSelectChat}) => {
               <p className="p-3">No chats</p>
             </div>
           )}
-          <button
-            onClick={onCreateChat}
-            className="bg-blue-500 rounded px-2 py-1 mx-4 my-2"
-          >
-            Create Chat
-          </button>
         </>
       ) : (
         <p>Loading...</p>
