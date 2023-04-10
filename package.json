@@ -10,8 +10,6 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
-    "migrate:generate": "drizzle-kit generate:sqlite --out migrations --schema src/db/schema.ts --breakpoints",
-    "migrate:up": "drizzle-kit up:sqlite --out migrations",
     "check": "konk run c -gL -n'check:*'",
     "check:build": "tsc --noEmit",
     "check:format": "prettier --check .",
