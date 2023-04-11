@@ -1,7 +1,7 @@
 import {app, BrowserWindow, ipcMain, Menu} from 'electron'
 import path from 'path'
 import {ChatController} from './main/chat/controller'
-import {config, setOpenAIAPIKey} from './main/config/config'
+import {config, setModel, setOpenAIAPIKey} from './main/config/config'
 import {
   createChat,
   createMessage,
@@ -60,8 +60,10 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   runMigrations()
-  ipcMain.on('config:setOpenAIAPIKey', (event, key) => setOpenAIAPIKey(key))
   ipcMain.handle('config:getOpenAIAPIKey', () => config.openAIAPIKey)
+  ipcMain.on('config:setOpenAIAPIKey', (event, key) => setOpenAIAPIKey(key))
+  ipcMain.handle('config:getModel', () => config.model)
+  ipcMain.on('config:setModel', (event, model) => setModel(model))
   ipcMain.handle('chats:create', createChat)
   ipcMain.handle('chats:list', listChats)
   ipcMain.handle('messages:create', (event, chatId, role, content) => {

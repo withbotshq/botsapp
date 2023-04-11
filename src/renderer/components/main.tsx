@@ -141,7 +141,7 @@ export const Main: FC = () => {
           )}
 
           {showInfoPanel && (
-            <div className="w-1/3 border-l">
+            <div className="border-t">
               <ChatSettings />
             </div>
           )}

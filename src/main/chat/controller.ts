@@ -109,7 +109,7 @@ export class ChatController {
       },
       signal: partialMessage.abortController.signal,
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: config.model.key,
         messages: messageHistory.map(m => ({
           role: m.role,
           content: m.content

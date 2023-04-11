@@ -15,9 +15,19 @@ const ChatSettings: FC = () => {
     onSuccess: () => queryClient.invalidateQueries(['config:openAIAPIKey'])
   })
 
+  const modelQuery = useQuery({
+    queryKey: ['config:model'],
+    queryFn: api.getModel
+  })
+
+  const setModel = useMutation({
+    mutationFn: async (model: string) => api.setModel(model),
+    onSuccess: () => queryClient.invalidateQueries(['config:model'])
+  })
+
   return (
-    <div className="p-2">
-      <div className="mb-4">
+    <div className="flex flex-row gap-4 p-2 w-full">
+      <div className="w-full">
         <h3 className="text-xs font-bold uppercase text-gray-500">OpenAI</h3>
 
         <input
@@ -27,6 +37,19 @@ const ChatSettings: FC = () => {
           value={apiKeyQuery.data ?? ''}
           onChange={e => setApiKey.mutate(e.target.value)}
         />
+      </div>
+
+      <div className="w-full">
+        <h3 className="text-xs font-bold uppercase text-gray-500">Model</h3>
+
+        <select
+          className="w-full rounded border bg-transparent p-2 py-1 text-white"
+          value={modelQuery.data?.key ?? 'gpt-3.5-turbo'}
+          onChange={e => setModel.mutate(e.target.value)}
+        >
+          <option value="gpt-3.5-turbo">GPT-3.5-Turbo</option>
+          <option value="gpt-4">GPT-4</option>
+        </select>
       </div>
     </div>
   )

@@ -12,6 +12,10 @@ const api = {
   setOpenAIAPIKey: (key: string): void =>
     ipcRenderer.send('config:setOpenAIAPIKey', key),
 
+  getModel: (): Promise<{key: string; title: string}> =>
+    ipcRenderer.invoke('config:getModel'),
+  setModel: (model: string): void => ipcRenderer.send('config:setModel', model),
+
   // Database
   createChat: (): Promise<Chat> => ipcRenderer.invoke('chats:create'),
   listChats: (): Promise<Chat[]> => ipcRenderer.invoke('chats:list'),
