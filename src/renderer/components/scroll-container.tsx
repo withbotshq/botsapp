@@ -14,8 +14,7 @@ export const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
 
     outerDivEl.scrollTo({
       top: innerHeight - outerHeight,
-      left: 0,
-      behavior: 'smooth'
+      left: 0
     })
   }, [children])
 
