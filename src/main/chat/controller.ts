@@ -55,6 +55,16 @@ export class ChatController {
 
   #windows: Set<BrowserWindow> = new Set()
 
+  readonly #systemMessage = {
+    role: 'system',
+    content: `You are Chat, an AI assistant based on OpenAI's GPT
+  models. Follow the user's instructions carefully, but be concise. Do not offer
+  great detail unless the user asks for it. Respond using Markdown.`.replace(
+      /\s+/g,
+      ' '
+    )
+  }
+
   getPartialMessage(chatId: number) {
     return this.#partialMessages.get(chatId)?.chunks ?? null
   }
@@ -86,7 +96,10 @@ export class ChatController {
 
   async sendMessage(message: Message) {
     // Includes the new message already.
-    const messageHistory = listMessages(message.chatId)
+    const messageHistory = [
+      this.#systemMessage,
+      ...listMessages(message.chatId)
+    ]
 
     if (this.#partialMessages.has(message.chatId)) {
       console.warn('Already streaming a message for chat', message.chatId)
