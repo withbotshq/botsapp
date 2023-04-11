@@ -6,7 +6,9 @@
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package",
+    "package": "konk run s -L -n'package:*'",
+    "package:build": "electron-forge package",
+    "package:copy": "cp -R out/Chat-darwin-*/Chat.app/ /Applications/Chat.app",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
