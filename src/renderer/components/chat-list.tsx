@@ -1,4 +1,5 @@
 import {useQuery} from '@tanstack/react-query'
+import {formatDistanceToNowStrict} from 'date-fns'
 import {IpcRendererEvent} from 'electron'
 import {FC, useEffect, useMemo, useState} from 'react'
 import {Chat, Message} from '../../main/db/schema'
@@ -88,11 +89,43 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
                     chat.id === activeChatId ? 'bg-blue-500 text-white' : ''
                   }`}
                 >
-                  <div>
-                    {isUnread[chat.id] ? (
-                      <span className="bg-blue-500 rounded-full h-2 w-2 inline-block mr-2" />
-                    ) : null}
-                    <span>{chat.name ?? 'Untitled chat'}</span>
+                  <div className="min-w-0">
+                    <div className="flex items-baseline justify-between">
+                      <div>
+                        {isUnread[chat.id] ? (
+                          <span
+                            className={`rounded-full h-2 w-2 inline-block mr-2 ${
+                              chat.id === activeChatId
+                                ? 'bg-white'
+                                : 'bg-blue-500'
+                            }`}
+                          />
+                        ) : null}
+                        <span className="font-bold">
+                          {chat.name ?? 'Untitled chat'}
+                        </span>
+                      </div>
+
+                      <div
+                        className={`text-sm ${
+                          chat.id === activeChatId
+                            ? 'text-blue-200'
+                            : 'text-gray-400'
+                        }`}
+                      >
+                        {formatDistanceToNowStrict(new Date(chat.createdAt))}
+                      </div>
+                    </div>
+
+                    <div
+                      className={`truncate ${
+                        chat.id === activeChatId
+                          ? 'text-blue-200'
+                          : 'text-gray-400'
+                      }`}
+                    >
+                      This is the beginning of the last line of the chat
+                    </div>
                   </div>
 
                   <div>{isTyping[chat.id] ? <TypingIndicator /> : null}</div>
