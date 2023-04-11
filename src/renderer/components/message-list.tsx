@@ -26,28 +26,32 @@ export const MessageList: FC<Props> = ({messages, partialMessageChunks}) => {
 
   return (
     <ScrollContainer>
-      <div
-        className="flex flex-col gap-2 p-3"
-        style={{WebkitOverflowScrolling: 'touch'}}
-      >
-        {(partialMessage ? [...messages, partialMessage] : messages).map(
-          message => (
-            <div
-              className={`flex gap-2 ${
-                isMe(message) ? 'flex-row-reverse items-end' : 'items-start'
-              }`}
-              key={message.id}
-            >
+      {(partialMessage ? [...messages, partialMessage] : messages).map(
+        message => (
+          <div
+            className={`flex gap-4 border-b p-4 ${
+              isMe(message) ? '' : 'bg-gray-900'
+            }`}
+            key={message.id}
+          >
+            {isMe(message) ? (
               <img
-                className="h-7 w-7 rounded-full"
+                className="block h-6 w-6 rounded-full"
                 src={'https://github.com/nat.png'}
               />
+            ) : (
+              <img
+                className="block h-6 w-6 rounded-full"
+                src={'https://github.com/openai.png'}
+              />
+            )}
 
+            <div className="mt-0.5">
               <MessageRenderer message={message} />
             </div>
-          )
-        )}
-      </div>
+          </div>
+        )
+      )}
     </ScrollContainer>
   )
 }

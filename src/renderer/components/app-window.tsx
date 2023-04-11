@@ -12,7 +12,7 @@ const AppWindow = ({children}: {children: ReactNode | ReactNode[]}) => {
       <div className="flex h-full">
         <div className="w-[280px] border-r border-white/10">{slots.left}</div>
 
-        <div className="flex-1 bg-gray-900">{slots.right}</div>
+        <div className="flex-1 bg-gray-950">{slots.right}</div>
       </div>
     </div>
   )
