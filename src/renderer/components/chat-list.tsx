@@ -73,7 +73,7 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
   }, [typingTimeouts])
 
   return (
-    <div className="flex flex-col h-full overflow-scroll">
+    <div className="flex flex-col-reverse h-full overflow-scroll">
       {chats ? (
         <>
           {chats.length > 0 ? (
@@ -81,18 +81,23 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
               <button
                 onContextMenu={() => onContextMenu(chat.id)}
                 onClick={() => onSelectChat(chat)}
-                className={`flex align-middle justify-between border-b p-3 hover:bg-gray-900 text-left ${
-                  chat.id === activeChatId ? 'bg-gray-900' : ''
-                }`}
+                className="px-2 py-1 text-left"
                 key={chat.id}
               >
-                <div>
-                  {isUnread[chat.id] ? (
-                    <span className="bg-blue-500 rounded-full h-2 w-2 inline-block mr-2" />
-                  ) : null}
-                  <span>{chat.name ?? 'Untitled chat'}</span>
+                <div
+                  className={`p-2 flex align-middle justify-between rounded  ${
+                    chat.id === activeChatId ? 'bg-blue-500 text-white' : ''
+                  }`}
+                >
+                  <div>
+                    {isUnread[chat.id] ? (
+                      <span className="bg-blue-500 rounded-full h-2 w-2 inline-block mr-2" />
+                    ) : null}
+                    <span>{chat.name ?? 'Untitled chat'}</span>
+                  </div>
+
+                  <div>{isTyping[chat.id] ? <TypingIndicator /> : null}</div>
                 </div>
-                <div>{isTyping[chat.id] ? <TypingIndicator /> : null}</div>
               </button>
             ))
           ) : (
