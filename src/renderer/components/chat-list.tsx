@@ -13,9 +13,8 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
     queryKey: ['chats'],
     queryFn: api.listChats,
     onSuccess: chats => {
-      if (!activeChatId && chats.length > 0) {
-        onSelectChat(chats[0])
-      }
+      const lastChat = chats.at(-1)
+      if (!activeChatId && lastChat) onSelectChat(lastChat)
     }
   })
 
