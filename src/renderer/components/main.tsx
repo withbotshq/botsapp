@@ -88,7 +88,7 @@ export const Main: FC = () => {
 
           <div className="app-region-none">
             <button
-              className="block rounded text-gray-400 hover:bg-gray-800"
+              className="block rounded text-gray-400 hover:bg-white/10"
               onClick={() => createChat.mutate()}
             >
               <NewChatIcon />
