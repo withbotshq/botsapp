@@ -1,5 +1,5 @@
 import {ReactNode} from 'react'
-import {useSlots} from '../hooks/useSlots'
+import {useSlots} from '../hooks/use-slots'
 
 const Left = ({children}: {children: ReactNode}) => <>{children}</>
 const Right = ({children}: {children: ReactNode}) => <>{children}</>

@@ -3,6 +3,7 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {IpcRendererEvent} from 'electron'
 import {FC, useEffect, useState} from 'react'
 import type {Chat, Message} from '../../main/db/schema'
+import {useConfigModel} from '../hooks/use-config'
 import {AppWindow} from './app-window'
 import {ChatList} from './chat-list'
 import {ChatSettings} from './chat-settings'
@@ -15,6 +16,10 @@ export const Main: FC = () => {
   const [currentChat, setCurrentChat] = useState<Chat | null>(null)
   const [showInfoPanel, setShowInfoPanel] = useState<boolean>(false)
   const queryClient = useQueryClient()
+  const {query: modelQuery} = useConfigModel()
+  const windowTitle = currentChat
+    ? `${currentChat.name ?? 'Untitled chat'} (${modelQuery.data?.title})`
+    : 'Chat'
 
   const messagesQuery = useQuery({
     queryKey: ['messages', currentChat?.id],
@@ -108,6 +113,7 @@ export const Main: FC = () => {
         <div className="flex flex-col h-full">
           <div className="app-region-drag flex-none border-b">
             <TitleBar
+              title={windowTitle}
               showInfoPanel={showInfoPanel}
               setShowInfoPanel={setShowInfoPanel}
             />
