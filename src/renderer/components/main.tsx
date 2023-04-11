@@ -88,8 +88,8 @@ export const Main: FC = () => {
   return (
     <AppWindow>
       <AppWindow.Left>
-        <div className="h-[44px] flex justify-between items-center pl-[15px] pr-2 app-region-drag">
-          <div className="w-[52px] h-[12px]" />
+        <div className="app-region-drag flex h-[44px] items-center justify-between pl-[15px] pr-2">
+          <div className="h-[12px] w-[52px]" />
 
           <div className="app-region-none">
             <button
@@ -110,7 +110,7 @@ export const Main: FC = () => {
       </AppWindow.Left>
 
       <AppWindow.Right>
-        <div className="flex flex-col h-full">
+        <div className="flex h-full flex-col">
           <div className="app-region-drag flex-none border-b">
             <TitleBar
               title={windowTitle}
@@ -135,11 +135,11 @@ export const Main: FC = () => {
               </div>
             </div>
           ) : (
-            <div className="flex flex-1 flex-col overflow-hidden gap-4 items-center p-8">
+            <div className="flex flex-1 flex-col items-center gap-4 overflow-hidden p-8">
               <p>No chat selected.</p>
               <button
                 onClick={() => createChat.mutate()}
-                className="bg-blue-500 rounded px-2 py-1"
+                className="rounded bg-blue-500 px-2 py-1"
               >
                 Click here to create one.
               </button>

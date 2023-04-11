@@ -73,7 +73,7 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
   }, [typingTimeouts])
 
   return (
-    <div className="flex flex-col-reverse h-full overflow-scroll">
+    <div className="flex h-full flex-col-reverse overflow-scroll">
       {chats ? (
         <>
           {chats.length > 0 ? (
@@ -85,7 +85,7 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
                 key={chat.id}
               >
                 <div
-                  className={`p-2 flex align-middle justify-between rounded  ${
+                  className={`flex justify-between rounded p-2 align-middle  ${
                     chat.id === activeChatId ? 'bg-blue-500 text-white' : ''
                   }`}
                 >
@@ -94,7 +94,7 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
                       <div>
                         {isUnread[chat.id] ? (
                           <span
-                            className={`rounded-full h-2 w-2 inline-block mr-2 ${
+                            className={`mr-2 inline-block h-2 w-2 rounded-full ${
                               chat.id === activeChatId
                                 ? 'bg-white'
                                 : 'bg-blue-500'

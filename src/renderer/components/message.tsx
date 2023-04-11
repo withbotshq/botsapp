@@ -7,12 +7,13 @@ import oneDark from '../one-dark'
 
 export const MessageRenderer: FC<{message: Message}> = ({message}) => {
   return (
-    <span
-      className={`rounded-2xl text-white px-3 py-1 ${
+    <div
+      className={`rounded-2xl px-3 py-1 text-white ${
         message.role === 'user' ? 'bg-blue-500' : 'bg-gray-500'
       }`}
     >
       <ReactMarkdown
+        className="markdown"
         components={{
           code({inline, className, children, ...props}) {
             const match = /language-(\w+)/.exec(className || '')
@@ -62,6 +63,6 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
       >
         {message.content}
       </ReactMarkdown>
-    </span>
+    </div>
   )
 }

@@ -22,3 +22,31 @@ td {
   @apply border;
   @apply p-1;
 }
+
+.markdown {
+  @apply flex flex-col gap-2;
+}
+
+.markdown ol {
+  @apply list-inside list-decimal;
+}
+
+.markdown ul {
+  @apply list-inside list-disc;
+}
+
+.markdown h1 {
+  @apply text-2xl font-bold;
+}
+
+.markdown h2 {
+  @apply text-xl font-semibold;
+}
+
+.markdown h3 {
+  @apply text-base font-semibold;
+}
+
+.markdown blockquote {
+  @apply border-l-2 border-gray-300 pl-2 text-sm;
+}

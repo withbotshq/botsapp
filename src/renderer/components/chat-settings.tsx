@@ -18,7 +18,7 @@ const ChatSettings: FC = () => {
   })
 
   return (
-    <div className="flex flex-row gap-4 p-2 w-full">
+    <div className="flex w-full flex-row gap-4 p-2">
       <div className="w-full">
         <h3 className="text-xs font-bold uppercase text-gray-500">OpenAI</h3>
 
