@@ -83,7 +83,7 @@ export const Main: FC = () => {
   return (
     <AppWindow>
       <AppWindow.Left>
-        <div className="border-b h-[44px] flex justify-between items-center pl-[15px] pr-2 app-region-drag">
+        <div className="h-[44px] flex justify-between items-center pl-[15px] pr-2 app-region-drag">
           <div className="w-[52px] h-[12px]" />
 
           <div className="app-region-none">
