@@ -32,7 +32,8 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js')
     },
     titleBarStyle: 'hidden',
-    trafficLightPosition: {x: 14, y: 14}
+    trafficLightPosition: {x: 14, y: 14},
+    vibrancy: 'sidebar'
   })
 
   // and load the index.html of the app.

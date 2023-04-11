@@ -13,7 +13,6 @@
 }
 
 body {
-  @apply bg-gray-950;
   @apply text-base;
   @apply text-white;
 }
