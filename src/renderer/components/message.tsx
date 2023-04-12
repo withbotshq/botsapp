@@ -16,21 +16,9 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
             const language = match?.[1]
 
             return !inline && match ? (
-              <div className="rounded border">
-                <div className="flex justify-between bg-gray-900 px-2 py-1">
-                  <div>{language ?? ''}</div>
-
-                  <div>
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                      <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.5"
-                        d="M18.25 12L5.75 5.75V18.25L18.25 12Z"
-                      ></path>
-                    </svg>
-                  </div>
+              <div className="rounded border border-gray-700 bg-gray-800 shadow">
+                <div className="rounded-t border-b border-gray-700 px-2 py-1">
+                  <div className="text-xs text-gray-500">{language ?? ''}</div>
                 </div>
 
                 <div>
