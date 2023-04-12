@@ -84,6 +84,13 @@ const menuTemplate: MenuItemConstructorOptions[] = [
         }
       },
       {type: 'separator'},
+      {
+        label: 'New Window',
+        accelerator: 'CmdOrCtrl+Shift+N',
+        click() {
+          createWindow()
+        }
+      },
       {role: 'close'}
     ]
   },
