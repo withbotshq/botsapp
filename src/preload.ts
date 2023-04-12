@@ -24,14 +24,9 @@ const api = {
 
   onChatRename: (
     callback: (event: IpcRendererEvent, chatId: number) => void
-  ): void => {
+  ): (() => void) => {
     ipcRenderer.on('chat:rename', callback)
-  },
-
-  offChatRename: (
-    callback: (event: IpcRendererEvent, chatId: number) => void
-  ): void => {
-    ipcRenderer.off('chat:rename', callback)
+    return () => ipcRenderer.removeListener('chat:rename', callback)
   },
 
   createMessage: (
@@ -49,26 +44,16 @@ const api = {
 
   onMessageChunk: (
     callback: (event: IpcRendererEvent, chatId: number, chunk: string) => void
-  ): void => {
+  ): (() => void) => {
     ipcRenderer.on('chat:message-chunk', callback)
-  },
-
-  offMessageChunk: (
-    callback: (event: IpcRendererEvent, chatId: number, chunk: string) => void
-  ): void => {
-    ipcRenderer.off('chat:message-chunk', callback)
+    return () => ipcRenderer.removeListener('chat:message-chunk', callback)
   },
 
   onMessage: (
     callback: (event: IpcRendererEvent, message: Message) => void
-  ): void => {
+  ): (() => void) => {
     ipcRenderer.on('chat:message', callback)
-  },
-
-  offMessage: (
-    callback: (event: IpcRendererEvent, message: Message) => void
-  ): void => {
-    ipcRenderer.off('chat:message', callback)
+    return () => ipcRenderer.removeListener('chat:message', callback)
   },
 
   // Context menus
@@ -79,50 +64,30 @@ const api = {
   // Other events
   onChatCreated: (
     callback: (event: IpcRendererEvent, chat: Chat) => void
-  ): void => {
+  ): (() => void) => {
     ipcRenderer.on('chat:created', callback)
-  },
-
-  offChatCreated: (
-    callback: (event: IpcRendererEvent, chat: Chat) => void
-  ): void => {
-    ipcRenderer.off('chat:created', callback)
+    return () => ipcRenderer.removeListener('chat:created', callback)
   },
 
   onChatDeleted: (
     callback: (event: IpcRendererEvent, chatId: number) => void
-  ): void => {
+  ): (() => void) => {
     ipcRenderer.on('chat:deleted', callback)
-  },
-
-  offChatDeleted: (
-    callback: (event: IpcRendererEvent, chatId: number) => void
-  ): void => {
-    ipcRenderer.off('chat:deleted', callback)
+    return () => ipcRenderer.removeListener('chat:deleted', callback)
   },
 
   onFocusNextChat: (
     callback: (event: IpcRendererEvent, chat: Chat) => void
-  ): void => {
+  ): (() => void) => {
     ipcRenderer.on('focus:next-chat', callback)
-  },
-
-  offFocusNextChat: (
-    callback: (event: IpcRendererEvent, chat: Chat) => void
-  ): void => {
-    ipcRenderer.off('focus:next-chat', callback)
+    return () => ipcRenderer.removeListener('focus:next-chat', callback)
   },
 
   onFocusPrevChat: (
     callback: (event: IpcRendererEvent, chat: Chat) => void
-  ): void => {
+  ): (() => void) => {
     ipcRenderer.on('focus:prev-chat', callback)
-  },
-
-  offFocusPrevChat: (
-    callback: (event: IpcRendererEvent, chat: Chat) => void
-  ): void => {
-    ipcRenderer.off('focus:prev-chat', callback)
+    return () => ipcRenderer.removeListener('focus:prev-chat', callback)
   }
 }
 

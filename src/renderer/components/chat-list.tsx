@@ -34,9 +34,7 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
       }
     }
 
-    api.onMessage(onMessage)
-
-    return () => api.offMessage(onMessage)
+    return api.onMessage(onMessage)
   }, [activeChatId])
 
   useEffect(() => {
@@ -57,9 +55,7 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
       )
     }
 
-    api.onMessageChunk(onMessageChunk)
-
-    return () => api.offMessageChunk(onMessageChunk)
+    return api.onMessageChunk(onMessageChunk)
   }, [typingTimeouts])
 
   useEffect(() => {
@@ -93,12 +89,12 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
       if (previousChat) onSelectChat(previousChat.id)
     }
 
-    api.onFocusNextChat(onFocusNextChat)
-    api.onFocusPrevChat(onFocusPrevChat)
+    const offNext = api.onFocusNextChat(onFocusNextChat)
+    const offPrev = api.onFocusPrevChat(onFocusPrevChat)
 
     return () => {
-      api.offFocusNextChat(onFocusNextChat)
-      api.offFocusPrevChat(onFocusPrevChat)
+      offNext()
+      offPrev()
     }
   }, [activeChatId, chats, onSelectChat])
 
@@ -196,9 +192,7 @@ function ChatName({chat}: {chat: Chat}) {
       }
     }
 
-    api.onChatRename(onChatRename)
-
-    return () => api.offChatRename(onChatRename)
+    return api.onChatRename(onChatRename)
   }, [chat.id])
 
   const renameChatMutation = useMutation({
@@ -234,9 +228,7 @@ function ChatName({chat}: {chat: Chat}) {
       }
     }
 
-    api.onChatRename(onChatRename)
-
-    return () => api.offChatRename(onChatRename)
+    return api.onChatRename(onChatRename)
   }, [chat.id])
 
   return isEditingName ? (

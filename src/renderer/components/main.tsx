@@ -70,9 +70,7 @@ export const Main: FC = () => {
       queryClient.invalidateQueries(['partial-message', message.chatId])
     }
 
-    api.onMessage(onMessage)
-
-    return () => api.offMessage(onMessage)
+    return api.onMessage(onMessage)
   }, [queryClient])
 
   useEffect(() => {
@@ -80,9 +78,7 @@ export const Main: FC = () => {
       queryClient.invalidateQueries(['partial-message', chatId])
     }
 
-    api.onMessageChunk(onMessageChunk)
-
-    return () => api.offMessageChunk(onMessageChunk)
+    return api.onMessageChunk(onMessageChunk)
   }, [queryClient])
 
   useEffect(() => {
@@ -92,9 +88,7 @@ export const Main: FC = () => {
       setCurrentChatId(chat.id)
     }
 
-    api.onChatCreated(onChatCreated)
-
-    return () => api.offChatCreated(onChatCreated)
+    return api.onChatCreated(onChatCreated)
   }, [queryClient])
 
   useEffect(() => {
@@ -105,9 +99,7 @@ export const Main: FC = () => {
       }
     }
 
-    api.onChatDeleted(onChatDeleted)
-
-    return () => api.offChatDeleted(onChatDeleted)
+    return api.onChatDeleted(onChatDeleted)
   }, [currentChat?.id, queryClient])
 
   return (
