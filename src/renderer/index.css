@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-canvas: theme('colors.gray.200');
+  --color-border: theme('colors.gray.400');
+  --color-border-focus: theme('colors.gray.500');
+  --color-text: theme('colors.gray.700');
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-canvas: theme('colors.gray.950');
+    --color-border: theme('colors.black');
+    --color-border-focus: theme('colors.gray.600');
+    --color-text: theme('colors.white');
+  }
+}
+
 @layer utilities {
   .app-region-drag {
     -webkit-app-region: drag;
@@ -14,7 +30,7 @@
 
 body {
   @apply text-base;
-  @apply text-white;
+  @apply text-text;
 }
 
 th,
@@ -53,5 +69,5 @@ td {
 }
 
 .markdown blockquote {
-  @apply border-l-2 border-gray-300 pl-2 text-sm;
+  @apply border-l-2 border-gray-400 pl-2 text-sm dark:border-gray-300;
 }

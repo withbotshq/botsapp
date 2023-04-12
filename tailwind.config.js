@@ -16,9 +16,13 @@ module.exports = {
     },
     extend: {
       borderColor: {
-        DEFAULT: colors.neutral[800]
+        DEFAULT: 'var(--color-border)'
       },
       colors: {
+        border: 'var(--color-border)',
+        'border-focus': 'var(--color-border-focus)',
+        canvas: 'var(--color-canvas)',
+        text: 'var(--color-text)',
         gray: colors.neutral
       }
     }
