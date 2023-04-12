@@ -66,7 +66,7 @@ export function createChat(): Chat {
 }
 
 export function listChats(): Chat[] {
-  return chatsIndex.chats
+  return [...chatsIndex.chats].sort((a, b) => a.createdAt - b.createdAt)
 }
 
 export function deleteChat(chatId: number): void {
