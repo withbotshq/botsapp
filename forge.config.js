@@ -1,32 +1,18 @@
 /* eslint-env node */
+
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+require('dotenv').config()
+
 const config = {
   packagerConfig: {
     icon: 'icons/chat.icns',
-    osxSign: {},
-    osxNotarize: {
-      tool: 'notarytool',
-      appleApiKey: 'AuthKey_HV3ST7BKZG.p8',
-      appleApiKeyId: 'HV3ST7BKZG',
-      appleApiIssuer: '69a6de81-6a73-47e3-e053-5b8c7c11a4d1'
-    }
+    osxSign: {}
   },
   rebuildConfig: {},
   makers: [
     {
-      name: '@electron-forge/maker-squirrel',
-      config: {}
-    },
-    {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin']
-    },
-    {
-      name: '@electron-forge/maker-deb',
-      config: {}
-    },
-    {
-      name: '@electron-forge/maker-rpm',
-      config: {}
     }
   ],
   plugins: [
@@ -54,7 +40,44 @@ const config = {
         ]
       }
     }
+  ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'withexec',
+          name: 'chat'
+        },
+        prerelease: true
+      }
+    }
   ]
 }
+
+function notarizeMaybe() {
+  if (process.platform !== 'darwin') return
+  if (!process.env.CI) return
+
+  if (
+    !process.env.APPLE_API_KEY ||
+    !process.env.APPLE_API_KEY_ID ||
+    !process.env.APPLE_API_ISSUER
+  ) {
+    console.warn(
+      'Should be notarizing, but environment variables APPLE_API_KEY, APPLE_API_KEY_ID or APPLE_API_ISSUER are missing!'
+    )
+    return
+  }
+
+  config.packagerConfig.osxNotarize = {
+    tool: 'notarytool',
+    appleApiKey: process.env.APPLE_API_KEY,
+    appleApiKeyId: process.env.APPLE_API_KEY_ID,
+    appleApiIssuer: process.env.APPLE_API_ISSUER
+  }
+}
+
+notarizeMaybe()
 
 module.exports = config
