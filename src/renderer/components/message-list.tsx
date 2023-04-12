@@ -43,7 +43,7 @@ export const MessageList: FC<Props> = ({messages, partialMessageChunks}) => {
               />
             )}
 
-            <div className="mt-0.5 flex-1">
+            <div className="mt-0.5 min-w-0">
               <MessageRenderer message={message} />
             </div>
           </div>

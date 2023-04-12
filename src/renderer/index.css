@@ -27,6 +27,11 @@ td {
   @apply flex flex-col gap-2;
 }
 
+.markdown > * {
+  @apply min-w-0;
+  @apply flex-1;
+}
+
 .markdown ol {
   @apply list-inside list-decimal;
 }
