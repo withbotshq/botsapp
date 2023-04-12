@@ -6,11 +6,21 @@ Chat UI is an extensible client for LLM chat bots.
 
 ```bash
 $ git clone git@github.com:withexec/chat.git
+$ cd chat
 $ npm install
 $ npm run package
 $ open /Applications/Chat.app
 
 # Click on the settings icon in the top right to enter your OpenAI API key
+```
+
+## Developing Locally
+
+```bash
+$ git clone git@github.com:withexec/chat.git
+$ cd chat
+$ npm install
+$ npm start
 ```
 
 ## MVP
