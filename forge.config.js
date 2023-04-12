@@ -1,5 +1,5 @@
 /* eslint-env node */
-module.exports = {
+const config = {
   packagerConfig: {
     icon: 'icons/chat.icns',
     osxSign: {},
@@ -56,3 +56,5 @@ module.exports = {
     }
   ]
 }
+
+module.exports = config
