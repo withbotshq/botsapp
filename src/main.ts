@@ -87,7 +87,43 @@ const menuTemplate: MenuItemConstructorOptions[] = [
     ]
   },
   {role: 'editMenu'},
-  {role: 'viewMenu'},
+  {
+    role: 'viewMenu',
+    submenu: [
+      {
+        label: 'Focus Previous Chat',
+        accelerator: 'CmdOrCtrl+Shift+[',
+        click() {
+          windowController.windows.forEach(window => {
+            if (window.isFocused()) {
+              window.webContents.send('focus:prev-chat')
+            }
+          })
+        }
+      },
+      {
+        label: 'Focus Next Chat',
+        accelerator: 'CmdOrCtrl+Shift+]',
+        click() {
+          windowController.windows.forEach(window => {
+            if (window.isFocused()) {
+              window.webContents.send('focus:next-chat')
+            }
+          })
+        }
+      },
+      {type: 'separator'},
+      {role: 'reload'},
+      {role: 'forceReload'},
+      {role: 'toggleDevTools'},
+      {type: 'separator'},
+      {role: 'resetZoom'},
+      {role: 'zoomIn'},
+      {role: 'zoomOut'},
+      {type: 'separator'},
+      {role: 'togglefullscreen'}
+    ]
+  },
   {role: 'windowMenu'},
   {
     label: 'Help',
