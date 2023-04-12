@@ -65,6 +65,12 @@ export function createChat(): Chat {
   return chat
 }
 
+export function renameChat(chatId: number, name: string | null): void {
+  const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
+  chat.name = name
+  writeChatsIndex(chatsIndex)
+}
+
 export function listChats(): Chat[] {
   return [...chatsIndex.chats].sort((a, b) => a.createdAt - b.createdAt)
 }

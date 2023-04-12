@@ -15,6 +15,7 @@ import {
   deleteChat,
   listChats,
   listMessages,
+  renameChat,
   runMigrations
 } from './main/db/db'
 import {WindowController} from './main/window-controller'
@@ -152,6 +153,9 @@ app.on('ready', () => {
   ipcMain.on('config:setModel', (event, model) => setModel(model))
   ipcMain.handle('chats:create', createChat)
   ipcMain.handle('chats:list', listChats)
+  ipcMain.handle('chats:rename', (event, chatId, name) =>
+    renameChat(chatId, name)
+  )
   ipcMain.handle('messages:create', (event, chatId, role, content) => {
     const message = createMessage(chatId, role, content)
     chatController.sendMessage(message)
@@ -162,6 +166,16 @@ app.on('ready', () => {
   ipcMain.handle('messages:list', (event, chatId) => listMessages(chatId))
   ipcMain.on('chat-list:show-context-menu', (event, chatId) => {
     const template = [
+      {
+        label: 'Rename chat',
+        click: () => {
+          windowController.windows.forEach(window => {
+            if (window.isFocused()) {
+              window.webContents.send('chat:rename', chatId)
+            }
+          })
+        }
+      },
       {
         label: 'Delete chat',
         click: () => {

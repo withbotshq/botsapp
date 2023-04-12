@@ -18,7 +18,21 @@ const api = {
 
   // Database
   createChat: (): Promise<Chat> => ipcRenderer.invoke('chats:create'),
+  renameChat: (chatId: number, name: string | null): Promise<void> =>
+    ipcRenderer.invoke('chats:rename', chatId, name),
   listChats: (): Promise<Chat[]> => ipcRenderer.invoke('chats:list'),
+
+  onChatRename: (
+    callback: (event: IpcRendererEvent, chatId: number) => void
+  ): void => {
+    ipcRenderer.on('chat:rename', callback)
+  },
+
+  offChatRename: (
+    callback: (event: IpcRendererEvent, chatId: number) => void
+  ): void => {
+    ipcRenderer.off('chat:rename', callback)
+  },
 
   createMessage: (
     chatId: number,

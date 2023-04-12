@@ -1,29 +1,19 @@
-import {useQuery} from '@tanstack/react-query'
+import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {formatDistanceToNowStrict} from 'date-fns'
 import {IpcRendererEvent} from 'electron'
-import {FC, useEffect, useMemo, useState} from 'react'
+import {FC, KeyboardEventHandler, useEffect, useMemo, useState} from 'react'
 import {Chat, Message} from '../../main/db/schema'
 
 interface Props {
+  chats: Chat[]
   activeChatId: number | null
-  onSelectChat: (chat: Chat) => void
+  onSelectChat: (chatId: number) => void
 }
 
-const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
-  const query = useQuery({
-    queryKey: ['chats'],
-    queryFn: api.listChats,
-    onSuccess: chats => {
-      const firstChat = chats.at(0)
-      if (!activeChatId && firstChat) onSelectChat(firstChat)
-    }
-  })
-
+const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
   const onContextMenu = (chatId: number) => {
     api.showChatListContextMenu(chatId)
   }
-
-  const chats = query.data
 
   const [isUnread, setIsUnread] = useState<{[key: number]: boolean}>({})
   const [isTyping, setIsTyping] = useState<{[key: number]: boolean}>({})
@@ -80,12 +70,12 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
 
       if (activeChatId == null) {
         const firstChat = chats.at(0)
-        if (firstChat) onSelectChat(firstChat)
+        if (firstChat) onSelectChat(firstChat.id)
       }
 
       const index = chats.findIndex(chat => chat.id === activeChatId)
       const nextChat = chats.at(index + 1) ?? chats.at(0)
-      if (nextChat) onSelectChat(nextChat)
+      if (nextChat) onSelectChat(nextChat.id)
     }
 
     const onFocusPrevChat = () => {
@@ -95,12 +85,12 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
 
       if (activeChatId == null) {
         const lastChat = chats.at(-1)
-        if (lastChat) onSelectChat(lastChat)
+        if (lastChat) onSelectChat(lastChat.id)
       }
 
       const index = chats.findIndex(chat => chat.id === activeChatId)
       const previousChat = chats.at(index - 1) ?? chats.at(-1)
-      if (previousChat) onSelectChat(previousChat)
+      if (previousChat) onSelectChat(previousChat.id)
     }
 
     api.onFocusNextChat(onFocusNextChat)
@@ -120,7 +110,7 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
             chats.map(chat => (
               <button
                 onContextMenu={() => onContextMenu(chat.id)}
-                onClick={() => onSelectChat(chat)}
+                onClick={() => onSelectChat(chat.id)}
                 className="px-2 py-1 text-left"
                 key={chat.id}
               >
@@ -141,9 +131,7 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
                             }`}
                           />
                         ) : null}
-                        <span className="font-bold">
-                          {chat.name ?? 'Untitled chat'}
-                        </span>
+                        <ChatName chat={chat} />
                       </div>
 
                       <div
@@ -194,5 +182,75 @@ function TypingIndicator() {
       <span className="animate-[ping_1s_200ms_ease-in-out_infinite]">·</span>
       <span className="animate-[ping_1s_300ms_ease-in-out_infinite]">·</span>
     </>
+  )
+}
+
+function ChatName({chat}: {chat: Chat}) {
+  const [isEditingName, setIsEditingName] = useState(false)
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    const onChatRename = (event: IpcRendererEvent, chatId: number) => {
+      if (chatId === chat.id) {
+        setIsEditingName(true)
+      }
+    }
+
+    api.onChatRename(onChatRename)
+
+    return () => api.offChatRename(onChatRename)
+  }, [chat.id])
+
+  const renameChatMutation = useMutation({
+    mutationFn: async (name: string | null) => {
+      await api.renameChat(chat.id, name)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['chats'])
+    }
+  })
+
+  const onBlur = () => {
+    setIsEditingName(false)
+  }
+
+  const onKeyDown: KeyboardEventHandler<HTMLInputElement> = e => {
+    switch (e.key) {
+      case 'Escape':
+        setIsEditingName(false)
+        break
+      case 'Enter': {
+        const name = e.currentTarget.value.trim()
+        renameChatMutation.mutate(name || null)
+        setIsEditingName(false)
+      }
+    }
+  }
+
+  useEffect(() => {
+    const onChatRename = (event: IpcRendererEvent, chatId: number | null) => {
+      if (chatId === chat.id) {
+        setIsEditingName(true)
+      }
+    }
+
+    api.onChatRename(onChatRename)
+
+    return () => api.offChatRename(onChatRename)
+  }, [chat.id])
+
+  return isEditingName ? (
+    <input
+      type="text"
+      className="bg-white text-text"
+      onBlur={onBlur}
+      onKeyDown={onKeyDown}
+      defaultValue={chat.name ?? ''}
+      autoFocus
+    />
+  ) : (
+    <span onDoubleClick={() => setIsEditingName(true)} className="font-bold">
+      {chat.name ?? 'Untitled chat'}
+    </span>
   )
 }

@@ -13,10 +13,23 @@ import {MessageList} from './message-list'
 import {TitleBar} from './title-bar'
 
 export const Main: FC = () => {
-  const [currentChat, setCurrentChat] = useState<Chat | null>(null)
+  const [currentChatId, setCurrentChatId] = useState<number | null>(null)
   const [showInfoPanel, setShowInfoPanel] = useState<boolean>(false)
   const queryClient = useQueryClient()
   const {query: modelQuery} = useConfigModel()
+
+  const chatsQuery = useQuery({
+    queryKey: ['chats'],
+    queryFn: api.listChats,
+    onSuccess: chats => {
+      const firstChat = chats.at(0)
+      if (!currentChatId && firstChat) setCurrentChatId(firstChat.id)
+    }
+  })
+
+  const currentChat =
+    chatsQuery.data?.find(chat => chat.id === currentChatId) ?? null
+
   const windowTitle = currentChat
     ? `${currentChat.name ?? 'Untitled chat'} (${modelQuery.data?.title})`
     : 'Chat'
@@ -39,7 +52,7 @@ export const Main: FC = () => {
     mutationFn: () => api.createChat(),
     onSuccess: chat => {
       queryClient.invalidateQueries(['chats'])
-      setCurrentChat(chat)
+      setCurrentChatId(chat.id)
     }
   })
 
@@ -76,7 +89,7 @@ export const Main: FC = () => {
     const onChatCreated = (event: IpcRendererEvent, chat: Chat) => {
       console.log('chat', chat)
       queryClient.invalidateQueries(['chats'])
-      setCurrentChat(chat)
+      setCurrentChatId(chat.id)
     }
 
     api.onChatCreated(onChatCreated)
@@ -88,7 +101,7 @@ export const Main: FC = () => {
     const onChatDeleted = (event: IpcRendererEvent, chatId: number) => {
       queryClient.invalidateQueries(['chats'])
       if (currentChat?.id === chatId) {
-        setCurrentChat(null)
+        setCurrentChatId(null)
       }
     }
 
@@ -115,8 +128,9 @@ export const Main: FC = () => {
 
         <div className="flex-1 overflow-hidden">
           <ChatList
+            chats={chatsQuery.data ?? []}
             activeChatId={currentChat?.id ?? null}
-            onSelectChat={setCurrentChat}
+            onSelectChat={setCurrentChatId}
           />
         </div>
       </AppWindow.Left>
