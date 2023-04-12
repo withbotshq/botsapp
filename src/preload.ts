@@ -63,6 +63,18 @@ const api = {
   },
 
   // Other events
+  onChatCreated: (
+    callback: (event: IpcRendererEvent, chat: Chat) => void
+  ): void => {
+    ipcRenderer.on('chat:created', callback)
+  },
+
+  offChatCreated: (
+    callback: (event: IpcRendererEvent, chat: Chat) => void
+  ): void => {
+    ipcRenderer.off('chat:created', callback)
+  },
+
   onChatDeleted: (
     callback: (event: IpcRendererEvent, chatId: number) => void
   ): void => {

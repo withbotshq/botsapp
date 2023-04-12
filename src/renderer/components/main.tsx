@@ -73,6 +73,18 @@ export const Main: FC = () => {
   }, [queryClient])
 
   useEffect(() => {
+    const onChatCreated = (event: IpcRendererEvent, chat: Chat) => {
+      console.log('chat', chat)
+      queryClient.invalidateQueries(['chats'])
+      setCurrentChat(chat)
+    }
+
+    api.onChatCreated(onChatCreated)
+
+    return () => api.offChatCreated(onChatCreated)
+  })
+
+  useEffect(() => {
     const onChatDeleted = (event: IpcRendererEvent, chatId: number) => {
       queryClient.invalidateQueries(['chats'])
       if (currentChat?.id === chatId) {
@@ -83,7 +95,7 @@ export const Main: FC = () => {
     api.onChatDeleted(onChatDeleted)
 
     return () => api.offChatDeleted(onChatDeleted)
-  })
+  }, [currentChat?.id, queryClient])
 
   return (
     <AppWindow>
@@ -130,6 +142,7 @@ export const Main: FC = () => {
 
               <div className="flex-none border-t p-3">
                 <MessageComposer
+                  key={currentChat?.id}
                   onSubmit={content => sendMessage.mutate(content)}
                 />
               </div>

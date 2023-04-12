@@ -1,4 +1,11 @@
-import {app, BrowserWindow, ipcMain, Menu} from 'electron'
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  MenuItemConstructorOptions,
+  shell
+} from 'electron'
 import path from 'path'
 import {ChatController} from './main/chat/controller'
 import {config, setModel, setOpenAIAPIKey} from './main/config/config'
@@ -54,6 +61,49 @@ const createWindow = () => {
 
   return window
 }
+
+const menuTemplate: MenuItemConstructorOptions[] = [
+  {
+    label: 'Chat',
+    role: 'appMenu'
+  },
+  {
+    label: 'File',
+    submenu: [
+      {
+        label: 'New Chat',
+        accelerator: 'CmdOrCtrl+N',
+        click() {
+          const chat = createChat()
+          windowController.windows.forEach(window => {
+            if (window.isFocused()) {
+              window.webContents.send('chat:created', chat)
+            }
+          })
+        }
+      },
+      {type: 'separator'},
+      {role: 'close'}
+    ]
+  },
+  {role: 'editMenu'},
+  {role: 'viewMenu'},
+  {role: 'windowMenu'},
+  {
+    label: 'Help',
+    role: 'help',
+    submenu: [
+      {
+        label: 'Open on GitHub',
+        click() {
+          shell.openExternal('https://github.com/withexec/chat')
+        }
+      }
+    ]
+  }
+]
+
+Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate))
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
