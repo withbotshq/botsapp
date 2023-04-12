@@ -72,8 +72,48 @@ const ChatList: FC<Props> = ({activeChatId, onSelectChat}) => {
     return () => api.offMessageChunk(onMessageChunk)
   }, [typingTimeouts])
 
+  useEffect(() => {
+    const onFocusNextChat = () => {
+      if (!chats || chats.length === 0) {
+        return
+      }
+
+      if (activeChatId == null) {
+        const firstChat = chats.at(0)
+        if (firstChat) onSelectChat(firstChat)
+      }
+
+      const index = chats.findIndex(chat => chat.id === activeChatId)
+      const nextChat = chats.at(index + 1) ?? chats.at(0)
+      if (nextChat) onSelectChat(nextChat)
+    }
+
+    const onFocusPrevChat = () => {
+      if (!chats || chats.length === 0) {
+        return
+      }
+
+      if (activeChatId == null) {
+        const lastChat = chats.at(-1)
+        if (lastChat) onSelectChat(lastChat)
+      }
+
+      const index = chats.findIndex(chat => chat.id === activeChatId)
+      const previousChat = chats.at(index - 1) ?? chats.at(-1)
+      if (previousChat) onSelectChat(previousChat)
+    }
+
+    api.onFocusNextChat(onFocusNextChat)
+    api.onFocusPrevChat(onFocusPrevChat)
+
+    return () => {
+      api.offFocusNextChat(onFocusNextChat)
+      api.offFocusPrevChat(onFocusPrevChat)
+    }
+  }, [activeChatId, chats, onSelectChat])
+
   return (
-    <div className="flex h-full flex-col-reverse overflow-scroll">
+    <div className="flex h-full flex-col overflow-scroll">
       {chats ? (
         <>
           {chats.length > 0 ? (

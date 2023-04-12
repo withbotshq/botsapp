@@ -82,7 +82,7 @@ export const Main: FC = () => {
     api.onChatCreated(onChatCreated)
 
     return () => api.offChatCreated(onChatCreated)
-  })
+  }, [queryClient])
 
   useEffect(() => {
     const onChatDeleted = (event: IpcRendererEvent, chatId: number) => {

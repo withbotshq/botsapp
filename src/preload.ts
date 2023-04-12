@@ -85,6 +85,30 @@ const api = {
     callback: (event: IpcRendererEvent, chatId: number) => void
   ): void => {
     ipcRenderer.off('chat:deleted', callback)
+  },
+
+  onFocusNextChat: (
+    callback: (event: IpcRendererEvent, chat: Chat) => void
+  ): void => {
+    ipcRenderer.on('focus:next-chat', callback)
+  },
+
+  offFocusNextChat: (
+    callback: (event: IpcRendererEvent, chat: Chat) => void
+  ): void => {
+    ipcRenderer.off('focus:next-chat', callback)
+  },
+
+  onFocusPrevChat: (
+    callback: (event: IpcRendererEvent, chat: Chat) => void
+  ): void => {
+    ipcRenderer.on('focus:prev-chat', callback)
+  },
+
+  offFocusPrevChat: (
+    callback: (event: IpcRendererEvent, chat: Chat) => void
+  ): void => {
+    ipcRenderer.off('focus:prev-chat', callback)
   }
 }
 
