@@ -35,18 +35,15 @@ export const MessageList: FC<Props> = ({messages, partialMessageChunks}) => {
             key={message.id}
           >
             {isMe(message) ? (
-              <img
-                className="block h-6 w-6 rounded-full"
-                src={'https://github.com/nat.png'}
-              />
+              <div className="h-6 w-6 flex-none rounded-full bg-gradient-to-br from-indigo-500 to-emerald-500" />
             ) : (
               <img
-                className="block h-6 w-6 rounded-full"
+                className="block h-6 w-6 flex-none rounded-full"
                 src={'https://github.com/openai.png'}
               />
             )}
 
-            <div className="mt-0.5">
+            <div className="mt-0.5 flex-1">
               <MessageRenderer message={message} />
             </div>
           </div>

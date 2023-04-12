@@ -21,7 +21,7 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
                   <div className="text-xs text-gray-500">{language ?? ''}</div>
                 </div>
 
-                <div>
+                <div className="overflow-y-hidden">
                   <SyntaxHighlighter
                     {...props}
                     language={language}

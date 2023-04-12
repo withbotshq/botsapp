@@ -40,7 +40,7 @@ export default {
     MozHyphens: 'none',
     msHyphens: 'none',
     hyphens: 'none',
-    padding: '1em',
+    padding: '0.75em',
     // margin: "0.5em 0",
     overflow: 'auto',
     borderRadius: '0.3em'
