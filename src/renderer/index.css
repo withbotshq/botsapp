@@ -89,5 +89,4 @@ td {
 .grow-wrap::after {
   @apply max-h-[10lh] rounded-2xl border bg-transparent p-2 px-3 py-1 text-inherit outline-none focus:border-border-focus;
   grid-area: 1 / 1 / 2 / 2;
-  /* @apply block w-full flex-1 rounded-full border bg-transparent px-3 py-1 outline-none focus:border-border-focus; */
 }
