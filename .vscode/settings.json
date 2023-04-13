@@ -11,7 +11,8 @@
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
     "**/.vite": true,
-    "**/node_modules": true
+    "**/node_modules": true,
+    "out": true
   },
   "files.associations": {
     "*.css": "tailwindcss"
