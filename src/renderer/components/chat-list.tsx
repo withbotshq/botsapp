@@ -234,7 +234,7 @@ function ChatName({chat}: {chat: Chat}) {
   return isEditingName ? (
     <input
       type="text"
-      className="bg-white text-text"
+      className="bg-transparent font-bold text-inherit"
       onBlur={onBlur}
       onKeyDown={onKeyDown}
       defaultValue={chat.name ?? ''}
