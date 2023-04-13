@@ -1,4 +1,5 @@
-import {FC, FormEvent, useState} from 'react'
+import {assert} from '@jclem/assert'
+import {FC, useState} from 'react'
 import {SnippetIcon} from './icons'
 
 export const MessageComposer: FC<{onSubmit: (content: string) => void}> = ({
@@ -6,9 +7,7 @@ export const MessageComposer: FC<{onSubmit: (content: string) => void}> = ({
 }) => {
   const [newMessageContent, setNewMessageContent] = useState('')
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
+  const submitForm = () => {
     if (newMessageContent === '') return
 
     onSubmit(newMessageContent)
@@ -16,19 +15,37 @@ export const MessageComposer: FC<{onSubmit: (content: string) => void}> = ({
   }
 
   return (
-    <form className="flex items-center gap-2" onSubmit={handleSubmit}>
+    <form
+      className="flex items-start gap-2"
+      onSubmit={e => {
+        e.preventDefault()
+        submitForm()
+      }}
+    >
       <div className="h-6 w-6 flex-none rounded-full bg-blue-500">
         <SnippetIcon />
       </div>
 
-      <input
-        autoFocus
-        className="block w-full flex-1 rounded-full border bg-transparent px-3 py-1 outline-none focus:border-border-focus"
-        onChange={e => setNewMessageContent(e.target.value)}
-        placeholder="Your message..."
-        type="text"
-        value={newMessageContent}
-      />
+      <div className="grow-wrap">
+        <textarea
+          autoFocus
+          rows={1}
+          className="block w-full flex-1 rounded-full border bg-transparent px-3 py-1 outline-none focus:border-border-focus"
+          onKeyDown={e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault()
+              submitForm()
+            }
+          }}
+          onChange={e => {
+            setNewMessageContent(e.target.value)
+            assert(e.currentTarget.parentElement).dataset.replicatedValue =
+              e.target.value
+          }}
+          placeholder="Your message..."
+          value={newMessageContent}
+        />
+      </div>
     </form>
   )
 }

@@ -71,3 +71,23 @@ td {
 .markdown blockquote {
   @apply border-l-2 border-gray-400 pl-2 text-sm dark:border-gray-300;
 }
+
+.grow-wrap {
+  @apply grid w-full;
+}
+
+.grow-wrap::after {
+  @apply invisible whitespace-pre-wrap;
+  content: attr(data-replicated-value) ' ';
+}
+
+.grow-wrap > textarea {
+  @apply resize-none overflow-hidden;
+}
+
+.grow-wrap > textarea,
+.grow-wrap::after {
+  @apply rounded-2xl border bg-transparent p-2 px-3 py-1 text-inherit outline-none focus:border-border-focus;
+  grid-area: 1 / 1 / 2 / 2;
+  /* @apply block w-full flex-1 rounded-full border bg-transparent px-3 py-1 outline-none focus:border-border-focus; */
+}
