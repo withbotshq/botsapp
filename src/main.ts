@@ -235,11 +235,7 @@ app.on('activate', () => {
 })
 
 app.on('will-quit', () => {
-  // Unregister a shortcut.
-  globalShortcut.unregister('CommandOrControl+O+P')
-
-  // Unregister all shortcuts.
-  globalShortcut.unregisterAll()
+  globalShortcut.unregister('Control+Command+Space')
 })
 
 // In this file you can include the rest of your app's specific main process
