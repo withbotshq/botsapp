@@ -19,7 +19,6 @@ import {
   renameChat,
   runMigrations
 } from './main/db/db'
-import {WindowController} from './main/window-controller'
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
 declare const MAIN_WINDOW_VITE_NAME: string
@@ -30,7 +29,6 @@ if (require('electron-squirrel-startup')) {
 }
 
 const chatController = new ChatController()
-const windowController = new WindowController()
 
 const createWindow = () => {
   // Create the browser window.
@@ -59,7 +57,6 @@ const createWindow = () => {
 
   // Register the window.
   chatController.addBrowserWindow(window)
-  windowController.addBrowserWindow(window)
 
   return window
 }
@@ -77,11 +74,10 @@ const menuTemplate: MenuItemConstructorOptions[] = [
         accelerator: 'CmdOrCtrl+N',
         click() {
           const chat = createChat()
-          windowController.windows.forEach(window => {
-            if (window.isFocused()) {
-              window.webContents.send('chat:created', chat)
-            }
-          })
+          BrowserWindow.getFocusedWindow()?.webContents.send(
+            'chat:created',
+            chat
+          )
         }
       },
       {type: 'separator'},
@@ -103,22 +99,14 @@ const menuTemplate: MenuItemConstructorOptions[] = [
         label: 'Focus Previous Chat',
         accelerator: 'CmdOrCtrl+Shift+[',
         click() {
-          windowController.windows.forEach(window => {
-            if (window.isFocused()) {
-              window.webContents.send('focus:prev-chat')
-            }
-          })
+          BrowserWindow.getFocusedWindow()?.webContents.send('focus:prev-chat')
         }
       },
       {
         label: 'Focus Next Chat',
         accelerator: 'CmdOrCtrl+Shift+]',
         click() {
-          windowController.windows.forEach(window => {
-            if (window.isFocused()) {
-              window.webContents.send('focus:next-chat')
-            }
-          })
+          BrowserWindow.getFocusedWindow()?.webContents.send('focus:next-chat')
         }
       },
       {type: 'separator'},
@@ -177,18 +165,17 @@ app.on('ready', () => {
       {
         label: 'Rename chat',
         click: () => {
-          windowController.windows.forEach(window => {
-            if (window.isFocused()) {
-              window.webContents.send('chat:rename', chatId)
-            }
-          })
+          BrowserWindow.getFocusedWindow()?.webContents.send(
+            'chat:rename',
+            chatId
+          )
         }
       },
       {
         label: 'Delete chat',
         click: () => {
           deleteChat(chatId)
-          windowController.windows.forEach(window =>
+          BrowserWindow.getAllWindows().forEach(window =>
             window.webContents.send('chat:deleted', chatId)
           )
         }
@@ -202,7 +189,8 @@ app.on('ready', () => {
   })
 
   globalShortcut.register('Control+Command+B', () => {
-    const window = windowController.windows.at(0)
+    const window = BrowserWindow.getAllWindows().at(0)
+
     if (window) {
       window?.show()
     } else {
