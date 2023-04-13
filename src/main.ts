@@ -201,15 +201,16 @@ app.on('ready', () => {
     })
   })
 
-  const mainWindow = createWindow()
-
-  const shortcut = globalShortcut.register('Control+Command+B', () => {
-    mainWindow.show()
+  globalShortcut.register('Control+Command+B', () => {
+    const window = windowController.windows.at(0)
+    if (window) {
+      window?.show()
+    } else {
+      createWindow()
+    }
   })
 
-  if (!shortcut) {
-    console.log('Registration of global shortcut failed.')
-  }
+  createWindow()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
