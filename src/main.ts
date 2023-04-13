@@ -1,9 +1,10 @@
 import {
-  app,
   BrowserWindow,
-  ipcMain,
   Menu,
   MenuItemConstructorOptions,
+  app,
+  globalShortcut,
+  ipcMain,
   shell
 } from 'electron'
 import path from 'path'
@@ -200,7 +201,20 @@ app.on('ready', () => {
     })
   })
 
-  createWindow()
+  const mainWindow = createWindow()
+
+  const shortcut = globalShortcut.register('Control+Command+Space', () => {
+    mainWindow.show()
+  })
+
+  if (!shortcut) {
+    console.log('Registration of global shortcut failed.')
+  }
+
+  mainWindow.on('close', event => {
+    event.preventDefault()
+    mainWindow.hide()
+  })
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -218,6 +232,14 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow()
   }
+})
+
+app.on('will-quit', () => {
+  // Unregister a shortcut.
+  globalShortcut.unregister('CommandOrControl+O+P')
+
+  // Unregister all shortcuts.
+  globalShortcut.unregisterAll()
 })
 
 // In this file you can include the rest of your app's specific main process
