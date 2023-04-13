@@ -30,7 +30,6 @@ export const MessageComposer: FC<{onSubmit: (content: string) => void}> = ({
         <textarea
           autoFocus
           rows={1}
-          className="block w-full flex-1 rounded-full border bg-transparent px-3 py-1 outline-none focus:border-border-focus"
           onKeyDown={e => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault()

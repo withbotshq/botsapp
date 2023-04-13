@@ -82,7 +82,7 @@ td {
 }
 
 .grow-wrap > textarea {
-  @apply resize-none overflow-hidden;
+  @apply resize-none;
 }
 
 .grow-wrap > textarea,
