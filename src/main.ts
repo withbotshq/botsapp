@@ -203,7 +203,7 @@ app.on('ready', () => {
 
   const mainWindow = createWindow()
 
-  const shortcut = globalShortcut.register('Control+Command+Space', () => {
+  const shortcut = globalShortcut.register('Control+Command+B', () => {
     mainWindow.show()
   })
 
