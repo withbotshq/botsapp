@@ -1,15 +1,15 @@
-# Chat
+# BotsApp
 
-Chat UI is an extensible client for LLM chat bots.
+An app to make personalized AI bots and chat with them.
 
 ## Building Locally
 
 ```bash
-$ git clone git@github.com:withexec/chat.git
-$ cd chat
+$ git clone git@github.com:withbotshq/botsapp.git
+$ cd botsapp
 $ npm install
 $ npm run package
-$ open /Applications/Chat.app
+$ open /Applications/Bots.app
 
 # Click on the settings icon in the top right to enter your OpenAI API key
 ```
@@ -17,8 +17,8 @@ $ open /Applications/Chat.app
 ## Developing Locally
 
 ```bash
-$ git clone git@github.com:withexec/chat.git
-$ cd chat
+$ git clone git@github.com:withbotshq/botsapp.git
+$ cd botsapp
 $ npm install
 $ npm start
 ```
@@ -37,7 +37,7 @@ $ npm start
 
 ## Plugins
 
-Open Chat UI is built with an architecture of participation in mind. Similar to VS Code and Obsidian, the app's behavior can be extended by install plugins. Plugins can be written in TypeScript and are loaded from a local directory.
+BotsApp is built with an architecture of participation in mind. Similar to VS Code and Obsidian, the app's behavior can be extended by install plugins. Plugins can be written in TypeScript and are loaded from a local directory.
 
 There are two types of plugin categories:
 

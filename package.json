@@ -1,14 +1,14 @@
 {
-  "name": "chat",
-  "productName": "Chat",
+  "name": "bots-app",
+  "productName": "Bots",
   "version": "0.1.1",
-  "description": "My Electron application description",
+  "description": "An app to make personalized AI bots and chat with them",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
     "package": "konk run s -L -n'package:*'",
     "package:build": "electron-forge package",
-    "package:copy": "cp -R out/Chat-darwin-*/Chat.app/ /Applications/Chat.app",
+    "package:copy": "cp -R out/Bots-darwin-*/Bots.app/ /Applications/Bots.app",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",

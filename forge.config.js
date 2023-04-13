@@ -1,11 +1,19 @@
 /* eslint-env node */
 
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-var-requires */
 require('dotenv').config()
+const {
+  utils: {fromBuildIdentifier}
+} = require('@electron-forge/core')
 
 const config = {
+  buildIdentifier: process.env.BETA ? 'beta' : 'stable',
   packagerConfig: {
-    icon: 'icons/chat.icns',
+    appBundleId: fromBuildIdentifier({
+      beta: 'app.beta.bots',
+      stable: 'app.bots'
+    }),
+    icon: 'icons/bots.icns',
     osxSign: {}
   },
   rebuildConfig: {},
@@ -46,8 +54,8 @@ const config = {
       name: '@electron-forge/publisher-github',
       config: {
         repository: {
-          owner: 'withexec',
-          name: 'chat'
+          owner: 'withbotshq',
+          name: 'botsapp'
         },
         prerelease: true
       }
