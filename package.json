@@ -8,7 +8,7 @@
     "start": "electron-forge start",
     "package": "konk run s -L -n'package:*'",
     "package:build": "electron-forge package",
-    "package:copy": "cp -R out/Bots-darwin-*/Bots.app/ /Applications/Bots.app",
+    "package:copy": "cp -R out/stable/Bots-darwin-*/Bots.app/ /Applications/Bots.app",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
