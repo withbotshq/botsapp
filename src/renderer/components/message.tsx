@@ -6,6 +6,10 @@ import {Message} from '../../main/db/schema'
 import oneDark from '../one-dark'
 
 export const MessageRenderer: FC<{message: Message}> = ({message}) => {
+  const onClickCopy = (code: string) => {
+    navigator.clipboard.writeText(code)
+  }
+
   return (
     <ReactMarkdown
       className="markdown"
@@ -16,8 +20,18 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
 
           return !inline && match ? (
             <div className="overflow-hidden rounded border border-gray-700 bg-gray-800 shadow">
-              <div className="rounded-t border-b border-gray-700 px-2 py-1">
+              <div className="flex justify-between rounded-t border-b border-gray-700 px-2 py-1">
                 <div className="text-xs text-gray-500">{language ?? ''}</div>
+                <div>
+                  <button
+                    onClick={() =>
+                      onClickCopy(children.join('').replace(/\n$/, ''))
+                    }
+                    className="text-xs text-gray-500"
+                  >
+                    copy
+                  </button>
+                </div>
               </div>
 
               <div className="overflow-hidden">
