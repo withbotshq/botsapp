@@ -72,7 +72,7 @@ export function renameChat(chatId: number, name: string | null): void {
 }
 
 export function listChats(): Chat[] {
-  return [...chatsIndex.chats].sort((a, b) => a.createdAt - b.createdAt)
+  return [...chatsIndex.chats].sort((a, b) => b.createdAt - a.createdAt)
 }
 
 export function deleteChat(chatId: number): void {
