@@ -210,11 +210,6 @@ app.on('ready', () => {
   if (!shortcut) {
     console.log('Registration of global shortcut failed.')
   }
-
-  mainWindow.on('close', event => {
-    event.preventDefault()
-    mainWindow.hide()
-  })
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -235,7 +230,7 @@ app.on('activate', () => {
 })
 
 app.on('will-quit', () => {
-  globalShortcut.unregister('Control+Command+Space')
+  globalShortcut.unregisterAll()
 })
 
 // In this file you can include the rest of your app's specific main process
