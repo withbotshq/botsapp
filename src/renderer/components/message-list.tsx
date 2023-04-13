@@ -1,5 +1,7 @@
 import {FC} from 'react'
 import {Message} from '../../main/db/schema'
+import {useConfigModel} from '../hooks/use-config'
+import OpenAIIcon from './icons/open-ai-icon'
 import {MessageRenderer} from './message'
 import {ScrollContainer} from './scroll-container'
 
@@ -13,6 +15,8 @@ interface Props {
 }
 
 export const MessageList: FC<Props> = ({messages, partialMessageChunks}) => {
+  const {query: modelQuery} = useConfigModel()
+
   const partialMessage = partialMessageChunks
     ? {
         id: Math.random(),
@@ -37,10 +41,13 @@ export const MessageList: FC<Props> = ({messages, partialMessageChunks}) => {
             {isMe(message) ? (
               <div className="h-6 w-6 flex-none rounded-full bg-gradient-to-br from-indigo-500 to-emerald-500" />
             ) : (
-              <img
-                className="block h-6 w-6 flex-none rounded-full"
-                src={'https://github.com/openai.png'}
-              />
+              <div
+                className={`flex-non h-6 w-6 rounded-full ${
+                  modelQuery.data?.key === 'gpt-4' ? 'bg-black' : 'bg-[#10A37F]'
+                }`}
+              >
+                <OpenAIIcon />
+              </div>
             )}
 
             <div className="mt-0.5 min-w-0">
