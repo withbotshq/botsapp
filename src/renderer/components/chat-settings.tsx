@@ -23,7 +23,7 @@ const ChatSettings: FC = () => {
         <h3 className="text-xs font-bold uppercase text-gray-500">OpenAI</h3>
 
         <input
-          className="w-full rounded border bg-transparent p-2 py-1 text-white"
+          className="w-full rounded border bg-transparent p-2 py-1 dark:text-white"
           type="password"
           placeholder="API Key"
           value={apiKeyQuery.data ?? ''}
@@ -35,7 +35,7 @@ const ChatSettings: FC = () => {
         <h3 className="text-xs font-bold uppercase text-gray-500">Model</h3>
 
         <select
-          className="w-full rounded border bg-transparent p-2 py-1 text-white"
+          className="w-full rounded border bg-transparent p-2 py-1 dark:text-white"
           value={modelQuery.data?.key ?? 'gpt-3.5-turbo'}
           onChange={e => modelMutation.mutate(e.target.value)}
         >
