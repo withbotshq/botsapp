@@ -8,6 +8,7 @@ import {
   shell
 } from 'electron'
 import path from 'path'
+import updateElectron from 'update-electron-app'
 import {ChatController} from './main/chat/controller'
 import {config, setModel, setOpenAIAPIKey} from './main/config/config'
 import {
@@ -222,5 +223,4 @@ app.on('will-quit', () => {
   globalShortcut.unregisterAll()
 })
 
-import updateElectron = require('update-electron-app')
 updateElectron()
