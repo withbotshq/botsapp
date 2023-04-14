@@ -2,7 +2,7 @@ import {FC} from 'react'
 import {Message} from '../../main/db/schema'
 import {useConfigModel} from '../hooks/use-config'
 import OpenAIIcon from './icons/open-ai-icon'
-import {MessageRenderer} from './message'
+import {MessageRenderer} from './message-renderer'
 import {ScrollContainer} from './scroll-container'
 
 const isMe = (message: Message) => {

@@ -107,7 +107,7 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
               <button
                 onContextMenu={() => onContextMenu(chat.id)}
                 onClick={() => onSelectChat(chat.id)}
-                className="px-2 py-1 text-left"
+                className="select-none px-2 py-1 text-left"
                 key={chat.id}
               >
                 <div
