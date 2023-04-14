@@ -5,7 +5,7 @@
 :root {
   --color-canvas: theme('colors.white');
   --color-border: theme('colors.gray.200');
-  --color-border-focus: theme('colors.gray.500');
+  --color-border-focus: theme('colors.gray.300');
   --color-text: theme('colors.gray.700');
 }
 
