@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --color-canvas: theme('colors.gray.200');
-  --color-border: theme('colors.gray.400');
+  --color-canvas: theme('colors.white');
+  --color-border: theme('colors.gray.200');
   --color-border-focus: theme('colors.gray.500');
   --color-text: theme('colors.gray.700');
 }

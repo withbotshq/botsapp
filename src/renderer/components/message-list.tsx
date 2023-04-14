@@ -34,7 +34,7 @@ export const MessageList: FC<Props> = ({messages, partialMessageChunks}) => {
         message => (
           <div
             className={`flex gap-4 border-b border-border p-4 ${
-              isMe(message) ? '' : 'bg-gray-300 dark:bg-gray-900'
+              isMe(message) ? '' : 'bg-gray-100 dark:bg-gray-900'
             }`}
             key={message.id}
           >
