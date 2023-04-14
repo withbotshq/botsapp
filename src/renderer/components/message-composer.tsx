@@ -1,6 +1,5 @@
 import {assert} from '@jclem/assert'
 import {FC, useState} from 'react'
-import {SnippetIcon} from './icons'
 
 export const MessageComposer: FC<{onSubmit: (content: string) => void}> = ({
   onSubmit
@@ -16,16 +15,11 @@ export const MessageComposer: FC<{onSubmit: (content: string) => void}> = ({
 
   return (
     <form
-      className="flex items-start gap-2"
       onSubmit={e => {
         e.preventDefault()
         submitForm()
       }}
     >
-      <div className="h-6 w-6 flex-none rounded-full bg-blue-500">
-        <SnippetIcon />
-      </div>
-
       <div className="grow-wrap">
         <textarea
           autoFocus
