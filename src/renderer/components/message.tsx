@@ -55,7 +55,7 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
         // FIXME: There must be a better way to avoid a `pre` tag around code blocks.
         pre: ({...props}) => (
           <pre
-            className="x-this-is-pre overflow-y-scroll whitespace-normal font-sans"
+            className="x-this-is-pre overflow-y-auto whitespace-normal font-sans"
             {...props}
           />
         )

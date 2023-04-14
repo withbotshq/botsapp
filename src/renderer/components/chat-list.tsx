@@ -99,7 +99,7 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
   }, [activeChatId, chats, onSelectChat])
 
   return (
-    <div className="flex h-full flex-col overflow-scroll">
+    <div className="flex h-full flex-col overflow-auto">
       {chats ? (
         <>
           {chats.length > 0 ? (
