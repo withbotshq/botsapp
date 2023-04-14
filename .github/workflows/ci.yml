@@ -10,7 +10,10 @@ jobs:
   macos:
     runs-on: macos-latest
     timeout-minutes: 30
-
+    env:
+      APPLE_API_KEY: ./certs/apple-api-key.p8
+      APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+      APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
     steps:
       - run: uname -a
       - uses: actions/checkout@v3
@@ -28,4 +31,6 @@ jobs:
         run: npm ci
         env:
           NPM_CONFIG_LOGLEVEL: verbose
+      - name: Write Apple Developer credentials to file
+        run: echo ${{ secrets.APPLE_API_KEY }} > ./certs/apple-api-key.p8
       - run: npm run package:build
