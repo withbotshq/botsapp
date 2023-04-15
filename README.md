@@ -2,6 +2,8 @@
 
 An app to make personalized AI bots and chat with them.
 
+<img width="1198" alt="image" src="https://user-images.githubusercontent.com/111631/232243956-76d94fa8-ba2b-468c-ad36-a360c6cfcfbf.png">
+
 ## Building Locally
 
 ```bash
