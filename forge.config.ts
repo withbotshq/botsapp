@@ -1,53 +1,39 @@
-/* eslint-env node */
+import {utils} from '@electron-forge/core'
+import {MakerZIP} from '@electron-forge/maker-zip'
+import {WebpackPlugin} from '@electron-forge/plugin-webpack'
+import {ForgeConfig} from '@electron-forge/shared-types'
+import {mainConfig} from './webpack.main.config'
+import {rendererConfig} from './webpack.renderer.config'
 
-/* eslint-disable @typescript-eslint/no-var-requires */
-require('dotenv').config()
-const {
-  utils: {fromBuildIdentifier}
-} = require('@electron-forge/core')
-
-const config = {
+const config: ForgeConfig = {
   buildIdentifier: process.env.BETA ? 'beta' : 'stable',
   packagerConfig: {
-    appBundleId: fromBuildIdentifier({
+    appBundleId: utils.fromBuildIdentifier({
       beta: 'app.beta.bots',
       stable: 'app.bots'
-    }),
+    }) as unknown as string,
     icon: 'icons/bots.icns',
     osxSign: {}
   },
   rebuildConfig: {},
-  makers: [
-    {
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin']
-    }
-  ],
+  makers: [new MakerZIP({}, ['darwin'])],
   plugins: [
-    {
-      name: '@electron-forge/plugin-vite',
-      config: {
-        // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.
-        // If you are familiar with Vite configuration, it will look really familiar.
-        build: [
+    new WebpackPlugin({
+      mainConfig,
+      renderer: {
+        config: rendererConfig,
+        entryPoints: [
           {
-            // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
-            entry: 'src/main.ts',
-            config: 'vite.main.config.ts'
-          },
-          {
-            entry: 'src/preload.ts',
-            config: 'vite.preload.config.ts'
-          }
-        ],
-        renderer: [
-          {
+            html: './src/renderer/index.html',
+            js: './src/renderer.tsx',
             name: 'main_window',
-            config: 'vite.renderer.config.ts'
+            preload: {
+              js: './src/preload.ts'
+            }
           }
         ]
       }
-    }
+    })
   ],
   publishers: [
     {
@@ -78,7 +64,7 @@ function notarizeMaybe() {
     return
   }
 
-  config.packagerConfig.osxNotarize = {
+  config.packagerConfig!.osxNotarize = {
     tool: 'notarytool',
     appleApiKey: process.env.APPLE_API_KEY,
     appleApiKeyId: process.env.APPLE_API_KEY_ID,
@@ -88,4 +74,4 @@ function notarizeMaybe() {
 
 notarizeMaybe()
 
-module.exports = config
+export default config

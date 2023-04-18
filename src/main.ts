@@ -7,7 +7,6 @@ import {
   ipcMain,
   shell
 } from 'electron'
-import path from 'path'
 import updateElectron from 'update-electron-app'
 import {ChatController} from './main/chat/controller'
 import {config, setModel, setOpenAIAPIKey} from './main/config/config'
@@ -21,8 +20,8 @@ import {
   runMigrations
 } from './main/db/db'
 
-declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
-declare const MAIN_WINDOW_VITE_NAME: string
+declare const MAIN_WINDOW_WEBPACK_ENTRY: string
+declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -39,21 +38,14 @@ const createWindow = () => {
     minHeight: 600,
     minWidth: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
     },
     titleBarStyle: 'hidden',
     trafficLightPosition: {x: 14, y: 14},
     vibrancy: 'sidebar'
   })
 
-  // and load the index.html of the app.
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    window.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
-  } else {
-    window.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
-    )
-  }
+  window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

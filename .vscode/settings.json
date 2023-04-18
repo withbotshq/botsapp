@@ -12,7 +12,8 @@
     "**/Thumbs.db": true,
     "**/.vite": true,
     "**/node_modules": true,
-    "out": true
+    "out": true,
+    ".webpack": true
   },
   "files.associations": {
     "*.css": "tailwindcss"
