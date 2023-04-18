@@ -2,8 +2,8 @@ import {utils} from '@electron-forge/core'
 import {MakerZIP} from '@electron-forge/maker-zip'
 import {WebpackPlugin} from '@electron-forge/plugin-webpack'
 import {ForgeConfig} from '@electron-forge/shared-types'
-import {mainConfig} from './webpack.main.config'
-import {rendererConfig} from './webpack.renderer.config'
+import {mainConfig} from './webpack/main.config'
+import {rendererConfig} from './webpack/renderer.config'
 
 const config: ForgeConfig = {
   buildIdentifier: process.env.BETA ? 'beta' : 'stable',
