@@ -35,8 +35,10 @@ const api = {
     content: string
   ): Promise<Message> =>
     ipcRenderer.invoke('messages:create', chatId, role, content),
-  listMessages: (chatId: number): Promise<Message[]> =>
-    ipcRenderer.invoke('messages:list', chatId),
+  listMessages: (
+    chatId: number,
+    opts: {onlyVisible?: boolean} = {}
+  ): Promise<Message[]> => ipcRenderer.invoke('messages:list', chatId, opts),
 
   // Chat coordination
   getPartialMessage: (chatId: number): Promise<string[] | null> =>

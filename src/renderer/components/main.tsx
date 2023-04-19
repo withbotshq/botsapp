@@ -36,7 +36,8 @@ export const Main: FC = () => {
 
   const messagesQuery = useQuery({
     queryKey: ['messages', currentChat?.id],
-    queryFn: () => api.listMessages(assert(currentChat?.id)),
+    queryFn: () =>
+      api.listMessages(assert(currentChat?.id), {onlyVisible: true}),
     enabled: currentChat != null
   })
 

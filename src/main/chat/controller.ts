@@ -3,7 +3,9 @@ import {BrowserWindow} from 'electron'
 import {z} from 'zod'
 import {config} from '../config/config'
 import {createMessage, listMessages} from '../db/db'
-import {Message} from '../db/schema'
+import {BaseMessage, Message} from '../db/schema'
+import {renderSystemTemplate} from '../templates/system'
+import {PluginController} from './plugin-controller'
 
 const RoleChoice = z.object({
   delta: z.object({role: z.string()}),
@@ -55,15 +57,7 @@ export class ChatController {
 
   #windows: Set<BrowserWindow> = new Set()
 
-  readonly #systemMessage = {
-    role: 'system',
-    content: `You are Chat, an AI assistant based on OpenAI's GPT
-  models. Follow the user's instructions carefully, but be concise. Do not offer
-  great detail unless the user asks for it. Respond using Markdown.`.replace(
-      /\s+/g,
-      ' '
-    )
-  }
+  #pluginController = new PluginController(['http://127.0.0.1:5001'])
 
   getPartialMessage(chatId: number) {
     return this.#partialMessages.get(chatId)?.chunks ?? null
@@ -95,11 +89,13 @@ export class ChatController {
   }
 
   async sendMessage(message: Message) {
+    const plugins = await this.#pluginController.plugins
+    const systemMessage = {
+      role: 'system',
+      content: renderSystemTemplate(plugins)
+    }
     // Includes the new message already.
-    const messageHistory = [
-      this.#systemMessage,
-      ...listMessages(message.chatId)
-    ]
+    const messageHistory = [systemMessage, ...listMessages(message.chatId)]
 
     if (this.#partialMessages.has(message.chatId)) {
       console.warn('Already streaming a message for chat', message.chatId)
@@ -113,24 +109,10 @@ export class ChatController {
 
     this.#partialMessages.set(message.chatId, partialMessage)
 
-    // TODO: Handle no API key being set, yet.
-    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${assert(config.openAIAPIKey)}`
-      },
-      signal: partialMessage.abortController.signal,
-      body: JSON.stringify({
-        model: config.model.key,
-        messages: messageHistory.map(m => ({
-          role: m.role,
-          content: m.content
-        })),
-        temperature: 0.8,
-        stream: true
-      })
-    })
+    const resp = await this.#requestCompletion(
+      messageHistory,
+      partialMessage.abortController
+    )
 
     if (!resp.ok) {
       throw new Error(
@@ -140,6 +122,12 @@ export class ChatController {
 
     const bodyReader = assert(resp.body).getReader()
     const decoder = new TextDecoder()
+
+    let usePlugin = 'Thought: Do I need to use a tool? Yes.\n'
+    let isUsePlugin = false
+    let pastUsePlugin = false
+    const usePluginChunks = []
+    const pluginBuffer = []
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -160,6 +148,52 @@ export class ChatController {
         const choice = chunk.choices.at(0)
 
         if (choice && isContentChoice(choice)) {
+          const content = choice.delta.content
+
+          if (isUsePlugin) {
+            pluginBuffer.push(content)
+            continue
+          }
+
+          if (!pastUsePlugin) {
+            if (usePlugin.startsWith(content)) {
+              usePlugin = usePlugin.slice(content.length)
+              usePluginChunks.push(content)
+
+              if (usePlugin === '') {
+                isUsePlugin = true
+                this.#partialMessages.delete(message.chatId)
+                const reqMessage = createMessage(
+                  message.chatId,
+                  'assistant',
+                  'One moment while I gather the information you requested...'
+                )
+                this.#windows.forEach(window => {
+                  window.webContents.send('chat:message', reqMessage)
+                })
+              }
+
+              continue
+            } else {
+              pastUsePlugin = true
+              usePluginChunks.push(content)
+
+              usePluginChunks.forEach(chunk => {
+                partialMessage.chunks.push(chunk)
+
+                this.#windows.forEach(window => {
+                  window.webContents.send(
+                    'chat:message-chunk',
+                    message.chatId,
+                    chunk
+                  )
+                })
+              })
+
+              continue
+            }
+          }
+
           partialMessage.chunks.push(choice.delta.content)
 
           this.#windows.forEach(window => {
@@ -173,7 +207,40 @@ export class ChatController {
       }
     }
 
-    this.#completePartialMessage(message.chatId)
+    if (isUsePlugin) {
+      const pluginResp = await this.#pluginController.send(pluginBuffer)
+      const asstMessage = createMessage(
+        message.chatId,
+        'assistant',
+        `Thought: Do I need to use a tool? Yes.
+${pluginBuffer.join('')}
+Observeration: ${JSON.stringify(pluginResp)}`,
+        {invisible: true}
+      )
+      await this.sendMessage(asstMessage)
+    } else {
+      this.#completePartialMessage(message.chatId)
+    }
+  }
+
+  async #requestCompletion(
+    messages: BaseMessage[],
+    abortController: AbortController
+  ) {
+    return fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${assert(config.openAIAPIKey)}` // TODO: Handle no API key being set, yet.
+      },
+      signal: abortController.signal,
+      body: JSON.stringify({
+        model: config.model.key,
+        messages: messages.map(m => ({role: m.role, content: m.content})),
+        temperature: 0.6,
+        stream: true
+      })
+    })
   }
 
   #completePartialMessage(chatId: number, opts: {abort?: boolean} = {}) {

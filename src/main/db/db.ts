@@ -87,13 +87,15 @@ export function deleteChat(chatId: number): void {
 export function createMessage(
   chatId: number,
   role: 'user' | 'assistant' | 'system',
-  content: string
+  content: string,
+  opts: {invisible?: boolean} = {}
 ): Message {
   const message: Message = {
     id: getNextMessageId(),
     role,
     chatId,
     content,
+    invisible: opts.invisible ?? false,
     ...timestamps(true)
   }
 
@@ -114,9 +116,17 @@ export function createMessage(
   return message
 }
 
-export function listMessages(chatId: number): Message[] {
+export function listMessages(
+  chatId: number,
+  opts: {onlyVisible?: boolean} = {}
+): Message[] {
   const chatState = readChatState(chatId)
-  return chatState.messages
+
+  if (opts.onlyVisible) {
+    return chatState.messages.filter(m => !m.invisible)
+  } else {
+    return chatState.messages
+  }
 }
 
 function timestamps(creating: true): {createdAt: number; updatedAt: number}

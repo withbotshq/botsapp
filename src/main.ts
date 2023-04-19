@@ -154,7 +154,9 @@ app.on('ready', () => {
   ipcMain.handle('messages:get-partial', (event, chatId) => {
     return chatController.getPartialMessage(chatId)
   })
-  ipcMain.handle('messages:list', (event, chatId) => listMessages(chatId))
+  ipcMain.handle('messages:list', (event, chatId, opts) =>
+    listMessages(chatId, opts)
+  )
   ipcMain.on('chat-list:show-context-menu', (event, chatId) => {
     const template = [
       {

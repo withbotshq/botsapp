@@ -1,5 +1,5 @@
 import OpenAPIParser from '@readme/openapi-parser'
-import type {OpenAPI, OpenAPIV2, OpenAPIV3, OpenAPIV3_1} from 'openapi-types'
+import type {OpenAPI} from 'openapi-types'
 import {z} from 'zod'
 
 const HttpAuthorizationType = z.union([z.literal('bearer'), z.literal('basic')])
@@ -65,10 +65,18 @@ const AiPlugin = z.object({
 })
 type AiPlugin = z.infer<typeof AiPlugin>
 
-type Plugin = {
+export type Plugin = {
   aiPlugin: AiPlugin
   openApi: OpenAPI.Document
 }
+
+const PluginRequest = z.object({
+  tool: z.string(),
+  endpoint: z.string(),
+  method: z.string(),
+  parameters: z.object({}).passthrough()
+})
+type PluginRequest = z.infer<typeof PluginRequest>
 
 export class PluginController {
   readonly plugins: Promise<Plugin[]>
@@ -80,74 +88,44 @@ export class PluginController {
     })
   }
 
-  #pluginTitle(plugin: AiPlugin): string {
-    return `# ${plugin.name_for_model}`
-  }
+  async send(buffer: string[]) {
+    const fullMessage = buffer.join('')
+    const toolPayloadPrefix = 'Tool Payload: '
+    const toolPayload = fullMessage
+      .split('\n')
+      .find(line => line.startsWith(toolPayloadPrefix))
 
-  #pluginDescription(plugin: AiPlugin): string {
-    return plugin.description_for_model
-  }
+    if (!toolPayload) {
+      throw new Error('Failed to find tool payload')
+    }
 
-  #pluginActions(plugin: Plugin): string {
-    const paths: [
-      string,
-      (
-        | OpenAPIV2.PathItemObject
-        | OpenAPIV3.PathItemObject
-        | OpenAPIV3_1.PathItemObject
+    const toolPayloadJson = JSON.parse(
+      toolPayload.slice(toolPayloadPrefix.length)
+    )
+    const request = PluginRequest.parse(toolPayloadJson)
+    const query =
+      request.method !== 'GET'
+        ? ''
+        : `?${new URLSearchParams(
+            Object.entries(request.parameters).map(([k, v]) => [k, String(v)])
+          ).toString()}`
+
+    const resp = await fetch(
+      `http://127.0.0.1:5001${request.endpoint}${query}`,
+      {
+        method: request.method,
+        body:
+          request.method === 'GET' ? null : JSON.stringify(request.parameters)
+      }
+    )
+
+    if (!resp.ok) {
+      throw new Error(
+        `Failed to send plugin request: ${resp.status} ${resp.statusText}`
       )
-    ][] = Object.entries(plugin.openApi.paths ?? {})
+    }
 
-    const actions = paths
-      .map(([path, pathItem]) => {
-        const operations: [
-          string,
-          (
-            | OpenAPIV2.OperationObject
-            | OpenAPIV3.OperationObject
-            | OpenAPIV3_1.OperationObject
-          )
-        ][] = Object.entries(pathItem)
-
-        return operations.map(([method, operation]) => {
-          const parameters =
-            operation.parameters?.map(param => {
-              param = param as OpenAPIV3_1.ParameterObject // TODO: Handle other versions.
-
-              return {
-                name: param.name,
-                description: param.description,
-                required: param.required,
-                schema: param.schema
-              }
-            }) ?? []
-          return `- \`${method.toUpperCase()} ${path}\`: ${operation.summary}${
-            parameters.length < 1
-              ? ''
-              : `
-  - **Parameters**
-${parameters.map(param => {
-  const required = param.required ? ' (required)' : ''
-  return `    - \`${param.name}\`${required}: ${param.description ?? ''}`
-})}`
-          }`
-        })
-      })
-      .flat()
-
-    return `## Actions\n\n${actions.join('\n')}`
-  }
-
-  async pluginDescriptions() {
-    const plugins = await this.plugins
-
-    return plugins.map(p => {
-      return [
-        this.#pluginTitle(p.aiPlugin),
-        this.#pluginDescription(p.aiPlugin),
-        this.#pluginActions(p)
-      ].join('\n\n')
-    })
+    return resp.json()
   }
 
   async #loadPlugins(pluginUrls: string[]): Promise<Plugin[]> {
