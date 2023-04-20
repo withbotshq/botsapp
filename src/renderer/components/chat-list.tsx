@@ -1,4 +1,4 @@
-import {useMutation, useQueryClient} from '@tanstack/react-query'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {formatDistanceToNowStrict} from 'date-fns'
 import {IpcRendererEvent} from 'electron'
 import {FC, KeyboardEventHandler, useEffect, useMemo, useState} from 'react'
@@ -110,50 +110,12 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
                 className="select-none px-2 py-1 text-left"
                 key={chat.id}
               >
-                <div
-                  className={`flex justify-between rounded p-2 align-middle  ${
-                    chat.id === activeChatId ? 'bg-blue-500 text-white' : ''
-                  }`}
-                >
-                  <div className="min-w-0">
-                    <div className="flex items-baseline justify-between">
-                      <div>
-                        {isUnread[chat.id] ? (
-                          <span
-                            className={`mr-2 inline-block h-2 w-2 rounded-full ${
-                              chat.id === activeChatId
-                                ? 'bg-white'
-                                : 'bg-blue-500'
-                            }`}
-                          />
-                        ) : null}
-                        <ChatName chat={chat} />
-                      </div>
-
-                      <div
-                        className={`text-sm ${
-                          chat.id === activeChatId
-                            ? 'text-blue-200'
-                            : 'text-gray-400'
-                        }`}
-                      >
-                        {formatDistanceToNowStrict(new Date(chat.createdAt))}
-                      </div>
-                    </div>
-
-                    <div
-                      className={`truncate ${
-                        chat.id === activeChatId
-                          ? 'text-blue-200'
-                          : 'text-gray-400'
-                      }`}
-                    >
-                      This is the beginning of the last line of the chat
-                    </div>
-                  </div>
-
-                  <div>{isTyping[chat.id] ? <TypingIndicator /> : null}</div>
-                </div>
+                <ChatListItem
+                  chat={chat}
+                  isActive={chat.id === activeChatId}
+                  isUnread={isUnread[chat.id]}
+                  isReceivingResponse={isTyping[chat.id]}
+                />
               </button>
             ))
           ) : (
@@ -244,5 +206,74 @@ function ChatName({chat}: {chat: Chat}) {
     <span onDoubleClick={() => setIsEditingName(true)} className="font-bold">
       {chat.name ?? 'Untitled chat'}
     </span>
+  )
+}
+
+interface ChatListItemProps {
+  chat: Chat
+  isActive: boolean
+  isUnread: boolean
+  isReceivingResponse: boolean
+}
+
+function ChatListItem({
+  chat,
+  isActive,
+  isUnread,
+  isReceivingResponse
+}: ChatListItemProps) {
+  const getLastMessagesQuery = useQuery({
+    queryKey: ['messages', chat.id],
+    queryFn: async () => {
+      const lastMessages = await api.listMessages(chat.id)
+      return lastMessages
+    }
+  })
+
+  const partialMessageQuery = useQuery({
+    queryKey: ['partial-message', chat.id],
+    queryFn: () => api.getPartialMessage(chat.id)
+  })
+
+  const lastMessage = partialMessageQuery.data?.join('') ??
+    getLastMessagesQuery.data?.at(-1)?.content ?? <>&nbsp;</>
+
+  return (
+    <div
+      className={`flex justify-between rounded p-2 align-middle  ${
+        isActive ? 'bg-blue-500 text-white' : ''
+      }`}
+    >
+      <div className="w-full min-w-0">
+        <div className="flex items-baseline justify-between">
+          <div>
+            {isUnread ? (
+              <span
+                className={`mr-2 inline-block h-2 w-2 rounded-full ${
+                  isActive ? 'bg-white' : 'bg-blue-500'
+                }`}
+              />
+            ) : null}
+            <ChatName chat={chat} />
+          </div>
+
+          <div
+            className={`text-sm ${
+              isActive ? 'text-blue-200' : 'text-gray-400'
+            }`}
+          >
+            {formatDistanceToNowStrict(new Date(chat.createdAt))}
+          </div>
+        </div>
+
+        <div
+          className={`truncate ${isActive ? 'text-blue-200' : 'text-gray-400'}`}
+        >
+          {lastMessage}
+        </div>
+      </div>
+
+      <div>{isReceivingResponse ? <TypingIndicator /> : null}</div>
+    </div>
   )
 }
