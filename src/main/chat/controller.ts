@@ -180,8 +180,20 @@ Note: Do not respond to this error, the bot is not aware of it.`,
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const {value, done} = await bodyReader.read()
+      let value: Uint8Array | undefined
+      let done: boolean | undefined
+      try {
+        const read = await bodyReader.read()
+        value = read.value
+        done = read.done
+      } catch (err) {
+        if (partialMessage.abortController.signal.aborted) {
+          return
+        }
+      }
+
       if (done) break
+
       const chunk = decoder.decode(value)
       const lines = chunk
         .split('\n\n')

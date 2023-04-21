@@ -63,8 +63,20 @@ const createWindow = () => {
 
 const menuTemplate: MenuItemConstructorOptions[] = [
   {
-    label: 'Chat',
+    label: 'Bots',
     role: 'appMenu'
+  },
+  {
+    label: 'Chat',
+    submenu: [
+      {
+        label: 'Stop output',
+        accelerator: 'CmdOrCtrl+.',
+        click() {
+          BrowserWindow.getFocusedWindow()?.webContents.send('chat:stop')
+        }
+      }
+    ]
   },
   {
     label: 'File',
@@ -147,6 +159,7 @@ app.on('ready', () => {
   ipcMain.on('config:setOpenAIAPIKey', (event, key) => setOpenAIAPIKey(key))
   ipcMain.handle('config:getModel', () => config.model)
   ipcMain.on('config:setModel', (event, model) => setModel(model))
+  ipcMain.on('chat:stop', (event, chatId) => chatController.abortMessageForChat(chatId))
   ipcMain.handle('chats:create', createChat)
   ipcMain.handle('chats:list', listChats)
   ipcMain.handle('chats:rename', (event, chatId, name) =>

@@ -56,6 +56,15 @@ const api = {
     return () => ipcRenderer.removeListener('chat:message', callback)
   },
 
+  onStopChat: (callback: (event: IpcRendererEvent) => void): (() => void) => {
+    ipcRenderer.on('chat:stop', callback)
+    return () => ipcRenderer.removeListener('chat:stop', callback)
+  },
+
+  stopChat: (chatId: number): void => {
+    ipcRenderer.send('chat:stop', chatId)
+  },
+
   // Context menus
   showChatListContextMenu: (chatId: number): void => {
     ipcRenderer.send('chat-list:show-context-menu', chatId)

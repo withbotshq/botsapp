@@ -74,6 +74,14 @@ export const Main: FC = () => {
   }, [queryClient])
 
   useEffect(() => {
+    const onStopChat = () => {
+      if (currentChatId) api.stopChat(currentChatId)
+    }
+
+    return api.onStopChat(onStopChat)
+  }, [currentChatId])
+
+  useEffect(() => {
     const onMessageChunk = (event: IpcRendererEvent, chatId: number) => {
       queryClient.invalidateQueries(['partial-message', chatId])
     }
