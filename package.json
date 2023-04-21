@@ -1,7 +1,7 @@
 {
   "name": "botsapp",
   "productName": "Bots",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "An app to make personalized AI bots and chat with them",
   "repository": {
     "type": "git",
