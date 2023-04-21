@@ -87,7 +87,6 @@ export class ChatController {
    */
   abortMessageForChat(chatId: number) {
     if (!this.#partialMessages.has(chatId)) {
-      console.warn('No partial message to abort for chat', chatId)
       return
     }
 
