@@ -12,7 +12,7 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
 
   return (
     <ReactMarkdown
-      className="markdown whitespace-pre-wrap"
+      className="markdown"
       components={{
         code({inline, className, children, ...props}) {
           const match = /language-(\w+)/.exec(className || '')

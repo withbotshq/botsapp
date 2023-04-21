@@ -48,6 +48,10 @@ td {
   @apply flex-1;
 }
 
+.markdown p {
+  @apply whitespace-pre-wrap;
+}
+
 .markdown ol {
   @apply list-inside list-decimal;
 }
