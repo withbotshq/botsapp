@@ -3,6 +3,7 @@ import {formatDistanceToNowStrict} from 'date-fns'
 import {IpcRendererEvent} from 'electron'
 import {FC, KeyboardEventHandler, useEffect, useMemo, useState} from 'react'
 import {Chat, Message} from '../../main/db/schema'
+import {ScrollContainer} from './scroll-container'
 
 interface Props {
   chats: Chat[]
@@ -99,7 +100,7 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
   }, [activeChatId, chats, onSelectChat])
 
   return (
-    <div className="flex h-full flex-col overflow-auto">
+    <ScrollContainer>
       {chats ? (
         <>
           {chats.length > 0 ? (
@@ -107,7 +108,7 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
               <button
                 onContextMenu={() => onContextMenu(chat.id)}
                 onClick={() => onSelectChat(chat.id)}
-                className="select-none px-2 py-1 text-left"
+                className="block w-full select-none px-2 py-1"
                 key={chat.id}
               >
                 <ChatListItem
@@ -127,7 +128,7 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
       ) : (
         <p>Loading...</p>
       )}
-    </div>
+    </ScrollContainer>
   )
 }
 
@@ -240,7 +241,7 @@ function ChatListItem({
 
   return (
     <div
-      className={`flex justify-between rounded p-2 align-middle  ${
+      className={`flex justify-between rounded p-2 align-middle ${
         isActive ? 'bg-blue-500 text-white' : ''
       }`}
     >
@@ -254,6 +255,7 @@ function ChatListItem({
                 }`}
               />
             ) : null}
+
             <ChatName chat={chat} />
           </div>
 

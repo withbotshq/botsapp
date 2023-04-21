@@ -113,25 +113,27 @@ export const Main: FC = () => {
   return (
     <AppWindow>
       <AppWindow.Left>
-        <div className="app-region-drag flex h-[44px] items-center justify-between pl-[15px] pr-2">
-          <div className="h-[12px] w-[52px]" />
+        <div className="flex h-full flex-col">
+          <div className="app-region-drag flex h-[44px] flex-none items-center justify-between pl-[15px] pr-2">
+            <div className="h-[12px] w-[52px]" />
 
-          <div className="app-region-none">
-            <button
-              className="block rounded text-gray-400 hover:bg-white/10"
-              onClick={() => createChat.mutate()}
-            >
-              <NewChatIcon />
-            </button>
+            <div className="app-region-none">
+              <button
+                className="block rounded text-gray-400 hover:bg-white/10"
+                onClick={() => createChat.mutate()}
+              >
+                <NewChatIcon />
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className="flex-1 overflow-hidden">
-          <ChatList
-            chats={chatsQuery.data ?? []}
-            activeChatId={currentChat?.id ?? null}
-            onSelectChat={setCurrentChatId}
-          />
+          <div className="min-h-0 min-w-0 flex-1">
+            <ChatList
+              chats={chatsQuery.data ?? []}
+              activeChatId={currentChat?.id ?? null}
+              onSelectChat={setCurrentChatId}
+            />
+          </div>
         </div>
       </AppWindow.Left>
 

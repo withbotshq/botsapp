@@ -10,11 +10,11 @@ const AppWindow = ({children}: {children: ReactNode | ReactNode[]}) => {
   return (
     <div className="absolute bottom-0 left-0 right-0 top-0 overflow-hidden">
       <div className="flex h-full">
-        <div className="w-[280px] border-r border-black/10 dark:border-white/10">
+        <div className="min-h-0 w-[280px] min-w-0 border-r border-black/10 dark:border-white/10">
           {slots.left}
         </div>
 
-        <div className="min-w-0 flex-1 bg-canvas">{slots.right}</div>
+        <div className="min-h-0 min-w-0 flex-1 bg-canvas">{slots.right}</div>
       </div>
     </div>
   )
