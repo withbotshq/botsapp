@@ -58,7 +58,7 @@ const messageClass = cva(['flex gap-4 border-b border-border p-4'], {
     role: {
       user: '',
       assistant: 'bg-gray-100 dark:bg-gray-900',
-      system: 'bg-sky-50 dark:bg-sky-950'
+      system: 'bg-red-50 dark:bg-red-500/10'
     }
   }
 })
