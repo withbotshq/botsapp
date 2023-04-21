@@ -12,7 +12,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --color-canvas: theme('colors.gray.950');
-    --color-border: theme('colors.black');
+    --color-border: theme('colors.gray.800');
     --color-border-focus: theme('colors.gray.600');
     --color-text: theme('colors.white');
   }
