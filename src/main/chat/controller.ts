@@ -98,7 +98,7 @@ export class ChatController {
     // Includes the new message already.
     const messageHistory = [
       this.#systemMessage,
-      ...listMessages(message.chatId)
+      ...listMessages(message.chatId, {onlyServer: true})
     ]
 
     if (this.#partialMessages.has(message.chatId)) {
@@ -135,9 +135,44 @@ export class ChatController {
     if (!resp.ok) {
       this.#partialMessages.delete(message.chatId)
 
-      throw new Error(
-        `OpenAI API error: ${resp.statusText} ${await resp.text()}`
-      )
+      let errorMessage: Message
+
+      if (resp.headers.get('content-type')?.includes('application/json')) {
+        const errorJson = await resp.json()
+        errorMessage = createMessage(
+          message.chatId,
+          'system',
+          `Received an error from the OpenAI API: \`${resp.status} ${
+            resp.statusText
+          }\`:
+\`\`\`json
+${JSON.stringify(errorJson, null, '\t')}
+\`\`\`
+
+Note: Do not respond to this error, the bot is not aware of it.`,
+          {clientOnly: true}
+        )
+      } else {
+        const errorText = await resp.text()
+        errorMessage = createMessage(
+          message.chatId,
+          'system',
+          `Received an error from the OpenAI API: \`${resp.status} ${resp.statusText}\`:
+\`\`\`text
+${errorText}
+\`\`\`
+
+Note: Do not respond to this error, the bot is not aware of it.`,
+          {clientOnly: true}
+        )
+        console.log('returning')
+      }
+
+      this.#windows.forEach(window => {
+        window.webContents.send('chat:message', errorMessage)
+      })
+
+      return
     }
 
     const bodyReader = assert(resp.body).getReader()

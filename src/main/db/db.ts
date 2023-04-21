@@ -87,13 +87,15 @@ export function deleteChat(chatId: number): void {
 export function createMessage(
   chatId: number,
   role: 'user' | 'assistant' | 'system',
-  content: string
+  content: string,
+  opts: {clientOnly?: boolean} = {}
 ): Message {
   const message: Message = {
     id: getNextMessageId(),
     role,
     chatId,
     content,
+    clientOnly: opts.clientOnly ?? false,
     ...timestamps(true)
   }
 
@@ -114,8 +116,16 @@ export function createMessage(
   return message
 }
 
-export function listMessages(chatId: number): Message[] {
+export function listMessages(
+  chatId: number,
+  opts: {onlyServer?: boolean} = {}
+): Message[] {
   const chatState = readChatState(chatId)
+
+  if (opts.onlyServer) {
+    return chatState.messages.filter(message => !message.clientOnly)
+  }
+
   return chatState.messages
 }
 
