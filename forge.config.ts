@@ -19,6 +19,8 @@ const config: ForgeConfig = {
   makers: [new MakerZIP({}, ['darwin'])],
   plugins: [
     new WebpackPlugin({
+      port: 9090,
+      loggerPort: 9091,
       mainConfig,
       renderer: {
         config: rendererConfig,
