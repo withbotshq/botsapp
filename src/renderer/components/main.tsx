@@ -137,7 +137,7 @@ export const Main: FC = () => {
 
       <AppWindow.Right>
         <div className="flex h-full flex-col">
-          <div className="app-region-drag flex-none border-b border-border">
+          <div className="app-region-drag flex-none border-b">
             <TitleBar
               title={windowTitle}
               showInfoPanel={showInfoPanel}
@@ -154,7 +154,7 @@ export const Main: FC = () => {
                 partialMessageChunks={partialMessageQuery.data ?? null}
               />
 
-              <div className="flex-none border-t border-border p-3">
+              <div className="flex-none border-t p-3">
                 <MessageComposer
                   key={currentChat?.id}
                   onSubmit={content => sendMessage.mutate(content)}

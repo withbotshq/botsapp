@@ -53,7 +53,7 @@ interface MessageProps {
   modelKey: string | null
 }
 
-const messageClass = cva(['flex gap-4 border-b border-border p-4'], {
+const messageClass = cva(['flex gap-4 border-b p-4'], {
   variants: {
     role: {
       user: '',
