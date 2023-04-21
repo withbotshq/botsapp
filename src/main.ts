@@ -54,6 +54,10 @@ const createWindow = () => {
   chatController.addBrowserWindow(window)
 
   window.webContents.on('will-navigate', (event, url) => {
+    if (url === MAIN_WINDOW_WEBPACK_ENTRY) {
+      return
+    }
+
     event.preventDefault()
     shell.openExternal(url)
   })
@@ -159,7 +163,9 @@ app.on('ready', () => {
   ipcMain.on('config:setOpenAIAPIKey', (event, key) => setOpenAIAPIKey(key))
   ipcMain.handle('config:getModel', () => config.model)
   ipcMain.on('config:setModel', (event, model) => setModel(model))
-  ipcMain.on('chat:stop', (event, chatId) => chatController.abortMessageForChat(chatId))
+  ipcMain.on('chat:stop', (event, chatId) =>
+    chatController.abortMessageForChat(chatId)
+  )
   ipcMain.handle('chats:create', createChat)
   ipcMain.handle('chats:list', listChats)
   ipcMain.handle('chats:rename', (event, chatId, name) =>
