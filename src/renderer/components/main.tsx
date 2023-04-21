@@ -153,7 +153,7 @@ export const Main: FC = () => {
                 partialMessageChunks={partialMessageQuery.data ?? null}
               />
 
-              <div className="flex-none p-3">
+              <div className="flex-none border-t p-3">
                 <MessageComposer
                   key={currentChat?.id}
                   onSubmit={content => sendMessage.mutate(content)}
