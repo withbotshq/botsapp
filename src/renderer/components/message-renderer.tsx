@@ -20,8 +20,9 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
 
           return !inline && match ? (
             <div className="overflow-hidden rounded border border-gray-700 bg-gray-800 shadow">
-              <div className="flex justify-between rounded-t border-b border-gray-700 px-2 py-1">
+              <div className="flex items-center justify-between rounded-t border-b border-gray-700 px-2 py-1">
                 <div className="text-xs text-gray-500">{language ?? ''}</div>
+
                 <div>
                   <button
                     onClick={() =>
