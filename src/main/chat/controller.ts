@@ -133,6 +133,8 @@ export class ChatController {
     })
 
     if (!resp.ok) {
+      this.#partialMessages.delete(message.chatId)
+
       throw new Error(
         `OpenAI API error: ${resp.statusText} ${await resp.text()}`
       )
