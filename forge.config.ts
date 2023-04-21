@@ -1,3 +1,6 @@
+import dotenv from 'dotenv'
+dotenv.config()
+
 import {utils} from '@electron-forge/core'
 import {MakerZIP} from '@electron-forge/maker-zip'
 import {WebpackPlugin} from '@electron-forge/plugin-webpack'
