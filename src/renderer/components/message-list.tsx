@@ -86,7 +86,7 @@ function MessageListItem({message, modelKey}: MessageProps) {
       ) : (
         <div
           className={modelClass({
-            modelKey: modelKey === 'gpt-4' ? modelKey : null
+            modelKey: modelKey === 'gpt-4' ? modelKey : undefined
           })}
         >
           <OpenAIIcon />
