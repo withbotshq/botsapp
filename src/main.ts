@@ -53,6 +53,11 @@ const createWindow = () => {
   // Register the window.
   chatController.addBrowserWindow(window)
 
+  window.webContents.on('will-navigate', (event, url) => {
+    event.preventDefault()
+    shell.openExternal(url)
+  })
+
   return window
 }
 
