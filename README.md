@@ -8,7 +8,7 @@ An app to make personalized AI bots and chat with them.
 
 1. Download the app from the [releases page](https://github.com/withbotshq/botsapp/releases) – Apple Silicon only for now.
 2. Unzip the archive and drag the app into your Applications folder.
-3. Open the app and click on the settings icon in the top right to enter your OpenAI API key – hit return to save the key 🙈.
+3. Open the app and click on the settings icon in the top right to enter your OpenAI API key.
 4. Click on the settings icon to dismiss the panel.
 5. Happy chatting!
 
