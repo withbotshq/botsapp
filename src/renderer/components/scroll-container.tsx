@@ -37,15 +37,8 @@ export const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
   }, [])
 
   return (
-    <div className="h-full overflow-hidden">
-      <div
-        className="relative h-full overflow-auto overscroll-contain"
-        ref={outerDiv}
-      >
-        <div className="relative" ref={innerDiv}>
-          {children}
-        </div>
-      </div>
+    <div className="h-full overflow-auto" ref={outerDiv}>
+      <div ref={innerDiv}>{children}</div>
     </div>
   )
 }

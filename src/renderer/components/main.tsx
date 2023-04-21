@@ -145,16 +145,15 @@ export const Main: FC = () => {
             />
           </div>
 
-          {/* FIXME: Ideally, the `overflow-hidden` isn't necessary here. This should be the concern of the `ScrollContainer` */}
           {currentChat ? (
-            <div className="flex flex-1 flex-col overflow-hidden">
+            <div className="flex min-h-0 flex-1 flex-col">
               <MessageList
                 key={currentChat.id}
                 messages={messages}
                 partialMessageChunks={partialMessageQuery.data ?? null}
               />
 
-              <div className="flex-none border-t p-3">
+              <div className="flex-none p-3">
                 <MessageComposer
                   key={currentChat?.id}
                   onSubmit={content => sendMessage.mutate(content)}
@@ -162,8 +161,9 @@ export const Main: FC = () => {
               </div>
             </div>
           ) : (
-            <div className="flex flex-1 flex-col items-center gap-4 overflow-hidden p-8">
+            <div className="flex min-h-0 flex-1 flex-col items-center gap-4 p-8">
               <p>No chat selected.</p>
+
               <button
                 onClick={() => createChat.mutate()}
                 className="rounded bg-blue-500 px-2 py-1"

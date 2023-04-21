@@ -19,7 +19,7 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
           const language = match?.[1]
 
           return !inline && match ? (
-            <div className="overflow-hidden rounded border border-gray-700 bg-gray-800 shadow">
+            <div className="rounded border border-gray-700 bg-gray-800 shadow">
               <div className="flex items-center justify-between rounded-t border-b border-gray-700 px-2 py-1">
                 <div className="text-xs text-gray-500">{language ?? ''}</div>
 
@@ -35,7 +35,7 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
                 </div>
               </div>
 
-              <div className="overflow-hidden">
+              <div>
                 <SyntaxHighlighter
                   {...props}
                   className={className}
