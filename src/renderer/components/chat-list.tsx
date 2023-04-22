@@ -13,7 +13,7 @@ interface Props {
 
 const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
   const onContextMenu = (chatId: number) => {
-    api.showChatListContextMenu(chatId)
+    api.send('ui:chats:show-context', chatId)
   }
 
   const [isUnread, setIsUnread] = useState<{[key: number]: boolean}>({})
@@ -35,7 +35,7 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
       }
     }
 
-    return api.onMessage(onMessage)
+    return api.on('messaging:message', onMessage)
   }, [activeChatId])
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
       )
     }
 
-    return api.onMessageChunk(onMessageChunk)
+    return api.on('messaging:chunk', onMessageChunk)
   }, [typingTimeouts])
 
   useEffect(() => {
@@ -90,8 +90,8 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
       if (previousChat) onSelectChat(previousChat.id)
     }
 
-    const offNext = api.onFocusNextChat(onFocusNextChat)
-    const offPrev = api.onFocusPrevChat(onFocusPrevChat)
+    const offNext = api.on('ui:chats:focus-next', onFocusNextChat)
+    const offPrev = api.on('ui:chats:focus-previous', onFocusPrevChat)
 
     return () => {
       offNext()
@@ -155,12 +155,12 @@ function ChatName({chat}: {chat: Chat}) {
       }
     }
 
-    return api.onChatRename(onChatRename)
+    return api.on('chat:rename', onChatRename)
   }, [chat.id])
 
   const renameChatMutation = useMutation({
     mutationFn: async (name: string | null) => {
-      await api.renameChat(chat.id, name)
+      await api.invoke('chat:rename', chat.id, name)
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['chats'])
@@ -191,7 +191,7 @@ function ChatName({chat}: {chat: Chat}) {
       }
     }
 
-    return api.onChatRename(onChatRename)
+    return api.on('chat:rename', onChatRename)
   }, [chat.id])
 
   return isEditingName ? (
@@ -223,21 +223,20 @@ function ChatListItem({
   isUnread,
   isReceivingResponse
 }: ChatListItemProps) {
-  const getLastMessagesQuery = useQuery({
-    queryKey: ['messages', chat.id],
-    queryFn: async () => {
-      const lastMessages = await api.listMessages(chat.id)
-      return lastMessages
+  const getLastMessagesQuery = useQuery(
+    ['messaging', 'list', chat.id, 'last'],
+    async () => {
+      const messages = await api.invoke('messaging:list', chat.id)
+      return messages.at(-1)
     }
-  })
+  )
 
-  const partialMessageQuery = useQuery({
-    queryKey: ['partial-message', chat.id],
-    queryFn: () => api.getPartialMessage(chat.id)
-  })
+  const partialMessageQuery = useQuery(['messaging', 'partial', chat.id], () =>
+    api.invoke('messaging:read:partial', chat.id)
+  )
 
   const lastMessage = partialMessageQuery.data?.join('') ??
-    getLastMessagesQuery.data?.at(-1)?.content ?? <>&nbsp;</>
+    getLastMessagesQuery.data?.content ?? <>&nbsp;</>
 
   return (
     <div

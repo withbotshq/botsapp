@@ -18,9 +18,7 @@ export const Main: FC = () => {
   const queryClient = useQueryClient()
   const {query: modelQuery} = useConfigModel()
 
-  const chatsQuery = useQuery({
-    queryKey: ['chats'],
-    queryFn: api.listChats,
+  const chatsQuery = useQuery(['chats'], () => api.invoke('chat:list'), {
     onSuccess: chats => {
       const firstChat = chats.at(0)
       if (!currentChatId && firstChat) setCurrentChatId(firstChat.id)
@@ -34,69 +32,73 @@ export const Main: FC = () => {
     ? `${currentChat.name ?? 'Untitled chat'} (${modelQuery.data?.title})`
     : 'Chat'
 
-  const messagesQuery = useQuery({
-    queryKey: ['messages', currentChat?.id],
-    queryFn: () => api.listMessages(assert(currentChat?.id)),
-    enabled: currentChat != null
-  })
+  const messagesQuery = useQuery(
+    ['messaging', 'list', currentChat?.id],
+    () => api.invoke('messaging:list', assert(currentChat?.id)),
+    {
+      enabled: currentChat != null
+    }
+  )
 
-  const partialMessageQuery = useQuery({
-    queryKey: ['partial-message', currentChat?.id],
-    queryFn: () => api.getPartialMessage(assert(currentChat?.id)),
-    enabled: currentChat != null
-  })
+  const partialMessageQuery = useQuery(
+    ['messaging', 'partial', currentChat?.id],
+    () => api.invoke('messaging:read:partial', assert(currentChat?.id)),
+    {
+      enabled: currentChat != null
+    }
+  )
 
   const messages = messagesQuery.data ?? []
 
-  const createChat = useMutation({
-    mutationFn: () => api.createChat(),
+  const createChat = useMutation(() => api.invoke('chat:create'), {
     onSuccess: chat => {
       queryClient.invalidateQueries(['chats'])
       setCurrentChatId(chat.id)
     }
   })
 
-  const sendMessage = useMutation({
-    mutationFn: (content: string) =>
-      api.createMessage(assert(currentChat).id, 'user', content),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['messages', currentChat?.id])
+  const sendMessage = useMutation(
+    (content: string) =>
+      api.invoke('messaging:send', assert(currentChat).id, 'user', content),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['messaging', 'list', currentChat?.id])
+      }
     }
-  })
+  )
 
   useEffect(() => {
     const onMessage = (event: IpcRendererEvent, message: Message) => {
-      queryClient.invalidateQueries(['messages', message.chatId])
-      queryClient.invalidateQueries(['partial-message', message.chatId])
+      queryClient.invalidateQueries(['messaging', 'list', message.chatId])
+      queryClient.invalidateQueries(['messaging', 'partial', message.chatId])
     }
 
-    return api.onMessage(onMessage)
+    return api.on('messaging:message', onMessage)
   }, [queryClient])
 
   useEffect(() => {
     const onStopChat = () => {
-      if (currentChatId) api.stopChat(currentChatId)
+      if (currentChatId) api.send('chat:stop', currentChatId)
     }
 
-    return api.onStopChat(onStopChat)
+    return api.on('chat:stop', onStopChat)
   }, [currentChatId])
 
   useEffect(() => {
     const onMessageChunk = (event: IpcRendererEvent, chatId: number) => {
-      queryClient.invalidateQueries(['partial-message', chatId])
+      queryClient.invalidateQueries(['messaging', 'partial', chatId])
     }
 
-    return api.onMessageChunk(onMessageChunk)
+    return api.on('messaging:chunk', onMessageChunk)
   }, [queryClient])
 
   useEffect(() => {
     const onChatCreated = (event: IpcRendererEvent, chat: Chat) => {
-      console.log('chat', chat)
       queryClient.invalidateQueries(['chats'])
       setCurrentChatId(chat.id)
     }
 
-    return api.onChatCreated(onChatCreated)
+    return api.on('chat:create', onChatCreated)
   }, [queryClient])
 
   useEffect(() => {
@@ -107,7 +109,7 @@ export const Main: FC = () => {
       }
     }
 
-    return api.onChatDeleted(onChatDeleted)
+    return api.on('chat:delete', onChatDeleted)
   }, [currentChat?.id, queryClient])
 
   return (

@@ -4,22 +4,15 @@ import {
   MenuItemConstructorOptions,
   app,
   globalShortcut,
-  ipcMain,
   shell
 } from 'electron'
 import updateElectron from 'update-electron-app'
+import {createChatAPI} from './main/api/chat'
+import {createConfigAPI} from './main/api/config'
+import {createMessagingAPI} from './main/api/messaging'
+import {createUIAPI} from './main/api/ui'
 import {ChatController} from './main/chat/controller'
-import {config, setModel, setOpenAIAPIKey} from './main/config/config'
-import {
-  createChat,
-  createMessage,
-  dataPath,
-  deleteChat,
-  listChats,
-  listMessages,
-  renameChat,
-  runMigrations
-} from './main/db/db'
+import {createChat, dataPath, runMigrations} from './main/db/db'
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string
@@ -47,9 +40,6 @@ const createWindow = () => {
   })
 
   window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
 
   // Register the window.
   chatController.addBrowserWindow(window)
@@ -92,7 +82,7 @@ const menuTemplate: MenuItemConstructorOptions[] = [
         click() {
           const chat = createChat()
           BrowserWindow.getFocusedWindow()?.webContents.send(
-            'chat:created',
+            'chat:create',
             chat
           )
         }
@@ -116,14 +106,18 @@ const menuTemplate: MenuItemConstructorOptions[] = [
         label: 'Focus Previous Chat',
         accelerator: 'CmdOrCtrl+Shift+[',
         click() {
-          BrowserWindow.getFocusedWindow()?.webContents.send('focus:prev-chat')
+          BrowserWindow.getFocusedWindow()?.webContents.send(
+            'ui:chats:focus-previous'
+          )
         }
       },
       {
         label: 'Focus Next Chat',
         accelerator: 'CmdOrCtrl+Shift+]',
         click() {
-          BrowserWindow.getFocusedWindow()?.webContents.send('focus:next-chat')
+          BrowserWindow.getFocusedWindow()?.webContents.send(
+            'ui:chats:focus-next'
+          )
         }
       },
       {type: 'separator'},
@@ -166,53 +160,11 @@ Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate))
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   runMigrations()
-  ipcMain.handle('config:getOpenAIAPIKey', () => config.openAIAPIKey)
-  ipcMain.on('config:setOpenAIAPIKey', (event, key) => setOpenAIAPIKey(key))
-  ipcMain.handle('config:getModel', () => config.model)
-  ipcMain.on('config:setModel', (event, model) => setModel(model))
-  ipcMain.on('chat:stop', (event, chatId) =>
-    chatController.abortMessageForChat(chatId)
-  )
-  ipcMain.handle('chats:create', createChat)
-  ipcMain.handle('chats:list', listChats)
-  ipcMain.handle('chats:rename', (event, chatId, name) =>
-    renameChat(chatId, name)
-  )
-  ipcMain.handle('messages:create', (event, chatId, role, content) => {
-    const message = createMessage(chatId, role, content)
-    chatController.sendMessage(message)
-  })
-  ipcMain.handle('messages:get-partial', (event, chatId) => {
-    return chatController.getPartialMessage(chatId)
-  })
-  ipcMain.handle('messages:list', (event, chatId) => listMessages(chatId))
-  ipcMain.on('chat-list:show-context-menu', (event, chatId) => {
-    const template = [
-      {
-        label: 'Rename chat',
-        click: () => {
-          BrowserWindow.getFocusedWindow()?.webContents.send(
-            'chat:rename',
-            chatId
-          )
-        }
-      },
-      {
-        label: 'Delete chat',
-        click: () => {
-          deleteChat(chatId)
-          BrowserWindow.getAllWindows().forEach(window =>
-            window.webContents.send('chat:deleted', chatId)
-          )
-        }
-      }
-    ]
 
-    const menu = Menu.buildFromTemplate(template)
-    menu.popup({
-      window: BrowserWindow.fromWebContents(event.sender) ?? undefined
-    })
-  })
+  createConfigAPI()
+  createChatAPI(chatController)
+  createMessagingAPI(chatController)
+  createUIAPI()
 
   globalShortcut.register('Control+Command+B', () => {
     const window = BrowserWindow.getAllWindows().at(0)
