@@ -1,5 +1,5 @@
 import type {API} from '../preload'
 
 declare global {
-  const api: API
+  const api: typeof API
 }

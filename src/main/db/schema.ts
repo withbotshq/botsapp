@@ -6,15 +6,17 @@ export const Chat = z.object({
   createdAt: z.number(),
   updatedAt: z.number()
 })
-
 export type Chat = z.infer<typeof Chat>
 
+export const MessageRole = z.union([
+  z.literal('user'),
+  z.literal('system'),
+  z.literal('assistant')
+])
+export type MessageRole = z.infer<typeof MessageRole>
+
 export const MessageBase = z.object({
-  role: z.union([
-    z.literal('user'),
-    z.literal('system'),
-    z.literal('assistant')
-  ]),
+  role: MessageRole,
   content: z.string()
 })
 export type MessageBase = z.infer<typeof MessageBase>

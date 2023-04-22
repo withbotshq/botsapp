@@ -1,21 +1,22 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {FC} from 'react'
 import {useConfigModel} from '../hooks/use-config'
-// import {Plugin, initialPlugins} from '../models/plugin'
 
 const ChatSettings: FC = () => {
   const queryClient = useQueryClient()
   const {query: modelQuery, mutation: modelMutation} = useConfigModel()
 
-  const apiKeyQuery = useQuery({
-    queryKey: ['config:openAIAPIKey'],
-    queryFn: api.getOpenAIAPIKey
-  })
+  const apiKeyQuery = useQuery(['config', 'openai-api-key'], () =>
+    api.invoke('config:read:openai-api-key')
+  )
 
-  const setApiKey = useMutation({
-    mutationFn: async (key: string) => api.setOpenAIAPIKey(key),
-    onSuccess: () => queryClient.invalidateQueries(['config:openAIAPIKey'])
-  })
+  const setApiKey = useMutation(
+    async (key: string) => api.send('config:write:openai-api-key', key),
+    {
+      onSuccess: () =>
+        queryClient.invalidateQueries(['config', 'openai-api-key'])
+    }
+  )
 
   return (
     <div className="flex w-full flex-row gap-4 p-2">
