@@ -2,6 +2,8 @@
 
 An app to make personalized AI bots and chat with them.
 
+**This is not good software and you shouldn't use it unless you _really_ want to.** For now, it's basically Chat GPT with a global shortcut and has no other redeeming qualities. But, we like to work with the garage door open. Anyways, don't use it! Unless you must! Why though? It's just Chat GPT! Now, if you _do_ use it more than once, [let us know](mailto:contact@max.wtf). We'll buy you a coffee to learn more about why you make weird life choices.
+
 <img width="1198" alt="image" src="https://user-images.githubusercontent.com/111631/232243956-76d94fa8-ba2b-468c-ad36-a360c6cfcfbf.png">
 
 ## Geting Started
