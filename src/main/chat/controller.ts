@@ -1,9 +1,16 @@
+import {encoding_for_model} from '@dqbd/tiktoken'
 import {assert} from '@jclem/assert'
 import {BrowserWindow} from 'electron'
 import {z} from 'zod'
 import {config} from '../config/config'
 import {createMessage, listMessages} from '../db/db'
-import {Message} from '../db/schema'
+import {Message, MessageBase} from '../db/schema'
+
+const gpt35encoding = encoding_for_model('gpt-3.5-turbo')
+const gpt4encoding = encoding_for_model('gpt-4')
+const gpt35maxSize = 4096
+const gpt4maxSize = 8192
+const REPLY_MAX_TOKENS = 1024
 
 const RoleChoice = z.object({
   delta: z.object({role: z.string()}),
@@ -55,7 +62,7 @@ export class ChatController {
 
   #windows: Set<BrowserWindow> = new Set()
 
-  readonly #systemMessage = {
+  readonly #systemMessage: MessageBase = {
     role: 'system',
     content: `You are Chat, an AI assistant based on OpenAI's GPT
   models. Follow the user's instructions carefully, but be concise. Do not offer
@@ -95,10 +102,17 @@ export class ChatController {
 
   async sendMessage(message: Message) {
     // Includes the new message already.
-    const messageHistory = [
-      this.#systemMessage,
-      ...listMessages(message.chatId, {onlyServer: true})
-    ]
+    const [messageHistory, tokenCount, wasTruncated] =
+      this.#truncateMessageHistory(config.model.key, [
+        this.#systemMessage,
+        ...listMessages(message.chatId, {onlyServer: true})
+      ])
+
+    if (wasTruncated) {
+      console.warn('Message history was truncated to', tokenCount)
+    }
+
+    console.debug('Sending message total size', tokenCount, 'tokens')
 
     if (this.#partialMessages.has(message.chatId)) {
       console.warn('Already streaming a message for chat', message.chatId)
@@ -122,6 +136,7 @@ export class ChatController {
       signal: partialMessage.abortController.signal,
       body: JSON.stringify({
         model: config.model.key,
+        max_tokens: REPLY_MAX_TOKENS,
         messages: messageHistory.map(m => ({
           role: m.role,
           content: m.content
@@ -241,6 +256,45 @@ Note: Do not respond to this error, the bot is not aware of it.`,
     this.#windows.forEach(window => {
       window.webContents.send('chat:message', message)
     })
+  }
+
+  #truncateMessageHistory(
+    model: string,
+    messages: MessageBase[]
+  ): [messages: MessageBase[], tokenCount: number, wasTruncated: boolean] {
+    const tokensPerMessage = model === 'gpt-4' ? 3 : 4
+    const maxTokens = model === 'gpt-4' ? gpt4maxSize : gpt35maxSize
+    const encoding = model === 'gpt-4' ? gpt4encoding : gpt35encoding
+    const systemMessage = assert(
+      messages.at(0),
+      'No system message passed to #truncateMessageHistory'
+    )
+
+    let tokenCount = REPLY_MAX_TOKENS + 3 // Reply tokens, and reply primed with <|start|>assistant<|message|>.
+    tokenCount +=
+      encoding.encode(systemMessage.content ?? '').length + tokensPerMessage // System message
+
+    const allowedMessages: MessageBase[] = []
+
+    for (const message of messages.slice(1).reverse()) {
+      const nextCount =
+        encoding.encode(message.role).length +
+        encoding.encode(message.content).length +
+        tokensPerMessage
+
+      if (tokenCount + nextCount > maxTokens) {
+        break
+      }
+
+      tokenCount += nextCount
+      allowedMessages.unshift(message)
+    }
+
+    return [
+      [systemMessage, ...allowedMessages],
+      tokenCount - REPLY_MAX_TOKENS - 3,
+      allowedMessages.length + 1 != messages.length
+    ]
   }
 }
 

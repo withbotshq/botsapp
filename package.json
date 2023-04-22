@@ -48,6 +48,7 @@
     "@typescript-eslint/parser": "^5.57.1",
     "@vercel/webpack-asset-relocator-loader": "^1.7.3",
     "autoprefixer": "^10.4.14",
+    "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
     "dotenv": "^16.0.3",
     "electron": "^24.0.0",
@@ -69,6 +70,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@dqbd/tiktoken": "^1.0.6",
     "@jclem/assert": "^1.2.2",
     "@readme/openapi-parser": "^2.5.0",
     "@tanstack/react-query": "^4.28.0",
