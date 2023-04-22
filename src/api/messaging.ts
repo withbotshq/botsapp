@@ -5,7 +5,7 @@ export interface MessagingAPI extends APIDefinition {
   handlers: {
     'messaging:send': Handler<[number, MessageRole, string], Message>
     'messaging:list': Handler<[number], Message[]>
-    'messaging:read:partial': Handler<[number], string[]>
+    'messaging:read:partial': Handler<[number], string[] | null>
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types

@@ -224,7 +224,7 @@ function ChatListItem({
   isReceivingResponse
 }: ChatListItemProps) {
   const getLastMessagesQuery = useQuery(
-    ['messaging', 'list', chat.id],
+    ['messaging', 'list', chat.id, 'last'],
     async () => {
       const messages = await api.invoke('messaging:list', chat.id)
       return messages.at(-1)

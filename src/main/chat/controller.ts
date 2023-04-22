@@ -183,7 +183,7 @@ Note: Do not respond to this error, the bot is not aware of it.`,
       }
 
       this.#windows.forEach(window => {
-        window.webContents.send('chat:message', errorMessage)
+        window.webContents.send('messaging:message', errorMessage)
       })
 
       return
@@ -227,7 +227,7 @@ Note: Do not respond to this error, the bot is not aware of it.`,
 
           this.#windows.forEach(window => {
             window.webContents.send(
-              'chat:message-chunk',
+              'messaging:chunk',
               message.chatId,
               choice.delta.content
             )
@@ -254,7 +254,7 @@ Note: Do not respond to this error, the bot is not aware of it.`,
     )
 
     this.#windows.forEach(window => {
-      window.webContents.send('chat:message', message)
+      window.webContents.send('messaging:message', message)
     })
   }
 
