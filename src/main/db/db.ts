@@ -5,7 +5,7 @@ import path from 'path'
 import {readJSONFile, toJSON, writeJSONFile} from '../fsutil'
 import {Chat, Message} from './schema'
 
-const dataPath = path.join(app.getPath('userData'), 'data')
+export const dataPath = path.join(app.getPath('userData'), 'data')
 const databaseStatePath = path.join(dataPath, 'database.json')
 const chatsIndexPath = path.join(dataPath, 'chats.json')
 const chatStatesPath = path.join(dataPath, 'chats')

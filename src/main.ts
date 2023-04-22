@@ -13,6 +13,7 @@ import {config, setModel, setOpenAIAPIKey} from './main/config/config'
 import {
   createChat,
   createMessage,
+  dataPath,
   deleteChat,
   listChats,
   listMessages,
@@ -146,6 +147,12 @@ const menuTemplate: MenuItemConstructorOptions[] = [
         label: 'Open on GitHub',
         click() {
           shell.openExternal('https://github.com/withexec/chat')
+        }
+      },
+      {
+        label: 'Open User Data Folder',
+        click() {
+          shell.openPath(dataPath)
         }
       }
     ]
