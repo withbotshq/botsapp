@@ -16,7 +16,8 @@ const config: ForgeConfig = {
       stable: 'app.bots'
     }) as unknown as string,
     icon: 'icons/bots.icns',
-    osxSign: {}
+    osxSign: {},
+    extendInfo: 'Info.plist'
   },
   rebuildConfig: {},
   makers: [new MakerZIP({}, ['darwin'])],
