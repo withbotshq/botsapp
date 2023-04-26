@@ -8,20 +8,20 @@ import decompress from 'decompress'
 import {parseArgs} from 'util'
 
 const {
-  values: {'open-ai-key': openAIKeyFlag, path: botFilePath}
+  values: {'open-ai-key': openAIKeyFlag},
+  positionals: [botFilePath]
 } = parseArgs({
   strict: true,
+  allowPositionals: true,
   options: {
     'open-ai-key': {
       type: 'string',
       short: 'k'
-    },
-    path: {
-      type: 'string',
-      short: 'p'
     }
   }
 })
+
+assert(botFilePath, 'One argument pointing to the bot file is required')
 
 const openAIKey = openAIKeyFlag || process.env.OPENAI_API_KEY
 const botFile = JSON.parse(
