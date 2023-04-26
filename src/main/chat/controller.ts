@@ -3,7 +3,7 @@ import {assert} from '@jclem/assert'
 import {BrowserWindow} from 'electron'
 import {z} from 'zod'
 import {config} from '../config/config'
-import {createMessage, listMessages} from '../db/db'
+import {createMessage, getChat, listMessages} from '../db/db'
 import {Message, MessageBase} from '../db/schema'
 
 const gpt35encoding = encoding_for_model('gpt-3.5-turbo')
@@ -101,10 +101,19 @@ export class ChatController {
   }
 
   async sendMessage(message: Message) {
+    const chat = getChat(message.chatId)
+    const systemMessage = chat.config?.systemMessage.content
+      ? ({
+          role: 'system',
+          content: chat.config.systemMessage.content
+        } as const)
+      : this.#systemMessage
+    const model = chat.config?.model ?? config.model.key
+
     // Includes the new message already.
     const [messageHistory, tokenCount, wasTruncated] =
       this.#truncateMessageHistory(config.model.key, [
-        this.#systemMessage,
+        systemMessage,
         ...listMessages(message.chatId, {onlyServer: true})
       ])
 
@@ -135,7 +144,7 @@ export class ChatController {
       },
       signal: partialMessage.abortController.signal,
       body: JSON.stringify({
-        model: config.model.key,
+        model,
         max_tokens: REPLY_MAX_TOKENS,
         messages: messageHistory.map(m => ({
           role: m.role,

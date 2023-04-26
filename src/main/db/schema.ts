@@ -1,8 +1,10 @@
 import {z} from 'zod'
+import {BotsFile} from '../botsfile'
 
 export const Chat = z.object({
   id: z.number(),
   name: z.string().nullable(),
+  config: BotsFile.optional().nullable(),
   createdAt: z.number(),
   updatedAt: z.number()
 })

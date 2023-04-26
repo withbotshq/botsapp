@@ -2,6 +2,7 @@ import {assert} from '@jclem/assert'
 import {app} from 'electron'
 import fs from 'fs'
 import path from 'path'
+import {BotsFile} from '../botsfile'
 import {readJSONFile, toJSON, writeJSONFile} from '../fsutil'
 import {Chat, Message} from './schema'
 
@@ -48,10 +49,11 @@ export function runMigrations() {
   return
 }
 
-export function createChat(): Chat {
+export function createChat({config}: {config?: BotsFile} = {}): Chat {
   const chat: Chat = {
     id: getNextChatId(),
     name: null,
+    config: config ?? null,
     ...timestamps(true)
   }
 
@@ -73,6 +75,10 @@ export function renameChat(chatId: number, name: string | null): void {
 
 export function listChats(): Chat[] {
   return [...chatsIndex.chats].sort((a, b) => b.createdAt - a.createdAt)
+}
+
+export function getChat(id: number): Chat {
+  return assert(chatsIndex.chats.find(chat => chat.id === id))
 }
 
 export function deleteChat(chatId: number): void {

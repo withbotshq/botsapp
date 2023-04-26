@@ -3,11 +3,13 @@ import {
   Menu,
   MenuItemConstructorOptions,
   app,
+  dialog,
   globalShortcut,
   ipcMain,
   shell
 } from 'electron'
 import updateElectron from 'update-electron-app'
+import {botfileFromPath} from './main/botsfile'
 import {ChatController} from './main/chat/controller'
 import {config, setModel, setOpenAIAPIKey} from './main/config/config'
 import {
@@ -91,6 +93,32 @@ const menuTemplate: MenuItemConstructorOptions[] = [
         accelerator: 'CmdOrCtrl+N',
         click() {
           const chat = createChat()
+          BrowserWindow.getFocusedWindow()?.webContents.send(
+            'chat:created',
+            chat
+          )
+        }
+      },
+      {
+        label: 'Open Bots File',
+        accelerator: 'CmdOrCtrl+O',
+        async click() {
+          const {
+            canceled,
+            filePaths: [filePath]
+          } = await dialog.showOpenDialog({
+            title: 'Open Bots File',
+            filters: [{name: 'Bots File', extensions: ['bot']}],
+            properties: ['openFile']
+          })
+
+          if (canceled) {
+            return
+          }
+
+          const botFile = await botfileFromPath(filePath)
+          const chat = createChat({config: botFile})
+
           BrowserWindow.getFocusedWindow()?.webContents.send(
             'chat:created',
             chat
