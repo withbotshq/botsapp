@@ -201,7 +201,7 @@ app.on('ready', () => {
   ipcMain.on('chat:stop', (event, chatId) =>
     chatController.abortMessageForChat(chatId)
   )
-  ipcMain.handle('chats:create', createChat)
+  ipcMain.handle('chats:create', () => createChat())
   ipcMain.handle('chats:list', listChats)
   ipcMain.handle('chats:rename', (event, chatId, name) =>
     renameChat(chatId, name)

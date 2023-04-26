@@ -69,6 +69,8 @@ function notarizeMaybe() {
     return
   }
 
+  // TODO: Assert?
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   config.packagerConfig!.osxNotarize = {
     tool: 'notarytool',
     appleApiKey: process.env.APPLE_API_KEY,
