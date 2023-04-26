@@ -116,13 +116,7 @@ const menuTemplate: MenuItemConstructorOptions[] = [
             return
           }
 
-          const botFile = await botfileFromPath(filePath)
-          const chat = createChat({config: botFile})
-
-          BrowserWindow.getFocusedWindow()?.webContents.send(
-            'chat:created',
-            chat
-          )
+          await openBotfile(filePath)
         }
       },
       {type: 'separator'},
@@ -276,4 +270,18 @@ app.on('will-quit', () => {
   globalShortcut.unregisterAll()
 })
 
+app.on('open-file', (event, path) => {
+  if (path.endsWith('.bot')) {
+    event.preventDefault()
+    openBotfile(path)
+  }
+})
+
 updateElectron()
+
+async function openBotfile(filePath: string) {
+  const botFile = await botfileFromPath(filePath)
+  const chat = createChat({config: botFile})
+
+  BrowserWindow.getFocusedWindow()?.webContents.send('chat:created', chat)
+}
