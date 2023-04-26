@@ -3,7 +3,7 @@ import decompress from 'decompress'
 import {z} from 'zod'
 
 export const BotsFile = z.object({
-  version: z.string(),
+  version: z.literal('0.0.0'),
   model: z.union([z.literal('gpt-3.5-turbo'), z.literal('gpt-4')]),
   systemMessage: z.object({
     type: z.literal('text'),
