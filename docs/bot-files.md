@@ -13,6 +13,8 @@ You can customize the behavior of bots by creating a bot file. A bot file is a J
 }
 ```
 
+For now, the `systemMessage` field is simply the content of the *first* system message sent to the chat completion endpoint, followed by conversation history (a sliding window), followed by the user's new message.
+
 To make this a bot file simply ZIP it and rename the extension to `.bot`:
 
 ```bash
