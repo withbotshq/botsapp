@@ -12,6 +12,9 @@
       "email": "max@max.wtf"
     }
   ],
+  "devDependencies": {
+    "nx": "15.9.2"
+  },
   "directories": {
     "doc": "docs"
   },
