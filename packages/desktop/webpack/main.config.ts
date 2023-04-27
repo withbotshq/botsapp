@@ -13,7 +13,7 @@ export const mainConfig: Configuration = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'node_modules/@dqbd/tiktoken/tiktoken_bg.wasm'
+          from: '../../node_modules/@dqbd/tiktoken/tiktoken_bg.wasm'
         }
       ]
     })
