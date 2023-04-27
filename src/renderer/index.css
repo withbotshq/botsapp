@@ -76,6 +76,10 @@ td {
   @apply border-l-2 border-gray-400 pl-2 text-sm dark:border-gray-300;
 }
 
+.markdown a {
+  @apply text-sky-600 underline underline-offset-2;
+}
+
 .grow-wrap {
   @apply grid w-full;
 }
