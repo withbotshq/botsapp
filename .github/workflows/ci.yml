@@ -21,9 +21,8 @@ jobs:
         id: cache-desktop-modules
         uses: actions/cache@v3
         with:
-          path: node_modules
+          path: ./packages/desktop/node_modules
           key: ${{ runner.os }}-${{ hashFiles('package.json', 'package-lock.json') }}
-        working-directory: ./packages/desktop
       - name: Install Desktop node_modules
         if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
         run: npm ci
