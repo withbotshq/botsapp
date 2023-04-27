@@ -81,7 +81,7 @@ td {
 }
 
 .grow-wrap {
-  @apply grid w-full;
+  @apply grid w-full grid-cols-1;
 }
 
 .grow-wrap::after {
