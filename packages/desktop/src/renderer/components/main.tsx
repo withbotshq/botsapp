@@ -11,6 +11,7 @@ import {NewChatIcon} from './icons'
 import {MessageComposer} from './message-composer'
 import {MessageList} from './message-list'
 import {TitleBar} from './title-bar'
+import Example from 'ui/components/example'
 
 export const Main: FC = () => {
   const [currentChatId, setCurrentChatId] = useState<number | null>(null)
@@ -178,6 +179,7 @@ export const Main: FC = () => {
           {showInfoPanel && (
             <div className="border-t">
               <ChatSettings />
+              <Example />
             </div>
           )}
         </div>
