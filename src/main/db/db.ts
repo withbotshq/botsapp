@@ -135,6 +135,24 @@ export function listMessages(
   return chatState.messages
 }
 
+export function deleteMessage(chatId: number, messageId: number): void {
+  // First, read the chat state from disk.
+  const chatState = readChatState(chatId)
+
+  // Next, update the chat state.
+  chatState.messages = chatState.messages.filter(
+    message => message.id !== messageId
+  )
+
+  // Next, write the chat state to disk.
+  writeChatState(chatId, chatState)
+
+  // Finally, update the index.
+  const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
+  chat.updatedAt = Date.now()
+  writeChatsIndex(chatsIndex)
+}
+
 function timestamps(creating: true): {createdAt: number; updatedAt: number}
 function timestamps(creating: false): {updatedAt: number}
 function timestamps(creating: boolean) {

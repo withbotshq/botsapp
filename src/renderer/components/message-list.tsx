@@ -15,17 +15,22 @@ const isSystem = (message: Message) => {
 }
 
 interface Props {
+  chatId: number
   messages: Message[]
   partialMessageChunks: string[] | null
 }
 
-export const MessageList: FC<Props> = ({messages, partialMessageChunks}) => {
+export const MessageList: FC<Props> = ({
+  chatId,
+  messages,
+  partialMessageChunks
+}) => {
   const {query: modelQuery} = useConfigModel()
 
   const partialMessage: Message | null = partialMessageChunks
     ? {
         id: Math.random(),
-        chatId: Math.random(),
+        chatId: chatId,
         role: 'assistant',
         content: partialMessageChunks.join(''),
         createdAt: Date.now(),
@@ -41,6 +46,7 @@ export const MessageList: FC<Props> = ({messages, partialMessageChunks}) => {
             key={message.id}
             message={message}
             modelKey={modelQuery.data?.key ?? null}
+            isPartialMessage={message === partialMessage}
           />
         )
       )}
@@ -51,6 +57,7 @@ export const MessageList: FC<Props> = ({messages, partialMessageChunks}) => {
 interface MessageProps {
   message: Message
   modelKey: string | null
+  isPartialMessage: boolean
 }
 
 const messageClass = cva(['flex gap-4 border-b p-4'], {
@@ -76,9 +83,17 @@ const modelClass = cva(['flex-none h-6 w-6 rounded-full'], {
   }
 })
 
-function MessageListItem({message, modelKey}: MessageProps) {
+function MessageListItem({message, modelKey, isPartialMessage}: MessageProps) {
+  const onContextMenu = () => {
+    api.showMessageContextMenu(message.chatId, message.id, isPartialMessage)
+  }
+
   return (
-    <div className={messageClass({role: message.role})} key={message.id}>
+    <div
+      onContextMenu={onContextMenu}
+      className={messageClass({role: message.role})}
+      key={message.id}
+    >
       {isMe(message) ? (
         <div className="h-6 w-6 flex-none rounded-full bg-gradient-to-br from-indigo-500 to-emerald-500" />
       ) : isSystem(message) ? (
