@@ -17,6 +17,7 @@ import {
   createMessage,
   dataPath,
   deleteChat,
+  deleteMessage,
   listChats,
   listMessages,
   renameChat,
@@ -235,6 +236,37 @@ app.on('ready', () => {
       window: BrowserWindow.fromWebContents(event.sender) ?? undefined
     })
   })
+
+  ipcMain.on(
+    'message:show-context-menu',
+    (event, chatId, messageId, isPartialMessage) => {
+      const template: MenuItemConstructorOptions[] = []
+
+      if (isPartialMessage) {
+        template.push({
+          label: 'Stop output',
+          click: () => {
+            chatController.abortMessageForChat(chatId)
+          }
+        })
+      } else {
+        template.push({
+          label: 'Delete message',
+          click: () => {
+            deleteMessage(chatId, messageId)
+            BrowserWindow.getAllWindows().forEach(window =>
+              window.webContents.send('message:deleted', chatId, messageId)
+            )
+          }
+        })
+      }
+
+      const menu = Menu.buildFromTemplate(template)
+      menu.popup({
+        window: BrowserWindow.fromWebContents(event.sender) ?? undefined
+      })
+    }
+  )
 
   globalShortcut.register('Control+Command+B', () => {
     const window = BrowserWindow.getAllWindows().at(0)

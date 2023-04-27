@@ -46,6 +46,19 @@ export const Main: FC = () => {
     enabled: currentChat != null
   })
 
+  useEffect(() => {
+    const onMessageDeleted = (
+      event: IpcRendererEvent,
+      chatId: number,
+      messageId: number
+    ) => {
+      queryClient.invalidateQueries(['messages', chatId])
+      queryClient.invalidateQueries(['partial-message', chatId])
+    }
+
+    return api.onMessageDeleted(onMessageDeleted)
+  }, [queryClient])
+
   const messages = messagesQuery.data ?? []
 
   const createChat = useMutation({
@@ -151,6 +164,7 @@ export const Main: FC = () => {
             <div className="flex min-h-0 flex-1 flex-col">
               <MessageList
                 key={currentChat.id}
+                chatId={currentChat.id}
                 messages={messages}
                 partialMessageChunks={partialMessageQuery.data ?? null}
               />

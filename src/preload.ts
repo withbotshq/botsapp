@@ -70,6 +70,19 @@ const api = {
     ipcRenderer.send('chat-list:show-context-menu', chatId)
   },
 
+  showMessageContextMenu: (
+    chatId: number,
+    messageId: number,
+    isPartialMessage: boolean
+  ): void => {
+    ipcRenderer.send(
+      'message:show-context-menu',
+      chatId,
+      messageId,
+      isPartialMessage
+    )
+  },
+
   // Other events
   onChatCreated: (
     callback: (event: IpcRendererEvent, chat: Chat) => void
@@ -83,6 +96,17 @@ const api = {
   ): (() => void) => {
     ipcRenderer.on('chat:deleted', callback)
     return () => ipcRenderer.removeListener('chat:deleted', callback)
+  },
+
+  onMessageDeleted: (
+    callback: (
+      event: IpcRendererEvent,
+      chatId: number,
+      messageId: number
+    ) => void
+  ): (() => void) => {
+    ipcRenderer.on('message:deleted', callback)
+    return () => ipcRenderer.removeListener('message:deleted', callback)
   },
 
   onFocusNextChat: (
