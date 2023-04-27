@@ -77,7 +77,7 @@ td {
 }
 
 .markdown a {
-  @apply text-sky-600 underline underline-offset-2;
+  @apply text-blue-500 underline underline-offset-2;
 }
 
 .grow-wrap {
