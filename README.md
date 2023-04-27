@@ -37,7 +37,7 @@ P.S: You can use the global shortcut (<kbd>⌘</kbd>+<kbd>Ctrl</kbd>+<kbd>B</kbd
 $ git clone git@github.com:withbotshq/botsapp.git
 $ cd botsapp
 $ npm install
-$ npm run package
+$ npm run package --workspace=botsapp
 $ open /Applications/Bots.app
 ```
 
@@ -47,5 +47,5 @@ $ open /Applications/Bots.app
 $ git clone git@github.com:withbotshq/botsapp.git
 $ cd botsapp
 $ npm install
-$ npm start
+$ npm start --workspace=botsapp
 ```

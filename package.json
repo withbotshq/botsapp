@@ -1,0 +1,26 @@
+{
+  "name": "root",
+  "description": "An app to make personalized AI bots and chat with them",
+  "version": "0.1.14",
+  "contributors": [
+    {
+      "name": "Jonathan Clem",
+      "email": "j@jclem.me"
+    },
+    {
+      "name": "Max Schoening",
+      "email": "max@max.wtf"
+    }
+  ],
+  "directories": {
+    "doc": "docs"
+  },
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}
