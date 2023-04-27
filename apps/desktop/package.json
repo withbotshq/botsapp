@@ -1,5 +1,6 @@
 {
-  "name": "botsapp",
+  "name": "@botsapp/desktop",
+  "prviate": true,
   "productName": "Bots",
   "version": "0.1.14",
   "description": "An app to make personalized AI bots and chat with them",

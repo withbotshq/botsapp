@@ -7,5 +7,9 @@
       }
     }
   },
-  "defaultBase": "main"
+  "defaultBase": "main",
+  "workspaceLayout": {
+    "appsDir": "apps",
+    "libsDir": "libs"
+  }
 }
