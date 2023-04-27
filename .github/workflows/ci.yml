@@ -23,9 +23,12 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('package.json', 'package-lock.json') }}
+        working_directory: ./packages/desktop
       - name: Install Desktop node_modules
         if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
         run: npm ci
         env:
           NPM_CONFIG_LOGLEVEL: verbose
+        working_directory: ./packages/desktop
       - run: npm run package:build
+        working_directory: ./packages/desktop
