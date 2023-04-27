@@ -188,7 +188,6 @@ ${errorText}
 Note: Do not respond to this error, the bot is not aware of it.`,
           {clientOnly: true}
         )
-        console.log('returning')
       }
 
       this.#windows.forEach(window => {

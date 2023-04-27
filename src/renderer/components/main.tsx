@@ -104,7 +104,6 @@ export const Main: FC = () => {
 
   useEffect(() => {
     const onChatCreated = (event: IpcRendererEvent, chat: Chat) => {
-      console.log('chat', chat)
       queryClient.invalidateQueries(['chats'])
       setCurrentChatId(chat.id)
     }
