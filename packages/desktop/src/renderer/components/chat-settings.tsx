@@ -18,9 +18,11 @@ const ChatSettings: FC = () => {
   })
 
   return (
-    <div className="flex w-full flex-row gap-4 p-2">
+    <div className="flex w-full flex-col gap-4 p-2">
       <div className="w-full">
-        <h3 className="text-xs font-bold uppercase text-gray-500">OpenAI</h3>
+        <h3 className="text-xs font-bold uppercase text-gray-500">
+          OpenAI API Token
+        </h3>
 
         <input
           className="w-full rounded border bg-transparent p-2 py-1 dark:text-white"

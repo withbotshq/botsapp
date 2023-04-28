@@ -7,6 +7,7 @@ import {useConfigModel} from '../hooks/use-config'
 import {AppWindow} from './app-window'
 import {ChatList} from './chat-list'
 import {ChatSettings} from './chat-settings'
+import {IconButton} from './icon-button'
 import {NewChatIcon} from './icons'
 import {MessageComposer} from './message-composer'
 import {MessageList} from './message-list'
@@ -126,12 +127,10 @@ export const Main: FC = () => {
             <div className="h-[12px] w-[52px]" />
 
             <div className="app-region-none">
-              <button
-                className="block rounded text-gray-400 hover:bg-white/10"
+              <IconButton
+                icon={<NewChatIcon />}
                 onClick={() => createChat.mutate()}
-              >
-                <NewChatIcon />
-              </button>
+              />
             </div>
           </div>
 
@@ -146,46 +145,48 @@ export const Main: FC = () => {
       </AppWindow.Left>
 
       <AppWindow.Right>
-        <div className="flex h-full flex-col">
-          <div className="app-region-drag flex-none border-b">
-            <TitleBar
-              title={windowTitle}
-              showInfoPanel={showInfoPanel}
-              setShowInfoPanel={setShowInfoPanel}
-            />
+        <div className="flex h-full">
+          <div className="flex h-full flex-1 flex-col">
+            <div className="app-region-drag flex-none border-b">
+              <TitleBar
+                title={windowTitle}
+                showInfoPanel={showInfoPanel}
+                setShowInfoPanel={setShowInfoPanel}
+              />
+            </div>
+
+            {currentChat ? (
+              <div className="flex min-h-0 flex-1 flex-col">
+                <MessageList
+                  key={currentChat.id}
+                  chatId={currentChat.id}
+                  messages={messages}
+                  partialMessageChunks={partialMessageQuery.data ?? null}
+                />
+
+                <div className="flex-none border-t p-3">
+                  <MessageComposer
+                    key={currentChat?.id}
+                    onSubmit={content => sendMessage.mutate(content)}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="flex min-h-0 flex-1 flex-col items-center gap-4 p-8">
+                <p>No chat selected.</p>
+
+                <button
+                  onClick={() => createChat.mutate()}
+                  className="rounded bg-blue-500 px-2 py-1"
+                >
+                  Click here to create one.
+                </button>
+              </div>
+            )}
           </div>
 
-          {currentChat ? (
-            <div className="flex min-h-0 flex-1 flex-col">
-              <MessageList
-                key={currentChat.id}
-                chatId={currentChat.id}
-                messages={messages}
-                partialMessageChunks={partialMessageQuery.data ?? null}
-              />
-
-              <div className="flex-none border-t p-3">
-                <MessageComposer
-                  key={currentChat?.id}
-                  onSubmit={content => sendMessage.mutate(content)}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="flex min-h-0 flex-1 flex-col items-center gap-4 p-8">
-              <p>No chat selected.</p>
-
-              <button
-                onClick={() => createChat.mutate()}
-                className="rounded bg-blue-500 px-2 py-1"
-              >
-                Click here to create one.
-              </button>
-            </div>
-          )}
-
           {showInfoPanel && (
-            <div className="border-t">
+            <div className="max-w-[240px] flex-1 border-l">
               <ChatSettings />
             </div>
           )}
