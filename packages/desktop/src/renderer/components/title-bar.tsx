@@ -1,5 +1,6 @@
 import {FC} from 'react'
 import {SettingsIcon} from './icons'
+import {IconButton} from './icon-button'
 
 interface Props {
   title: string
@@ -12,12 +13,11 @@ const TitleBar: FC<Props> = ({title, showInfoPanel, setShowInfoPanel}) => {
     <div className="flex items-center px-3">
       <div className="flex-1 p-3 text-center text-gray-500">{title}</div>
       <div className="app-region-none flex-none">
-        <button
-          className="block"
+        <IconButton
+          active={showInfoPanel}
+          icon={<SettingsIcon />}
           onClick={() => setShowInfoPanel(!showInfoPanel)}
-        >
-          <SettingsIcon />
-        </button>
+        />
       </div>
     </div>
   )
