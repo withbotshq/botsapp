@@ -1,0 +1,21 @@
+name: WWW CI
+
+on:
+  push: {branches: [main]}
+  pull_request: {branches: [main]}
+
+jobs:
+  checks:
+    name: Run Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: npm
+      - run: npm ci
+      - run: npx -w www next lint # Generates next-env.d.ts
+      - run: npm run check -w www

@@ -69,7 +69,7 @@ td {
 }
 
 .markdown li::marker {
-  @apply pr-0 mr-0 !important;
+  @apply mr-0 pr-0 !important;
 }
 
 .markdown h1 {

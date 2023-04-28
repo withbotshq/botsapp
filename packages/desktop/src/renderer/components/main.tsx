@@ -47,11 +47,7 @@ export const Main: FC = () => {
   })
 
   useEffect(() => {
-    const onMessageDeleted = (
-      event: IpcRendererEvent,
-      chatId: number,
-      messageId: number
-    ) => {
+    const onMessageDeleted = (event: IpcRendererEvent, chatId: number) => {
       queryClient.invalidateQueries(['messages', chatId])
       queryClient.invalidateQueries(['partial-message', chatId])
     }
