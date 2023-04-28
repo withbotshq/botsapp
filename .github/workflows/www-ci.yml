@@ -18,4 +18,4 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx -w www next lint # Generates next-env.d.ts
-      - run: npm run check -w www
+      - run: npx nx run www:check
