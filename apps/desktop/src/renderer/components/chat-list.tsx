@@ -1,8 +1,8 @@
 import {IpcRendererEvent} from 'electron'
 import {FC, useEffect, useMemo, useState} from 'react'
+import {ScrollContainer} from 'ui/components/scroll-container'
 import {Chat, Message} from '../../main/db/schema'
 import {ChatListItem} from './chat-list-item'
-import {ScrollContainer} from './scroll-container'
 
 interface Props {
   chats: Chat[]
@@ -113,8 +113,8 @@ const ChatList: FC<Props> = ({chats, activeChatId, onSelectChat}) => {
                 <ChatListItem
                   chat={chat}
                   isActive={chat.id === activeChatId}
-                  isUnread={isUnread[chat.id]}
-                  isReceivingResponse={isTyping[chat.id]}
+                  isUnread={isUnread[chat.id] ?? false}
+                  isReceivingResponse={isTyping[chat.id] ?? false}
                 />
               </button>
             ))

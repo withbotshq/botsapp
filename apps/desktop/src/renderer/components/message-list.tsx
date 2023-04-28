@@ -1,10 +1,10 @@
 import {cva} from 'class-variance-authority'
 import {FC} from 'react'
+import {ScrollContainer} from 'ui/components/scroll-container'
 import {Message} from '../../main/db/schema'
 import {useConfigModel} from '../hooks/use-config'
 import OpenAIIcon from './icons/open-ai-icon'
 import {MessageRenderer} from './message-renderer'
-import {ScrollContainer} from './scroll-container'
 
 const isMe = (message: Message) => {
   return message.role === 'user'

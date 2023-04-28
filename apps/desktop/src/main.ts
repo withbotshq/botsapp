@@ -1,3 +1,4 @@
+import {assert} from '@jclem/assert'
 import {
   BrowserWindow,
   Menu,
@@ -117,7 +118,7 @@ const menuTemplate: MenuItemConstructorOptions[] = [
             return
           }
 
-          await openBotfile(filePath)
+          await openBotfile(assert(filePath))
         }
       },
       {type: 'separator'},
