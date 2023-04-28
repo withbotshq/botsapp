@@ -1,11 +1,14 @@
+import {ClerkProvider} from '@clerk/nextjs/app-beta'
 import {FC, PropsWithChildren} from 'react'
 import '../styles/globals.css'
 
 const RootLayout: FC<PropsWithChildren> = ({children}) => {
   return (
-    <html>
+    <html lang="en">
       <head></head>
-      <body>{children}</body>
+      <ClerkProvider>
+        <body>{children}</body>
+      </ClerkProvider>
     </html>
   )
 }
