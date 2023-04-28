@@ -1,6 +1,6 @@
+import {ScrollContainer} from '@withbotshq/ui/components/scroll-container'
 import {IpcRendererEvent} from 'electron'
 import {FC, useEffect, useMemo, useState} from 'react'
-import {ScrollContainer} from 'ui/components/scroll-container'
 import {Chat, Message} from '../../main/db/schema'
 import {ChatListItem} from './chat-list-item'
 

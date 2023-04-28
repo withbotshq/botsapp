@@ -7,6 +7,15 @@
     "react-dom": "^18.2.0",
     "tailwindcss": "^3.3.1"
   },
+  "nx": {
+    "targets": {
+      "check": {
+        "dependsOn": [
+          "lint"
+        ]
+      }
+    }
+  },
   "devDependencies": {
     "@types/node": "^18.16.0",
     "@types/react": "^18.0.38",
