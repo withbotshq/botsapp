@@ -15,13 +15,7 @@
     "copy": "cp -R out/stable/Bots-darwin-*/Bots.app/ /Applications/Bots.app",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\"",
-    "check": "konk run c -gL -n'check:*'",
-    "check:build": "tsc --noEmit",
-    "check:format": "prettier --check .",
-    "check:lint": "eslint .",
-    "fix": "konk run s -L -n'fix:*'",
-    "fix:format": "prettier --write . --list-different"
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": {

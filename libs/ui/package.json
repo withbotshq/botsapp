@@ -4,5 +4,8 @@
   "dependencies": {
     "@jclem/assert": "^1.2.2",
     "react": "^18.2.0"
+  },
+  "scripts": {
+    "lint": "eslint ."
   }
 }
