@@ -17,5 +17,5 @@ jobs:
           node-version: 18.x
           cache: npm
       - run: npm ci
-      - run: npx next lint -w www # Generates next-env.d.ts
+      - run: npx -w www next lint # Generates next-env.d.ts
       - run: npm run check -w www
