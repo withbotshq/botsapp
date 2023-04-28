@@ -24,6 +24,7 @@
     "apps/*"
   ],
   "devDependencies": {
-    "nx": "16.0.0"
+    "nx": "16.0.0",
+    "nx-cloud": "^16.0.5"
   }
 }
