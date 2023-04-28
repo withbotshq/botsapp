@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx-cloud",
+      "options": {
+        "cacheableOperations": ["build", "check", "lint"]
+      }
+    }
+  },
+  "defaultBase": "main",
+  "workspaceLayout": {
+    "appsDir": "apps"
+  }
+}
