@@ -107,6 +107,6 @@ td {
 
 .grow-wrap > textarea,
 .grow-wrap::after {
-  @apply max-h-[10lh] rounded-2xl border bg-transparent p-2 px-3 py-1 text-inherit outline-none focus:border-border-focus;
+  @apply focus:border-border-focus max-h-[10lh] rounded-2xl border bg-transparent p-2 px-3 py-1 text-inherit outline-none;
   grid-area: 1 / 1 / 2 / 2;
 }

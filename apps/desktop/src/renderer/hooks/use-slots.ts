@@ -3,6 +3,7 @@
  * https://github.com/primer/react/blob/main/src/hooks/useSlots.ts
  */
 
+import {assert} from '@jclem/assert'
 import {
   Children,
   ComponentType,
@@ -52,7 +53,7 @@ export function useSlots<T extends SlotConfig>(
       return
     }
 
-    const slotKey = keys[index]
+    const slotKey = assert(keys[index])
 
     // If slot is already filled, ignore duplicates
     if (slots[slotKey]) {

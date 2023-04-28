@@ -48,7 +48,7 @@ to bring the app to the front.
 $ git clone git@github.com:withbotshq/botsapp.git
 $ cd botsapp
 $ npm install
-$ npx nx run desktop:build
+$ npx nx build desktop
 $ open /Applications/Bots.app
 ```
 
@@ -58,5 +58,5 @@ $ open /Applications/Bots.app
 $ git clone git@github.com:withbotshq/botsapp.git
 $ cd botsapp
 $ npm install
-$ npx nx run desktop:start
+$ npx nx start desktop
 ```

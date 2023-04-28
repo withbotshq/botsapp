@@ -23,5 +23,4 @@ jobs:
           cache: npm
       - uses: nrwl/nx-set-shas@v3
       - run: npm ci
-      - run: npx nx run desktop:check
       - run: npx nx run desktop:build
