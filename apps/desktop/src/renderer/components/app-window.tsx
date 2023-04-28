@@ -14,7 +14,7 @@ const AppWindow = ({children}: {children: ReactNode | ReactNode[]}) => {
           {slots.left}
         </div>
 
-        <div className="min-h-0 min-w-0 flex-1 bg-canvas">{slots.right}</div>
+        <div className="bg-canvas min-h-0 min-w-0 flex-1">{slots.right}</div>
       </div>
     </div>
   )

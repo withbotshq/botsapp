@@ -13,7 +13,7 @@ You can customize the behavior of bots by creating a bot file. A bot file is a J
 }
 ```
 
-For now, the `systemMessage` field is simply the content of the *first* system message sent to the chat completion endpoint, followed by conversation history (a sliding window), followed by the user's new message.
+For now, the `systemMessage` field is simply the content of the _first_ system message sent to the chat completion endpoint, followed by conversation history (a sliding window), followed by the user's new message.
 
 Opening up a bot file creates a new chat using the information found in the bot file, but editing the bot file itself, for example, won't update existing chats created from it (in other words, there is currently no permanent _link_ between bot files and the chats created by opening them).
 
