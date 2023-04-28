@@ -1,3 +1,5 @@
 out/
+.next/
+.vercel/
 .vite/
 .webpack/

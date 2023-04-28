@@ -1,4 +1,4 @@
-name: WWW CI
+name: Common CI
 
 on:
   push: {branches: [main]}
@@ -22,4 +22,6 @@ jobs:
           cache: npm
       - uses: nrwl/nx-set-shas@v3
       - run: npm ci
-      - run: npx nx run www:check
+      - run: npx nx format:check --all
+      - run: git branch --track main origin/main
+      - run: npx nx affected -t check
