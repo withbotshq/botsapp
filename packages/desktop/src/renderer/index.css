@@ -60,6 +60,18 @@ td {
   @apply list-inside list-disc;
 }
 
+.markdown li {
+  @apply ml-4 list-outside;
+}
+
+.markdown li > p:first-child {
+  @apply inline-block;
+}
+
+.markdown li::marker {
+  @apply pr-0 mr-0 !important;
+}
+
 .markdown h1 {
   @apply text-2xl font-bold;
 }
