@@ -21,7 +21,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "workspaces": [
-    "packages/*"
+    "apps/*"
   ],
   "devDependencies": {
     "nx": "16.0.0"

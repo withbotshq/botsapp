@@ -10,6 +10,6 @@
   },
   "defaultBase": "main",
   "workspaceLayout": {
-    "appsDir": "packages"
+    "appsDir": "apps"
   }
 }
