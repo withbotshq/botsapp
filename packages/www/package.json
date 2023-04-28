@@ -1,5 +1,5 @@
 {
-  "name": "template-nextjs",
+  "name": "www",
   "version": "0.1.0",
   "dependencies": {
     "next": "^13.3.1",
