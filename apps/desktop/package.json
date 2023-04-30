@@ -2,7 +2,7 @@
   "name": "desktop",
   "private": true,
   "productName": "Bots",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "description": "An app to make personalized AI bots and chat with them",
   "repository": {
     "type": "git",
