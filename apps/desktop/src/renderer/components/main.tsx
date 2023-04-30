@@ -177,7 +177,7 @@ export const Main: FC = () => {
 
                 <button
                   onClick={() => createChat.mutate()}
-                  className="rounded bg-blue-500 px-2 py-1"
+                  className="rounded bg-blue-500 px-2 py-1 text-white"
                 >
                   Click here to create one.
                 </button>
