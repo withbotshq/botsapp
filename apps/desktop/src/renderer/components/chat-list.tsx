@@ -1,7 +1,7 @@
+import {Chat, Message} from '@withbotshq/shared/schema'
 import {ScrollContainer} from '@withbotshq/ui/components/scroll-container'
 import {IpcRendererEvent} from 'electron'
 import {FC, useEffect, useMemo, useState} from 'react'
-import {Chat, Message} from '../../main/db/schema'
 import {ChatListItem} from './chat-list-item'
 
 interface Props {

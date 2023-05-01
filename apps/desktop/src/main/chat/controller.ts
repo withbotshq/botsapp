@@ -1,10 +1,10 @@
 import {encoding_for_model} from '@dqbd/tiktoken'
 import {assert} from '@jclem/assert'
+import {Message, MessageBase} from '@withbotshq/shared/schema'
 import {BrowserWindow} from 'electron'
 import {z} from 'zod'
 import {config} from '../config/config'
 import {createMessage, getChat, listMessages} from '../db/db'
-import {Message, MessageBase} from '../db/schema'
 
 const gpt35encoding = encoding_for_model('gpt-3.5-turbo')
 const gpt4encoding = encoding_for_model('gpt-4')

@@ -1,10 +1,10 @@
+import {Message} from '@withbotshq/shared/schema'
+import {MessageRenderer} from '@withbotshq/ui/components/message-renderer'
 import {ScrollContainer} from '@withbotshq/ui/components/scroll-container'
 import {cva} from 'class-variance-authority'
 import {FC} from 'react'
-import {Message} from '../../main/db/schema'
 import {useConfigModel} from '../hooks/use-config'
 import OpenAIIcon from './icons/open-ai-icon'
-import {MessageRenderer} from './message-renderer'
 
 const isMe = (message: Message) => {
   return message.role === 'user'

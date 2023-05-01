@@ -1,0 +1,11 @@
+{
+  "name": "@withbotshq/shared",
+  "version": "0.1.16",
+  "private": true,
+  "dependencies": {
+    "@jclem/assert": "^1.2.2"
+  },
+  "scripts": {
+    "lint": "eslint ."
+  }
+}

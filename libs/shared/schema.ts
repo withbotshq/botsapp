@@ -1,5 +1,5 @@
 import {z} from 'zod'
-import {BotsFile} from '../botsfile'
+import {BotsFile} from './botsfile'
 
 export const Chat = z.object({
   id: z.number(),

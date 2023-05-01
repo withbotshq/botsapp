@@ -4,7 +4,11 @@
   "private": true,
   "dependencies": {
     "@jclem/assert": "^1.2.2",
-    "react": "^18.2.0"
+    "@withbotshq/shared": "*",
+    "react": "^18.2.0",
+    "react-markdown": "^8.0.7",
+    "react-syntax-highlighter": "^15.5.0",
+    "remark-gfm": "^3.0.1"
   },
   "scripts": {
     "lint": "eslint ."
