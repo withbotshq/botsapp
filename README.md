@@ -49,6 +49,8 @@ $ git clone git@github.com:withbotshq/botsapp.git
 $ cd botsapp
 $ npm install
 $ npx nx build desktop
+$ rm -rf /Applications/Bots.app # TODO: This shouldn't be necessary but it's a permissions issue.
+$ npx nx copy desktop
 $ open /Applications/Bots.app
 ```
 
