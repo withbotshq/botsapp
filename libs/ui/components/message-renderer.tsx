@@ -4,8 +4,7 @@ import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 import remarkGfm from 'remark-gfm'
 // FIXME: Move these types to a shared location
 import {Message} from '../../../apps/desktop/src/main/db/schema'
-// FIXME: Move these types to a shared location
-import oneDark from '../../../apps/desktop/src/renderer/one-dark'
+import oneDark from '../one-dark'
 
 export const MessageRenderer: FC<{message: Message}> = ({message}) => {
   const onClickCopy = (code: string) => {
