@@ -1,4 +1,5 @@
 import {assert} from '@jclem/assert'
+import {botfileFromPath} from '@withbotshq/shared/botsfile'
 import {
   BrowserWindow,
   Menu,
@@ -10,7 +11,6 @@ import {
   shell
 } from 'electron'
 import updateElectron from 'update-electron-app'
-import {botfileFromPath} from './main/botsfile'
 import {ChatController} from './main/chat/controller'
 import {config, setModel, setOpenAIAPIKey} from './main/config/config'
 import {

@@ -1,6 +1,5 @@
 import {z} from 'zod'
-// FIXME: Move this to a shared resource
-import {BotsFile} from '../../apps/desktop/src/main/botsfile'
+import {BotsFile} from './botsfile'
 
 export const Chat = z.object({
   id: z.number(),
