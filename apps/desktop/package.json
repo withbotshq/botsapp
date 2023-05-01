@@ -61,6 +61,7 @@
     "@jclem/assert": "^1.2.2",
     "@readme/openapi-parser": "^2.5.0",
     "@tanstack/react-query": "^4.28.0",
+    "@withbotshq/shared": "*",
     "@withbotshq/ui": "*",
     "class-variance-authority": "^0.5.2",
     "date-fns": "^2.29.3",
