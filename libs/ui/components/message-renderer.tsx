@@ -1,9 +1,8 @@
+import {Message} from '@withbotshq/shared/schema'
 import {FC} from 'react'
 import ReactMarkdown from 'react-markdown'
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 import remarkGfm from 'remark-gfm'
-// FIXME: Move these types to a shared location
-import {Message} from '../../../apps/desktop/src/main/db/schema'
 import oneDark from '../one-dark'
 
 export const MessageRenderer: FC<{message: Message}> = ({message}) => {

@@ -1,10 +1,10 @@
 import {assert} from '@jclem/assert'
+import {Chat, Message} from '@withbotshq/shared/schema'
 import {app} from 'electron'
 import fs from 'fs'
 import path from 'path'
 import {BotsFile} from '../botsfile'
 import {readJSONFile, toJSON, writeJSONFile} from '../fsutil'
-import {Chat, Message} from './schema'
 
 export const dataPath = path.join(app.getPath('userData'), 'data')
 const databaseStatePath = path.join(dataPath, 'database.json')

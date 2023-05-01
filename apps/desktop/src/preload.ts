@@ -1,8 +1,8 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
+import {Chat, Message} from '@withbotshq/shared/schema'
 import {IpcRendererEvent, contextBridge, ipcRenderer} from 'electron'
-import {Chat, Message} from './main/db/schema'
 
 const api = {
   // Configuration
