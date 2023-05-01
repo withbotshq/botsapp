@@ -2,8 +2,10 @@ import {FC} from 'react'
 import ReactMarkdown from 'react-markdown'
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 import remarkGfm from 'remark-gfm'
-import {Message} from '../../main/db/schema'
-import oneDark from '../one-dark'
+// FIXME: Move these types to a shared location
+import {Message} from '../../../apps/desktop/src/main/db/schema'
+// FIXME: Move these types to a shared location
+import oneDark from '../../../apps/desktop/src/renderer/one-dark'
 
 export const MessageRenderer: FC<{message: Message}> = ({message}) => {
   const onClickCopy = (code: string) => {
