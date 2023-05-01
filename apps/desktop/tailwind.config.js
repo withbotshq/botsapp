@@ -5,7 +5,11 @@ const colors = require('tailwindcss/colors')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./index.html', './src/renderer/**/*.{ts,tsx}'],
+  content: [
+    './index.html',
+    './src/renderer/**/*.{ts,tsx}',
+    '../../libs/ui/**/*.{ts,tsx}'
+  ],
   theme: {
     fontSize: {
       xs: '0.625rem',
