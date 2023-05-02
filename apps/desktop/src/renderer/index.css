@@ -40,16 +40,20 @@ td {
 }
 
 .markdown {
-  @apply flex flex-col gap-2;
+  @apply flex flex-col gap-4;
 }
 
 .markdown > * {
-  @apply min-w-0;
-  @apply flex-1;
+  @apply min-w-0 flex-1;
 }
 
 .markdown p {
-  @apply whitespace-pre-wrap;
+  @apply whitespace-pre-wrap break-words;
+}
+
+.markdown ol,
+.markdown ul {
+  @apply flex flex-col gap-1.5;
 }
 
 .markdown ol {
@@ -64,12 +68,8 @@ td {
   @apply ml-4 list-outside;
 }
 
-.markdown li > p:first-child {
-  @apply inline-block;
-}
-
 .markdown li::marker {
-  @apply mr-0 pr-0 !important;
+  @apply text-gray-500;
 }
 
 .markdown h1 {
