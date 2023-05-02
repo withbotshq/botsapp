@@ -146,7 +146,7 @@ export const Main: FC = () => {
 
       <AppWindow.Right>
         <div className="flex h-full">
-          <div className="flex h-full flex-1 flex-col">
+          <div className="flex min-w-0 flex-1 flex-col">
             <div className="app-region-drag flex-none border-b">
               <TitleBar
                 title={windowTitle}
