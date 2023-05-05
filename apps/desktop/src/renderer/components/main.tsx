@@ -28,7 +28,7 @@ export const Main: FC = () => {
     }
   })
 
-  const currentChat =
+  const currentChat: Chat | null =
     chatsQuery.data?.find(chat => chat.id === currentChatId) ?? null
 
   const windowTitle = currentChat
@@ -122,6 +122,7 @@ export const Main: FC = () => {
   return (
     <AppWindow>
       <AppWindow.Left>
+        <h1>{api.env ?? 'HI'}</h1>
         <div className="flex h-full flex-col">
           <div className="app-region-drag flex h-[44px] flex-none items-center justify-between pl-[15px] pr-2">
             <div className="h-[12px] w-[52px]" />
@@ -187,7 +188,7 @@ export const Main: FC = () => {
 
           {showInfoPanel && (
             <div className="max-w-[240px] flex-1 border-l">
-              <ChatSettings />
+              <ChatSettings currentChat={currentChat} />
             </div>
           )}
         </div>

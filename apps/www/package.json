@@ -3,11 +3,16 @@
   "version": "0.1.17",
   "dependencies": {
     "@clerk/nextjs": "^4.16.4",
-    "@withbotshq/ui": "*",
+    "@planetscale/database": "^1.7.0",
+    "@withbotshq/shared": "^0.1.16",
+    "@withbotshq/ui": "^0.1.16",
+    "drizzle-orm": "^0.25.4",
     "next": "^13.3.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tailwindcss": "^3.3.1"
+    "tailwindcss": "^3.3.1",
+    "ulid": "^2.3.0",
+    "zod": "^3.21.4"
   },
   "nx": {
     "targets": {
@@ -19,6 +24,7 @@
     }
   },
   "devDependencies": {
+    "@jclem/assert": "^2.0.1",
     "@types/node": "^18.16.0",
     "@types/react": "^18.0.38",
     "@types/react-dom": "^18.0.11",

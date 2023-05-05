@@ -5,6 +5,7 @@ export const Chat = z.object({
   id: z.number(),
   name: z.string().nullable(),
   config: BotsFile.optional().nullable(),
+  shareUUID: z.string().optional().nullable(),
   createdAt: z.number(),
   updatedAt: z.number()
 })

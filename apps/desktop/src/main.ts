@@ -22,7 +22,8 @@ import {
   listChats,
   listMessages,
   renameChat,
-  runMigrations
+  runMigrations,
+  toggleChatShare
 } from './main/db/db'
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string
@@ -201,6 +202,9 @@ app.on('ready', () => {
   ipcMain.handle('chats:list', listChats)
   ipcMain.handle('chats:rename', (event, chatId, name) =>
     renameChat(chatId, name)
+  )
+  ipcMain.handle('chats:toggle-share', (event, chatId) =>
+    toggleChatShare(chatId)
   )
   ipcMain.handle('messages:create', (event, chatId, role, content) => {
     const message = createMessage(chatId, role, content)

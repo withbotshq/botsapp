@@ -90,6 +90,58 @@ export function deleteChat(chatId: number): void {
   writeChatsIndex(chatsIndex)
 }
 
+export async function toggleChatShare(chatId: number): Promise<void> {
+  const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
+
+  if (!chat.shareUUID) {
+    const messages = await listMessages(chatId, {onlyServer: true})
+
+    const resp = await fetch('http://localhost:3000/api/chats', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({name: chat.name, messages})
+    })
+
+    if (!resp.ok) {
+      console.error(
+        'Failed to share chat',
+        resp.status,
+        resp.statusText,
+        await resp.text()
+      )
+      throw new Error('Failed to share chat')
+    }
+
+    const {
+      data: {uuid}
+    } = await resp.json()
+    chat.shareUUID = uuid
+  } else {
+    const resp = await fetch(
+      `http://localhost:3000/api/chats/${chat.shareUUID}`,
+      {
+        method: 'DELETE'
+      }
+    )
+
+    if (!resp.ok) {
+      console.error(
+        'Failed to share chat',
+        resp.status,
+        resp.statusText,
+        await resp.text()
+      )
+      throw new Error('Failed to unshare chat')
+    }
+
+    chat.shareUUID = null
+  }
+
+  writeChatsIndex(chatsIndex)
+}
+
 export function createMessage(
   chatId: number,
   role: 'user' | 'assistant' | 'system',

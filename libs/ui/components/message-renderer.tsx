@@ -1,11 +1,11 @@
-import {Message} from '@withbotshq/shared/schema'
+import {MessageBase} from '@withbotshq/shared/schema'
 import {FC} from 'react'
 import ReactMarkdown from 'react-markdown'
-import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 import remarkGfm from 'remark-gfm'
-import oneDark from '../one-dark'
 
-export const MessageRenderer: FC<{message: Message}> = ({message}) => {
+export const MessageRenderer: FC<{message: Pick<MessageBase, 'content'>}> = ({
+  message
+}) => {
   const onClickCopy = (code: string) => {
     navigator.clipboard.writeText(code)
   }
@@ -35,17 +35,7 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
                 </div>
               </div>
 
-              <div>
-                <SyntaxHighlighter
-                  {...props}
-                  className={className}
-                  language={language}
-                  PreTag="pre"
-                  style={oneDark}
-                >
-                  {String(children).replace(/\n$/, '')}
-                </SyntaxHighlighter>
-              </div>
+              <div>{String(children).replace(/\n$/, '')}</div>
             </div>
           ) : (
             <code {...props} className={className}>
