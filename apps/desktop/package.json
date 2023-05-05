@@ -10,7 +10,7 @@
   },
   "main": "./.webpack/main",
   "scripts": {
-    "start": "electron-forge start",
+    "dev": "electron-forge start",
     "build": "electron-forge package",
     "copy": "cp -R out/stable/Bots-darwin-*/Bots.app/ /Applications/Bots.app",
     "make": "electron-forge make",
