@@ -21,6 +21,16 @@ const api = {
   renameChat: (chatId: number, name: string | null): Promise<void> =>
     ipcRenderer.invoke('chats:rename', chatId, name),
   listChats: (): Promise<Chat[]> => ipcRenderer.invoke('chats:list'),
+  toggleChatShare: (chatId: number): Promise<void> =>
+    ipcRenderer.invoke('chats:toggle-share', chatId),
+
+  getChatShareURL: (uuid: string): string => {
+    if (process.env.NODE_ENV === 'development') {
+      return `http://localhost:3000/shared-chats/${uuid}`
+    } else {
+      return `https://botsapp-www.vercel.app/shared-chats/${uuid}`
+    }
+  },
 
   onChatRename: (
     callback: (event: IpcRendererEvent, chatId: number) => void

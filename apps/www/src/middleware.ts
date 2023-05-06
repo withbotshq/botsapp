@@ -1,11 +1,22 @@
 import {getAuth, withClerkMiddleware} from '@clerk/nextjs/server'
 import {NextRequest, NextResponse} from 'next/server'
 
-const publicPaths = ['/', '/login*', '/signup*']
+const publicPaths = [
+  '/',
+  '/login*',
+  '/signup*',
+  '/api/chats',
+  '/api/chats/\\w+',
+  '/api/chats/\\w+/messages',
+  '/api/chats/\\w+/messages/\\w+',
+  '/shared-chats/\\w+$'
+]
 
 const isPublic = (path: string) =>
-  publicPaths.find((publicPath) =>
-    path.match(new RegExp(`^${publicPath}$`.replace('*$', '($|/)')))
+  Boolean(
+    publicPaths.find((publicPath) =>
+      path.match(new RegExp(`^${publicPath}$`.replace('*$', '($|/)')))
+    )
   )
 
 export default withClerkMiddleware((req: NextRequest) => {

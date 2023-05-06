@@ -4,6 +4,8 @@ import {Chat, Message} from '@withbotshq/shared/schema'
 import {app} from 'electron'
 import fs from 'fs'
 import path from 'path'
+import * as api from '../api'
+import {ShareQueue} from '../chat/share-queue'
 import {readJSONFile, toJSON, writeJSONFile} from '../fsutil'
 
 export const dataPath = path.join(app.getPath('userData'), 'data')
@@ -44,6 +46,7 @@ interface ChatState {
 
 const databaseState = readJSONFile(databaseStatePath) as DatabaseState
 const chatsIndex = readJSONFile(chatsIndexPath) as ChatsIndex
+const shareQueue = new ShareQueue()
 
 export function runMigrations() {
   return
@@ -71,6 +74,10 @@ export function renameChat(chatId: number, name: string | null): void {
   const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
   chat.name = name
   writeChatsIndex(chatsIndex)
+
+  if (chat.shareUUID) {
+    shareQueue.enqueueUpdateChat(chat)
+  }
 }
 
 export function listChats(): Chat[] {
@@ -82,11 +89,33 @@ export function getChat(id: number): Chat {
 }
 
 export function deleteChat(chatId: number): void {
+  const chat = getChat(chatId)
+
   // First, delete the chat state from disk.
   fs.unlinkSync(path.join(chatStatesPath, `${getChatIdString(chatId)}.json`))
 
   // Next, update the index.
   chatsIndex.chats = chatsIndex.chats.filter(chat => chat.id !== chatId)
+  writeChatsIndex(chatsIndex)
+
+  // Also, unshare the chat.
+  if (chat.shareUUID) {
+    shareQueue.enqueueDisableSharing(chat)
+  }
+}
+
+export async function toggleChatShare(chatId: number): Promise<void> {
+  const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
+
+  if (!chat.shareUUID) {
+    const messages = listMessages(chatId, {onlyServer: true})
+    const resp = await api.enableChatSharing(chat, messages)
+    chat.shareUUID = resp.data.uuid
+  } else {
+    await api.disableChatSharing(chat)
+    chat.shareUUID = null
+  }
+
   writeChatsIndex(chatsIndex)
 }
 
@@ -119,6 +148,12 @@ export function createMessage(
   chat.updatedAt = message.createdAt
   writeChatsIndex(chatsIndex)
 
+  // Also, share the message.
+  if (chat.shareUUID && !message.clientOnly) {
+    console.log('queue')
+    shareQueue.enqueueShareMessage(chat, message)
+  }
+
   return message
 }
 
@@ -138,6 +173,7 @@ export function listMessages(
 export function deleteMessage(chatId: number, messageId: number): void {
   // First, read the chat state from disk.
   const chatState = readChatState(chatId)
+  const message = assert(chatState.messages.find(m => m.id === messageId))
 
   // Next, update the chat state.
   chatState.messages = chatState.messages.filter(
@@ -151,6 +187,11 @@ export function deleteMessage(chatId: number, messageId: number): void {
   const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
   chat.updatedAt = Date.now()
   writeChatsIndex(chatsIndex)
+
+  // Also, unshare the message.
+  if (chat.shareUUID && !message.clientOnly) {
+    shareQueue.enqueueUnshareMessage(chat, message)
+  }
 }
 
 function timestamps(creating: true): {createdAt: number; updatedAt: number}

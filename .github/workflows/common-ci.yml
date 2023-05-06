@@ -24,4 +24,4 @@ jobs:
       - run: npm ci
       - run: npx nx format:check --all
       - run: git branch --track main origin/main
-      - run: npx nx affected -t check
+      - run: npx nx affected -t lint
