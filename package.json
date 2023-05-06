@@ -18,6 +18,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "build": "nx run-many --target=build --output-style=stream",
+    "lint": "nx run-many --target=lint --output-style=stream",
     "dev": "nx run-many --target=dev --output-style=stream",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

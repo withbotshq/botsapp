@@ -1,7 +1,7 @@
-import {assert} from '@jclem/assert'
+import {assert, assertEquals} from '@jclem/assert'
 import {connect} from '@planetscale/database'
-import {Message} from '@withbotshq/shared/schema'
-import {InferModel, eq} from 'drizzle-orm'
+import {Chat, Message} from '@withbotshq/shared/schema'
+import {InferModel, and, eq} from 'drizzle-orm'
 import {
   bigint,
   datetime,
@@ -23,7 +23,7 @@ const db = drizzle(conn)
 
 const chats = mysqlTable('chats', {
   id: serial('id').primaryKey(),
-  clientId: bigint('client_id', {mode: 'number'}).notNull(),
+  clientID: bigint('client_id', {mode: 'number'}).notNull(),
   uuid: varchar('uuid', {length: 26}).notNull(),
   name: varchar('name', {length: 64}).notNull(),
   insertedAt: datetime('inserted_at').notNull(),
@@ -34,8 +34,8 @@ type ChatRecord = InferModel<typeof chats>
 
 const messages = mysqlTable('messages', {
   id: serial('id').primaryKey(),
-  clientId: bigint('client_id', {mode: 'number'}).notNull(),
-  chatId: bigint('chat_id', {mode: 'number'}).notNull(),
+  clientID: bigint('client_id', {mode: 'number'}).notNull(),
+  chatID: bigint('chat_id', {mode: 'number'}).notNull(),
   role: varchar('role', {length: 16}).notNull(),
   content: text('content').notNull(),
   insertedAt: datetime('inserted_at').notNull(),
@@ -45,8 +45,7 @@ const messages = mysqlTable('messages', {
 type MessageRecord = InferModel<typeof messages>
 
 export async function createChat(
-  name: string | null,
-  chatId: number,
+  chat: Chat,
   messageHistory: Message[]
 ): Promise<string> {
   const now = new Date()
@@ -54,17 +53,21 @@ export async function createChat(
 
   await db.transaction(async (tx) => {
     const {insertId} = await tx.insert(chats).values({
-      name: name ?? 'Untitled chat',
-      clientId: chatId,
+      name: chat.name ?? 'Untitled chat',
+      clientID: chat.id,
       uuid: chatUUID,
       insertedAt: now,
       updatedAt: now
     })
 
+    if (messageHistory.length === 0) {
+      return
+    }
+
     await tx.insert(messages).values(
       messageHistory.map((message) => ({
-        clientId: message.id,
-        chatId: parseInt(insertId),
+        clientID: message.id,
+        chatID: parseInt(insertId),
         role: message.role,
         content: message.content,
         insertedAt: now,
@@ -76,25 +79,39 @@ export async function createChat(
   return chatUUID
 }
 
-export async function deleteChat(chatUUID: string): Promise<void> {
-  const chat = await getChatByUUID(chatUUID)
+export async function updateChat(
+  chatClientID: number,
+  chatUpdate: Pick<Chat, 'name'>
+): Promise<void> {
+  const chat = await getChatByClientID(chatClientID)
+
+  await db
+    .update(chats)
+    .set({
+      name: chatUpdate.name ?? 'Untitled chat'
+    })
+    .where(eq(chats.clientID, chatClientID))
+}
+
+export async function deleteChat(chatClientID: number): Promise<void> {
+  const chat = await getChatByClientID(chatClientID)
 
   await db.transaction(async (tx) => {
-    await tx.delete(chats).where(eq(chats.uuid, chatUUID))
-    await tx.delete(messages).where(eq(messages.chatId, chat.id))
+    await tx.delete(chats).where(eq(chats.clientID, chatClientID))
+    await tx.delete(messages).where(eq(messages.chatID, chat.id))
   })
 }
 
 export async function createMessage(
-  chatUUID: string,
+  chatClientID: number,
   message: Message
 ): Promise<void> {
   const now = new Date()
-  const chat = await getChatByUUID(chatUUID)
+  const chat = await getChatByClientID(chatClientID)
 
   await db.insert(messages).values({
-    chatId: chat.id,
-    clientId: message.id,
+    chatID: chat.id,
+    clientID: message.id,
     role: message.role,
     content: message.content,
     insertedAt: now,
@@ -102,8 +119,31 @@ export async function createMessage(
   })
 }
 
+export async function deleteMessage(
+  chatClientID: number,
+  messageClientID: number
+): Promise<void> {
+  const chat = await getChatByClientID(chatClientID)
+
+  const result = await db
+    .delete(messages)
+    .where(
+      and(eq(messages.chatID, chat.id), eq(messages.clientID, messageClientID))
+    )
+
+  assertEquals(result.rowsAffected, 1, 'rows deleted != 1')
+}
+
 export async function getChatByUUID(uuid: string) {
   const selected = await db.select().from(chats).where(eq(chats.uuid, uuid))
+  return assert(selected.at(0), 'no chat found')
+}
+
+export async function getChatByClientID(clientID: number) {
+  const selected = await db
+    .select()
+    .from(chats)
+    .where(eq(chats.clientID, clientID))
   return assert(selected.at(0), 'no chat found')
 }
 
@@ -113,7 +153,7 @@ export async function getChatMessagesByUUID(
   const chatMessages = await db
     .select({messages})
     .from(messages)
-    .innerJoin(chats, eq(messages.chatId, chats.id))
+    .innerJoin(chats, eq(messages.chatID, chats.id))
     .where(eq(chats.uuid, uuid))
 
   return chatMessages.map((m) => m.messages)

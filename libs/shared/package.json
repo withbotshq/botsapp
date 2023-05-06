@@ -4,7 +4,8 @@
   "private": true,
   "dependencies": {
     "@jclem/assert": "^1.2.2",
-    "decompress": "^4.2.1"
+    "decompress": "^4.2.1",
+    "zod": "^3.21.4"
   },
   "scripts": {
     "lint": "eslint ."

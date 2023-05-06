@@ -8,6 +8,7 @@ const publicPaths = [
   '/api/chats',
   '/api/chats/\\w+',
   '/api/chats/\\w+/messages',
+  '/api/chats/\\w+/messages/\\w+',
   '/shared-chats/\\w+$'
 ]
 
