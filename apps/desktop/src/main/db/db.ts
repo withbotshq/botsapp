@@ -94,14 +94,14 @@ export async function toggleChatShare(chatId: number): Promise<void> {
   const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
 
   if (!chat.shareUUID) {
-    const messages = await listMessages(chatId, {onlyServer: true})
+    const messages = listMessages(chatId, {onlyServer: true})
 
     const resp = await fetch('http://localhost:3000/api/chats', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({name: chat.name, messages})
+      body: JSON.stringify({name: chat.name, chatId: chat.id, messages})
     })
 
     if (!resp.ok) {

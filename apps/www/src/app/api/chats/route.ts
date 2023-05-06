@@ -1,11 +1,12 @@
-import {MessageBase} from '@withbotshq/shared/schema'
+import {Message} from '@withbotshq/shared/schema'
 import {NextRequest, NextResponse} from 'next/server'
 import {z} from 'zod'
 import {createChat} from '~/db'
 
 const CreateChat = z.object({
   name: z.string().nullable(),
-  messages: z.array(MessageBase)
+  chatId: z.number(),
+  messages: z.array(Message)
 })
 type CreateChat = z.infer<typeof CreateChat>
 
@@ -17,6 +18,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({error: input.error}, {status: 422})
   }
 
-  const chatUUID = await createChat(input.data.name, input.data.messages)
+  const chatUUID = await createChat(
+    input.data.name,
+    input.data.chatId,
+    input.data.messages
+  )
+
   return NextResponse.json({data: {uuid: chatUUID}})
 }
