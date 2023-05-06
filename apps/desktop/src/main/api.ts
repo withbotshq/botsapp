@@ -10,7 +10,7 @@ import {Chat, Message} from '@withbotshq/shared/schema'
 const apiURL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
-    : 'https://botsapp-www.vercel.dev'
+    : 'https://botsapp-www.vercel.app'
 
 export async function enableChatSharing(
   chat: Chat,

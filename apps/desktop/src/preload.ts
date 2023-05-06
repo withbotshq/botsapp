@@ -28,7 +28,7 @@ const api = {
     if (process.env.NODE_ENV === 'development') {
       return `http://localhost:3000/shared-chats/${uuid}`
     } else {
-      return `https://botsapp-www.vercel.dev/shared-chats/${uuid}`
+      return `https://botsapp-www.vercel.app/shared-chats/${uuid}`
     }
   },
 
