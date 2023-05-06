@@ -6,6 +6,8 @@ const publicPaths = [
   '/login*',
   '/signup*',
   '/api/chats',
+  '/api/chats/\\w+',
+  '/api/chats/\\w+/messages',
   '/shared-chats/\\w+$'
 ]
 

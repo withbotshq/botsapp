@@ -128,7 +128,7 @@ export async function toggleChatShare(chatId: number): Promise<void> {
 
     if (!resp.ok) {
       console.error(
-        'Failed to share chat',
+        'Failed to unshare chat',
         resp.status,
         resp.statusText,
         await resp.text()
