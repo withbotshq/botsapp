@@ -3,7 +3,7 @@
   "version": "0.1.17",
   "private": true,
   "dependencies": {
-    "@jclem/assert": "^1"
+    "@jclem/assert": "^2"
   },
   "scripts": {
     "lint": "eslint ."
