@@ -18,6 +18,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "check": "konk run c -cgL -n'check:*'",
+    "check:format": "nx format:check",
+    "check:lint": "nx run-many -t lint",
+    "fix": "nx format:write",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "workspaces": [
@@ -30,6 +34,7 @@
     "eslint-config-prettier": "^9",
     "eslint-plugin-react": "^7",
     "eslint-plugin-react-hooks": "^4",
+    "konk": "*",
     "nx": "^16",
     "nx-cloud": "^16",
     "prettier": "^3",
