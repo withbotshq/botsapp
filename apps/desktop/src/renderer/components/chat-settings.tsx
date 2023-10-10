@@ -17,21 +17,8 @@ const ChatSettings: FC = () => {
     onSuccess: () => queryClient.invalidateQueries(['config:openAIAPIKey'])
   })
 
-  const vaultLocationQuery = useQuery({
-    queryKey: ['config:vaultLocation'],
-    queryFn: api.getVaultLocation
-  })
-
-  const chooseVaultLocation = () => {
-    api.chooseVaultLocation()
-  }
-
   return (
     <div className="flex w-full flex-col gap-4 p-2">
-      <h1 className="text-sm font-bold uppercase text-gray-700">
-        App Settings
-      </h1>
-
       <div className="w-full">
         <h3 className="text-xs font-bold uppercase text-gray-500">
           OpenAI API Token
@@ -47,9 +34,7 @@ const ChatSettings: FC = () => {
       </div>
 
       <div className="w-full">
-        <h3 className="text-xs font-bold uppercase text-gray-500">
-          Default Model
-        </h3>
+        <h3 className="text-xs font-bold uppercase text-gray-500">Model</h3>
 
         <select
           className="w-full rounded border bg-transparent p-2 py-1 dark:text-white"
@@ -59,23 +44,6 @@ const ChatSettings: FC = () => {
           <option value="gpt-3.5-turbo">GPT-3.5-Turbo</option>
           <option value="gpt-4">GPT-4</option>
         </select>
-      </div>
-
-      <div className="w-full">
-        <h3 className="text-xs font-bold uppercase text-gray-500">
-          Vault Location
-        </h3>
-
-        <div className="flex flex-col gap-1">
-          <p className="font-mono text-xs">{vaultLocationQuery.data}</p>
-
-          <button
-            className="rounded bg-gray-300 px-2 py-1"
-            onClick={chooseVaultLocation}
-          >
-            Choose
-          </button>
-        </div>
       </div>
     </div>
   )

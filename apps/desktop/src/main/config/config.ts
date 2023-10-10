@@ -20,8 +20,7 @@ const Config = z.object({
   openAIAPIKey: z.preprocess(
     v => (typeof v === 'string' ? v : null),
     z.string().nullable()
-  ),
-  vaultLocation: z.string().nullable().default(null)
+  )
 })
 
 type Config = z.infer<typeof Config>
@@ -33,11 +32,6 @@ export const config: Readonly<Config> = globalConfig
 
 export function setOpenAIAPIKey(key: string): void {
   globalConfig.openAIAPIKey = key
-  writeUserConfig(config)
-}
-
-export function setVaultLocation(location: string): void {
-  globalConfig.vaultLocation = location
   writeUserConfig(config)
 }
 
@@ -56,7 +50,6 @@ function readUserConfig(): Config {
     return writeUserConfig({
       version: 0,
       openAIAPIKey: null,
-      vaultLocation: null,
       model: {
         key: 'gpt-3.5-turbo',
         title: 'GPT-3.5 Turbo'
