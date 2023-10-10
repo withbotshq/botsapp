@@ -73,6 +73,32 @@ export function renameChat(chatId: number, name: string | null): void {
   writeChatsIndex(chatsIndex)
 }
 
+export function setChatModel(chatId: number, model: string | null): void {
+  const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
+  const chatConfig: BotsFile = chat.config ?? {
+    version: '0.0.0',
+    model: null,
+    systemMessage: null
+  }
+
+  if (model === null) {
+    chatConfig.model = null
+  } else {
+    switch (model) {
+      case 'gpt-3.5-turbo':
+      case 'gpt-4':
+        chatConfig.model = model
+        break
+      default:
+        throw new Error(`Invalid model: ${model}`)
+    }
+  }
+
+  chat.config = chatConfig
+
+  writeChatsIndex(chatsIndex)
+}
+
 export function listChats(): Chat[] {
   return [...chatsIndex.chats].sort((a, b) => b.createdAt - a.createdAt)
 }

@@ -28,7 +28,7 @@ export const Main: FC = () => {
     }
   })
 
-  const currentChat =
+  const currentChat: Chat | null =
     chatsQuery.data?.find(chat => chat.id === currentChatId) ?? null
 
   const windowTitle = currentChat
@@ -187,7 +187,7 @@ export const Main: FC = () => {
 
           {showInfoPanel && (
             <div className="max-w-[240px] flex-1 border-l">
-              <ChatSettings />
+              <ChatSettings currentChat={currentChat} />
             </div>
           )}
         </div>

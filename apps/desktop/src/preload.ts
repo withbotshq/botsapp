@@ -29,6 +29,9 @@ const api = {
     return () => ipcRenderer.removeListener('chat:rename', callback)
   },
 
+  setChatModel: (chatId: number, model: string | null) =>
+    ipcRenderer.invoke('chats:setModel', chatId, model),
+
   createMessage: (
     chatId: number,
     role: string,

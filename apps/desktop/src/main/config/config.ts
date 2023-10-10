@@ -4,7 +4,7 @@ import path from 'path'
 import z from 'zod'
 import {readJSONFile, writeJSONFile} from '../fsutil'
 
-const modelTitles: Record<string, string | undefined> = {
+export const modelTitles: Record<string, string | undefined> = {
   'gpt-3.5-turbo': 'GPT-3.5 Turbo',
   'gpt-4': 'GPT-4'
 }
