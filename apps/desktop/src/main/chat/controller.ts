@@ -102,7 +102,7 @@ export class ChatController {
 
   async sendMessage(message: Message) {
     const chat = getChat(message.chatId)
-    const systemMessage = chat.config?.systemMessage.content
+    const systemMessage = chat.config?.systemMessage?.content
       ? ({
           role: 'system',
           content: chat.config.systemMessage.content
