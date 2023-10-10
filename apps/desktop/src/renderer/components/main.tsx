@@ -32,7 +32,9 @@ export const Main: FC = () => {
     chatsQuery.data?.find(chat => chat.id === currentChatId) ?? null
 
   const windowTitle = currentChat
-    ? `${currentChat.name ?? 'Untitled chat'} (${modelQuery.data?.title})`
+    ? `${currentChat.name ?? 'Untitled chat'} (${
+        currentChat.config?.model?.title ?? modelQuery.data?.title
+      })`
     : 'Chat'
 
   const messagesQuery = useQuery({

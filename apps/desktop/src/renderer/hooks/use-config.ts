@@ -18,3 +18,22 @@ export function useConfigModel() {
     mutation: modelMutation
   }
 }
+
+export function useConfigTemperature() {
+  const queryClient = useQueryClient()
+
+  const temperatureQuery = useQuery({
+    queryKey: ['config:temperature'],
+    queryFn: () => api.getTemperature()
+  })
+
+  const temperatureMutation = useMutation({
+    mutationFn: async (temperature: number) => api.setTemperature(temperature),
+    onSuccess: () => queryClient.invalidateQueries(['config:temperature'])
+  })
+
+  return {
+    query: temperatureQuery,
+    mutation: temperatureMutation
+  }
+}

@@ -4,7 +4,13 @@ import {z} from 'zod'
 
 export const BotsFile = z.object({
   version: z.literal('0.0.0'),
-  model: z.union([z.literal('gpt-3.5-turbo'), z.literal('gpt-4')]).nullable(),
+  model: z
+    .object({
+      key: z.string(),
+      title: z.string()
+    })
+    .nullable(),
+  temperature: z.number().min(0).max(2).nullable(),
   systemMessage: z
     .object({
       type: z.literal('text'),

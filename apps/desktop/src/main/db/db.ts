@@ -4,6 +4,7 @@ import {Chat, Message} from '@withbotshq/shared/schema'
 import {app} from 'electron'
 import fs from 'fs'
 import path from 'path'
+import {isValidModel, modelTitles} from '../config/config'
 import {readJSONFile, toJSON, writeJSONFile} from '../fsutil'
 
 export const dataPath = path.join(app.getPath('userData'), 'data')
@@ -78,21 +79,61 @@ export function setChatModel(chatId: number, model: string | null): void {
   const chatConfig: BotsFile = chat.config ?? {
     version: '0.0.0',
     model: null,
-    systemMessage: null
+    systemMessage: null,
+    temperature: null
   }
 
   if (model === null) {
     chatConfig.model = null
   } else {
-    switch (model) {
-      case 'gpt-3.5-turbo':
-      case 'gpt-4':
-        chatConfig.model = model
-        break
-      default:
-        throw new Error(`Invalid model: ${model}`)
+    if (!isValidModel(model)) {
+      throw new Error(`Invalid model: ${model}`)
+    }
+
+    chatConfig.model = {
+      key: model,
+      title: modelTitles[model]
     }
   }
+
+  chat.config = chatConfig
+
+  writeChatsIndex(chatsIndex)
+}
+
+export function setChatSystemMessage(chatId: number, content: string | null) {
+  const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
+  const chatConfig: BotsFile = chat.config ?? {
+    version: '0.0.0',
+    model: null,
+    systemMessage: null,
+    temperature: null
+  }
+
+  if (content === null) {
+    chatConfig.systemMessage = null
+  } else {
+    chatConfig.systemMessage = {
+      type: 'text',
+      content
+    }
+  }
+
+  chat.config = chatConfig
+
+  writeChatsIndex(chatsIndex)
+}
+
+export function setChatTemperature(chatId: number, temperature: number | null) {
+  const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
+  const chatConfig: BotsFile = chat.config ?? {
+    version: '0.0.0',
+    model: null,
+    systemMessage: null,
+    temperature: null
+  }
+
+  chatConfig.temperature = temperature
 
   chat.config = chatConfig
 

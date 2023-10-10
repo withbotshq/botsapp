@@ -108,7 +108,7 @@ export class ChatController {
           content: chat.config.systemMessage.content
         } as const)
       : this.#systemMessage
-    const model = chat.config?.model ?? config.model.key
+    const model = chat.config?.model?.key ?? config.model.key
 
     // Includes the new message already.
     const [messageHistory, tokenCount, wasTruncated] =
@@ -135,6 +135,17 @@ export class ChatController {
 
     this.#partialMessages.set(message.chatId, partialMessage)
 
+    const body = JSON.stringify({
+      model,
+      max_tokens: REPLY_MAX_TOKENS,
+      messages: messageHistory.map(m => ({
+        role: m.role,
+        content: m.content
+      })),
+      temperature: chat.config?.temperature ?? config.temperature,
+      stream: true
+    })
+
     // TODO: Handle no API key being set, yet.
     const resp = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -143,16 +154,7 @@ export class ChatController {
         Authorization: `Bearer ${assert(config.openAIAPIKey)}`
       },
       signal: partialMessage.abortController.signal,
-      body: JSON.stringify({
-        model,
-        max_tokens: REPLY_MAX_TOKENS,
-        messages: messageHistory.map(m => ({
-          role: m.role,
-          content: m.content
-        })),
-        temperature: 0.8,
-        stream: true
-      })
+      body
     })
 
     if (!resp.ok) {

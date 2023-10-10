@@ -16,6 +16,11 @@ const api = {
     ipcRenderer.invoke('config:getModel'),
   setModel: (model: string): void => ipcRenderer.send('config:setModel', model),
 
+  getTemperature: (): Promise<number> =>
+    ipcRenderer.invoke('config:getTemperature'),
+  setTemperature: (temperature: number): void =>
+    ipcRenderer.send('config:setTemperature', temperature),
+
   // Database
   createChat: (): Promise<Chat> => ipcRenderer.invoke('chats:create'),
   renameChat: (chatId: number, name: string | null): Promise<void> =>
@@ -31,6 +36,12 @@ const api = {
 
   setChatModel: (chatId: number, model: string | null) =>
     ipcRenderer.invoke('chats:setModel', chatId, model),
+
+  setChatSystemMessage: (chatId: number, content: string | null) =>
+    ipcRenderer.invoke('chats:setSystemMessage', chatId, content),
+
+  setChatTemperature: (chatId: number, temperature: number | null) =>
+    ipcRenderer.invoke('chats:setTemperature', chatId, temperature),
 
   createMessage: (
     chatId: number,

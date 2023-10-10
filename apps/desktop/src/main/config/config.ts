@@ -4,7 +4,7 @@ import path from 'path'
 import z from 'zod'
 import {readJSONFile, writeJSONFile} from '../fsutil'
 
-export const modelTitles: Record<string, string | undefined> = {
+export const modelTitles = {
   'gpt-3.5-turbo': 'GPT-3.5 Turbo',
   'gpt-4': 'GPT-4'
 }
@@ -17,6 +17,7 @@ const Config = z.object({
       title: z.string()
     })
     .default({key: 'gpt-3.5-turbo', title: 'GPT-3.5 Turbo'}),
+  temperature: z.number().min(0).max(2).default(0.8),
   openAIAPIKey: z.preprocess(
     v => (typeof v === 'string' ? v : null),
     z.string().nullable()
@@ -35,11 +36,22 @@ export function setOpenAIAPIKey(key: string): void {
   writeUserConfig(config)
 }
 
+export function isValidModel(model: string): model is keyof typeof modelTitles {
+  return Object.keys(modelTitles).includes(model)
+}
+
 export function setModel(model: string): void {
-  const modelTitle = modelTitles[model]
-  if (!modelTitle) throw new Error(`Invalid model: ${model}`)
+  if (!isValidModel(model)) {
+    throw new Error(`Invalid model: ${model}`)
+  }
+
   globalConfig.model.key = model
-  globalConfig.model.title = modelTitle
+  globalConfig.model.title = modelTitles[model]
+  writeUserConfig(config)
+}
+
+export function setTemperature(temperature: number): void {
+  globalConfig.temperature = temperature
   writeUserConfig(config)
 }
 
@@ -50,6 +62,7 @@ function readUserConfig(): Config {
     return writeUserConfig({
       version: 0,
       openAIAPIKey: null,
+      temperature: 0.8,
       model: {
         key: 'gpt-3.5-turbo',
         title: 'GPT-3.5 Turbo'

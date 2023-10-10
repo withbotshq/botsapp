@@ -12,7 +12,12 @@ import {
 } from 'electron'
 import updateElectron from 'update-electron-app'
 import {ChatController} from './main/chat/controller'
-import {config, setModel, setOpenAIAPIKey} from './main/config/config'
+import {
+  config,
+  setModel,
+  setOpenAIAPIKey,
+  setTemperature
+} from './main/config/config'
 import {
   createChat,
   createMessage,
@@ -23,7 +28,9 @@ import {
   listMessages,
   renameChat,
   runMigrations,
-  setChatModel
+  setChatModel,
+  setChatSystemMessage,
+  setChatTemperature
 } from './main/db/db'
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string
@@ -195,6 +202,10 @@ app.on('ready', () => {
   ipcMain.on('config:setOpenAIAPIKey', (event, key) => setOpenAIAPIKey(key))
   ipcMain.handle('config:getModel', () => config.model)
   ipcMain.on('config:setModel', (event, model) => setModel(model))
+  ipcMain.handle('config:getTemperature', () => config.temperature)
+  ipcMain.on('config:setTemperature', (event, temperature) =>
+    setTemperature(temperature)
+  )
   ipcMain.on('chat:stop', (event, chatId) =>
     chatController.abortMessageForChat(chatId)
   )
@@ -205,6 +216,12 @@ app.on('ready', () => {
   )
   ipcMain.handle('chats:setModel', (event, chatId, model) =>
     setChatModel(chatId, model)
+  )
+  ipcMain.handle('chats:setSystemMessage', (event, chatId, content) =>
+    setChatSystemMessage(chatId, content)
+  )
+  ipcMain.handle('chats:setTemperature', (event, chatId, temperature) =>
+    setChatTemperature(chatId, temperature)
   )
   ipcMain.handle('messages:create', (event, chatId, role, content) => {
     const message = createMessage(chatId, role, content)
