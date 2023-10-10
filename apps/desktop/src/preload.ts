@@ -16,6 +16,10 @@ const api = {
     ipcRenderer.invoke('config:getModel'),
   setModel: (model: string): void => ipcRenderer.send('config:setModel', model),
 
+  getVaultLocation: (): Promise<string> =>
+    ipcRenderer.invoke('config:getVaultLocation'),
+  chooseVaultLocation: () => ipcRenderer.invoke('config:chooseVaultLocation'),
+
   // Database
   createChat: (): Promise<Chat> => ipcRenderer.invoke('chats:create'),
   renameChat: (chatId: number, name: string | null): Promise<void> =>

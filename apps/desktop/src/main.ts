@@ -12,7 +12,12 @@ import {
 } from 'electron'
 import updateElectron from 'update-electron-app'
 import {ChatController} from './main/chat/controller'
-import {config, setModel, setOpenAIAPIKey} from './main/config/config'
+import {
+  config,
+  setModel,
+  setOpenAIAPIKey,
+  setVaultLocation
+} from './main/config/config'
 import {
   createChat,
   createMessage,
@@ -194,6 +199,24 @@ app.on('ready', () => {
   ipcMain.on('config:setOpenAIAPIKey', (event, key) => setOpenAIAPIKey(key))
   ipcMain.handle('config:getModel', () => config.model)
   ipcMain.on('config:setModel', (event, model) => setModel(model))
+  ipcMain.handle('config:getVaultLocation', () => config.vaultLocation)
+  ipcMain.handle('config:chooseVaultLocation', async () => {
+    const {
+      canceled,
+      filePaths: [dirPath]
+    } = await dialog.showOpenDialog({
+      title: 'Choose Vault Location',
+      properties: ['openDirectory']
+    })
+
+    if (canceled) {
+      return
+    }
+
+    if (dirPath) {
+      setVaultLocation(dirPath)
+    }
+  })
   ipcMain.on('chat:stop', (event, chatId) =>
     chatController.abortMessageForChat(chatId)
   )
