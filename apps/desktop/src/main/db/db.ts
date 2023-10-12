@@ -178,6 +178,8 @@ export function setChatTemperature(chatId: number, temperature: number | null) {
     temperature: null
   }
 
+  Object.assign(chat, timestamps(false))
+
   chatConfig.temperature = temperature
 
   chat.config = chatConfig
