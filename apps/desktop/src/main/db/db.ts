@@ -77,6 +77,7 @@ export function createChat({config}: {config?: BotsFile} = {}): Chat {
 export function renameChat(chatId: number, name: string | null): void {
   const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
   chat.name = name
+  Object.assign(chat, timestamps(false))
   writeChatsIndex(chatsIndex)
 }
 
@@ -89,6 +90,8 @@ export function setChatModel(chatId: number, model: string | null): void {
     systemMessage: null,
     temperature: null
   }
+
+  Object.assign(chat, timestamps(false))
 
   if (model === null) {
     chatConfig.model = null
@@ -118,6 +121,8 @@ export function setChatSystemMessage(chatId: number, content: string | null) {
     temperature: null
   }
 
+  Object.assign(chat, timestamps(false))
+
   if (content === null) {
     chatConfig.systemMessage = null
   } else {
@@ -145,6 +150,8 @@ export function toggleChatFunction(
     systemMessage: null,
     temperature: null
   }
+
+  Object.assign(chat, timestamps(false))
 
   if (!chatConfig.functions) {
     chatConfig.functions = []
