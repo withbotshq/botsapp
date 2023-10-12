@@ -54,7 +54,13 @@ export function createChat({config}: {config?: BotsFile} = {}): Chat {
   const chat: Chat = {
     id: getNextChatId(),
     name: null,
-    config: config ?? null,
+    config: config ?? {
+      version: '0.0.0',
+      model: null,
+      systemMessage: null,
+      temperature: null,
+      functions: null
+    },
     ...timestamps(true)
   }
 
