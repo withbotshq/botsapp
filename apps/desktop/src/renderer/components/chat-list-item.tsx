@@ -20,7 +20,7 @@ function ChatListItem({
   const getLastMessagesQuery = useQuery({
     queryKey: ['messages', chat.id],
     queryFn: async () => {
-      const lastMessages = await api.listMessages(chat.id)
+      const lastMessages = await api.listVisibleMessages(chat.id)
       return lastMessages
     }
   })

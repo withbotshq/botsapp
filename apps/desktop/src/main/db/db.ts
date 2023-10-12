@@ -1,6 +1,6 @@
 import {assert} from '@jclem/assert'
 import {BotsFile} from '@withbotshq/shared/botsfile'
-import {Chat, Message} from '@withbotshq/shared/schema'
+import {Chat, Message, VisibleMessage} from '@withbotshq/shared/schema'
 import {app} from 'electron'
 import fs from 'fs'
 import path from 'path'
@@ -78,6 +78,7 @@ export function setChatModel(chatId: number, model: string | null): void {
   const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
   const chatConfig: BotsFile = chat.config ?? {
     version: '0.0.0',
+    functions: [],
     model: null,
     systemMessage: null,
     temperature: null
@@ -105,6 +106,7 @@ export function setChatSystemMessage(chatId: number, content: string | null) {
   const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
   const chatConfig: BotsFile = chat.config ?? {
     version: '0.0.0',
+    functions: [],
     model: null,
     systemMessage: null,
     temperature: null
@@ -124,10 +126,40 @@ export function setChatSystemMessage(chatId: number, content: string | null) {
   writeChatsIndex(chatsIndex)
 }
 
+export function toggleChatFunction(
+  chatId: number,
+  dir: string,
+  enabled: boolean
+) {
+  const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
+  const chatConfig: BotsFile = chat.config ?? {
+    version: '0.0.0',
+    functions: [],
+    model: null,
+    systemMessage: null,
+    temperature: null
+  }
+
+  if (!chatConfig.functions) {
+    chatConfig.functions = []
+  }
+
+  if (enabled) {
+    chatConfig.functions.push(dir)
+  } else {
+    chatConfig.functions = chatConfig.functions.filter(f => f !== dir)
+  }
+
+  chat.config = chatConfig
+
+  writeChatsIndex(chatsIndex)
+}
+
 export function setChatTemperature(chatId: number, temperature: number | null) {
   const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
   const chatConfig: BotsFile = chat.config ?? {
     version: '0.0.0',
+    functions: [],
     model: null,
     systemMessage: null,
     temperature: null
@@ -159,15 +191,21 @@ export function deleteChat(chatId: number): void {
 
 export function createMessage(
   chatId: number,
-  role: 'user' | 'assistant' | 'system',
-  content: string,
-  opts: {clientOnly?: boolean} = {}
+  role: 'user' | 'assistant' | 'system' | 'function',
+  content: string | null,
+  opts: {
+    clientOnly?: boolean
+    name?: string
+    function_call?: {name: string; arguments: string}
+  } = {}
 ): Message {
   const message: Message = {
     id: getNextMessageId(),
     role,
+    name: opts.name,
     chatId,
     content,
+    function_call: opts.function_call,
     clientOnly: opts.clientOnly ?? false,
     ...timestamps(true)
   }
@@ -200,6 +238,20 @@ export function listMessages(
   }
 
   return chatState.messages
+}
+
+export function listVisibleMessages(
+  chatId: number,
+  opts: {onlyServer?: boolean} = {}
+): VisibleMessage[] {
+  const chatState = readChatState(chatId)
+  const messages = chatState.messages.filter(isVisibleMessage)
+
+  if (opts.onlyServer) {
+    return messages.filter(message => !message.clientOnly)
+  }
+
+  return messages
 }
 
 export function deleteMessage(chatId: number, messageId: number): void {
@@ -270,4 +322,8 @@ function getNextMessageId(): number {
   databaseState.nextMessageId++
   writeDatabaseState(databaseState)
   return nextId
+}
+
+function isVisibleMessage(m: Message): m is VisibleMessage {
+  return m.role !== 'function' && m.content != null
 }

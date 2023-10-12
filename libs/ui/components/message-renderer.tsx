@@ -14,20 +14,32 @@ export const MessageRenderer: FC<{message: Message}> = ({message}) => {
     <ReactMarkdown
       className="markdown break-words"
       components={{
-        code({inline, className, children, ...props}) {
+        code(allProps) {
+          const {className, children, ref: _ref, ...props} = allProps
+
           const match = /language-(\w+)/.exec(className || '')
           const language = match?.[1]
 
-          return !inline && match ? (
+          return match ? (
             <div className="rounded border border-gray-700 bg-gray-800 shadow">
               <div className="flex items-center justify-between rounded-t border-b border-gray-700 px-2 py-1">
                 <div className="text-xs text-gray-500">{language ?? ''}</div>
 
                 <div>
                   <button
-                    onClick={() =>
-                      onClickCopy(children.join('').replace(/\n$/, ''))
-                    }
+                    onClick={() => {
+                      let str: string
+
+                      if (Array.isArray(children)) {
+                        str = children.join('').replace(/\n$/, '')
+                      } else if (typeof children === 'string') {
+                        str = children
+                      } else {
+                        str = String(children)
+                      }
+
+                      onClickCopy(str)
+                    }}
                     className="text-xs text-gray-500"
                   >
                     copy

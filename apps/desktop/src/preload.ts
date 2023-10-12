@@ -1,7 +1,7 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
-import {Chat, Message} from '@withbotshq/shared/schema'
+import {Chat, Message, VisibleMessage} from '@withbotshq/shared/schema'
 import {IpcRendererEvent, contextBridge, ipcRenderer} from 'electron'
 
 const api = {
@@ -20,6 +20,10 @@ const api = {
     ipcRenderer.invoke('config:getTemperature'),
   setTemperature: (temperature: number): void =>
     ipcRenderer.send('config:setTemperature', temperature),
+
+  // Functions
+  listFunctions: (): Promise<{name: string; dir: string}[]> =>
+    ipcRenderer.invoke('functions:list'),
 
   // Database
   createChat: (): Promise<Chat> => ipcRenderer.invoke('chats:create'),
@@ -43,6 +47,9 @@ const api = {
   setChatTemperature: (chatId: number, temperature: number | null) =>
     ipcRenderer.invoke('chats:setTemperature', chatId, temperature),
 
+  setChatFunction: (chatId: number, dir: string, enabled: boolean) =>
+    ipcRenderer.invoke('chats:toggleFunction', chatId, dir, enabled),
+
   createMessage: (
     chatId: number,
     role: string,
@@ -51,6 +58,8 @@ const api = {
     ipcRenderer.invoke('messages:create', chatId, role, content),
   listMessages: (chatId: number): Promise<Message[]> =>
     ipcRenderer.invoke('messages:list', chatId),
+  listVisibleMessages: (chatId: number): Promise<VisibleMessage[]> =>
+    ipcRenderer.invoke('messages:listVisible', chatId),
 
   // Chat coordination
   getPartialMessage: (chatId: number): Promise<string[] | null> =>

@@ -10,8 +10,10 @@ import {
   ipcMain,
   shell
 } from 'electron'
+import path from 'node:path'
 import updateElectron from 'update-electron-app'
 import {ChatController} from './main/chat/controller'
+import {FunctionController} from './main/chat/function-controller'
 import {
   config,
   setModel,
@@ -26,11 +28,13 @@ import {
   deleteMessage,
   listChats,
   listMessages,
+  listVisibleMessages,
   renameChat,
   runMigrations,
   setChatModel,
   setChatSystemMessage,
-  setChatTemperature
+  setChatTemperature,
+  toggleChatFunction
 } from './main/db/db'
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string
@@ -42,6 +46,9 @@ if (require('electron-squirrel-startup')) {
 }
 
 const chatController = new ChatController()
+const fnController = new FunctionController(
+  path.join(app.getPath('userData'), 'functions')
+)
 
 const createWindow = () => {
   // Create the browser window.
@@ -223,14 +230,23 @@ app.on('ready', () => {
   ipcMain.handle('chats:setTemperature', (event, chatId, temperature) =>
     setChatTemperature(chatId, temperature)
   )
-  ipcMain.handle('messages:create', (event, chatId, role, content) => {
+  ipcMain.handle('chats:toggleFunction', (event, chatId, dir, enabled) =>
+    toggleChatFunction(chatId, dir, enabled)
+  )
+  ipcMain.handle('messages:create', async (event, chatId, role, content) => {
     const message = createMessage(chatId, role, content)
-    chatController.sendMessage(message)
+    chatController.sendMessage(message, fnController)
   })
   ipcMain.handle('messages:get-partial', (event, chatId) => {
     return chatController.getPartialMessage(chatId)
   })
   ipcMain.handle('messages:list', (event, chatId) => listMessages(chatId))
+  ipcMain.handle('messages:listVisible', (event, chatId) =>
+    listVisibleMessages(chatId)
+  )
+
+  ipcMain.handle('functions:list', () => fnController.loadFunctions())
+
   ipcMain.on('chat-list:show-context-menu', (event, chatId) => {
     const template = [
       {

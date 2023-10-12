@@ -51,6 +51,20 @@ const ChatSettings: FC<Props> = props => {
     onSuccess: () => queryClient.invalidateQueries(['chats'])
   })
 
+  const fnsQuery = useQuery({
+    queryKey: ['functions:list'],
+    queryFn: api.listFunctions
+  })
+
+  const onToggleFunction = useMutation({
+    mutationFn: async (opts: {dir: string; enabled: boolean}) => {
+      if (props.currentChat) {
+        await api.setChatFunction(props.currentChat.id, opts.dir, opts.enabled)
+      }
+    },
+    onSuccess: () => queryClient.invalidateQueries(['chats'])
+  })
+
   return (
     <div className="flex w-full flex-col gap-4 p-2">
       <div className="flex w-full flex-col gap-2">
@@ -80,6 +94,7 @@ const ChatSettings: FC<Props> = props => {
             onChange={e => modelMutation.mutate(e.target.value)}
           >
             <option value="gpt-3.5-turbo">GPT-3.5-Turbo</option>
+            <option value="gpt-3.5-turbo-16k">GPT-3.5-Turbo (16k)</option>
             <option value="gpt-4">GPT-4</option>
           </select>
         </div>
@@ -122,6 +137,7 @@ const ChatSettings: FC<Props> = props => {
             >
               <option value="">App Default</option>
               <option value="gpt-3.5-turbo">GPT-3.5-Turbo</option>
+              <option value="gpt-3.5-turbo-16k">GPT-3.5-Turbo (16k)</option>
               <option value="gpt-4">GPT-4</option>
             </select>
           </div>
@@ -168,6 +184,37 @@ const ChatSettings: FC<Props> = props => {
             >
               Use App Default
             </Button>
+          </div>
+
+          <div>
+            <h2 className="text-xs font-bold uppercase text-gray-500">
+              Functions
+            </h2>
+
+            <ul>
+              {fnsQuery.data
+                ? fnsQuery.data.map(({name, dir}) => (
+                    <li key={dir} className="flex items-center gap-1">
+                      <input
+                        type="checkbox"
+                        id={`fn-${dir}`}
+                        value={dir}
+                        checked={
+                          props.currentChat?.config?.functions?.includes(dir) ??
+                          false
+                        }
+                        onChange={e =>
+                          onToggleFunction.mutate({
+                            dir,
+                            enabled: e.target.checked
+                          })
+                        }
+                      />
+                      <label htmlFor={`fn-${dir}`}>{name}</label>
+                    </li>
+                  ))
+                : null}
+            </ul>
           </div>
         </div>
       )}

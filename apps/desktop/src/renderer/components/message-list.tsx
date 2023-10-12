@@ -1,4 +1,4 @@
-import {Message} from '@withbotshq/shared/schema'
+import {Message, VisibleMessage} from '@withbotshq/shared/schema'
 import {MessageRenderer} from '@withbotshq/ui/components/message-renderer'
 import {ScrollContainer} from '@withbotshq/ui/components/scroll-container'
 import {cva} from 'class-variance-authority'
@@ -16,7 +16,7 @@ const isSystem = (message: Message) => {
 
 interface Props {
   chatId: number
-  messages: Message[]
+  messages: VisibleMessage[]
   partialMessageChunks: string[] | null
 }
 
@@ -27,7 +27,7 @@ export const MessageList: FC<Props> = ({
 }) => {
   const {query: modelQuery} = useConfigModel()
 
-  const partialMessage: Message | null = partialMessageChunks
+  const partialMessage: VisibleMessage | null = partialMessageChunks
     ? {
         id: Math.random(),
         chatId: chatId,
@@ -55,7 +55,7 @@ export const MessageList: FC<Props> = ({
 }
 
 interface MessageProps {
-  message: Message
+  message: VisibleMessage
   modelKey: string | null
   isPartialMessage: boolean
 }

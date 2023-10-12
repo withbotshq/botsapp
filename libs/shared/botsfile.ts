@@ -11,6 +11,7 @@ export const BotsFile = z.object({
     })
     .nullable(),
   temperature: z.number().min(0).max(2).nullable(),
+  functions: z.array(z.string()).nullable(),
   systemMessage: z
     .object({
       type: z.literal('text'),
