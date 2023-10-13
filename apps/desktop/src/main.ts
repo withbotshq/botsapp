@@ -22,6 +22,7 @@ import {
   setTemperature
 } from './main/config/config'
 import {
+  clearChatHistory,
   createChat,
   createMessage,
   dataPath,
@@ -260,6 +261,16 @@ app.on('ready', () => {
           BrowserWindow.getFocusedWindow()?.webContents.send(
             'chat:rename',
             chatId
+          )
+        }
+      },
+      {
+        label: 'Clear chat history',
+        click: () => {
+          chatController.abortMessageForChat(chatId)
+          clearChatHistory(chatId)
+          BrowserWindow.getAllWindows().forEach(window =>
+            window.webContents.send('message:deleted', chatId)
           )
         }
       },

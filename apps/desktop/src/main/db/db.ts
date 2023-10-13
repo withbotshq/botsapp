@@ -204,6 +204,22 @@ export function deleteChat(chatId: number): void {
   writeChatsIndex(chatsIndex)
 }
 
+export function clearChatHistory(chatId: number): void {
+  // First, read the chat state from disk.
+  const chatState = readChatState(chatId)
+
+  // Next, update the chat state.
+  chatState.messages = []
+
+  // Next, write the chat state to disk.
+  writeChatState(chatId, chatState)
+
+  // Finally, update the index.
+  const chat = assert(chatsIndex.chats.find(chat => chat.id === chatId))
+  chat.updatedAt = Date.now()
+  writeChatsIndex(chatsIndex)
+}
+
 export function createMessage(
   chatId: number,
   role: 'user' | 'assistant' | 'system' | 'function',
