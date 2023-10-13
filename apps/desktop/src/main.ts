@@ -10,6 +10,7 @@ import {
   ipcMain,
   shell
 } from 'electron'
+import fs from 'node:fs'
 import path from 'node:path'
 import updateElectron from 'update-electron-app'
 import {ChatController} from './main/chat/controller'
@@ -45,10 +46,14 @@ if (require('electron-squirrel-startup')) {
   app.quit()
 }
 
+const fnPath = path.join(app.getPath('userData'), 'functions')
+
+if (!fs.existsSync(fnPath)) {
+  fs.mkdirSync(fnPath)
+}
+
 const chatController = new ChatController()
-const fnController = new FunctionController(
-  path.join(app.getPath('userData'), 'functions')
-)
+const fnController = new FunctionController(fnPath)
 
 const createWindow = () => {
   // Create the browser window.
