@@ -131,12 +131,14 @@ export class ChatController {
       : this.#systemMessage
     const model = chat.config?.model?.key ?? config.model.key
 
+    console.debug('Responding to message', message.id, 'with model', model)
+
     // Includes the new message already.
     const [messageHistory, tokenCount, wasTruncated] =
-      this.#truncateMessageHistory(config.model.key, [
-        systemMessage,
-        ...listMessages(message.chatId, {onlyServer: true})
-      ])
+      this.#truncateMessageHistory(
+        chat.config?.model?.key ?? config.model.key,
+        [systemMessage, ...listMessages(message.chatId, {onlyServer: true})]
+      )
 
     if (wasTruncated) {
       console.warn('Message history was truncated to', tokenCount)
@@ -195,6 +197,8 @@ export class ChatController {
         parameters: c.parameters
       }))
     }
+
+    console.debug('MESSAGES: ', JSON.stringify(body.messages, null, '\t'))
 
     // TODO: Handle no API key being set, yet.
     const resp = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -281,7 +285,22 @@ Note: Do not respond to this error, the bot is not aware of it.`,
           break
         }
 
-        const chunk = CompletionChunk.parse(JSON.parse(line))
+        let parsedLine: unknown
+
+        try {
+          parsedLine = JSON.parse(line)
+        } catch (err) {
+          console.error('Error parsing JSON:', line)
+          throw err
+        }
+
+        const parseResult = CompletionChunk.safeParse(parsedLine)
+
+        if (!parseResult.success) {
+          throw new Error(`Error parsing completion chunk: ${line}`)
+        }
+
+        const chunk = parseResult.data
         const choice = chunk.choices.at(0)
 
         if (choice && isContentChoice(choice)) {
@@ -319,7 +338,16 @@ Note: Do not respond to this error, the bot is not aware of it.`,
 
     if (functionCall) {
       const name = assert(functionCall.name)
-      const args = JSON.parse(assert(functionCall.arguments))
+      const argsRaw = assert(functionCall.arguments)
+
+      let args: unknown
+
+      try {
+        args = JSON.parse(argsRaw)
+      } catch (err) {
+        console.error('Error parsing JSON:', argsRaw)
+        throw err
+      }
 
       console.debug('invoke', name, 'with', functionCall.arguments)
 
@@ -332,6 +360,12 @@ Note: Do not respond to this error, the bot is not aware of it.`,
           window.webContents.send('chat:message', message)
         })
       })
+
+      console.debug(
+        'Got a result, which is',
+        this.#countTokens(model, JSON.stringify(result)),
+        'tokens.'
+      )
 
       const asstMsg = createMessage(chat.id, 'assistant', null, {
         name,
@@ -382,6 +416,12 @@ Note: Do not respond to this error, the bot is not aware of it.`,
     })
   }
 
+  #countTokens(model: string, text: string): number {
+    const encoding = model.includes('gpt-4') ? gpt4encoding : gpt35encoding
+    const tokenCount = encoding.encode(text).length
+    return tokenCount
+  }
+
   #truncateMessageHistory(
     model: string,
     messages: MessageBase[]
@@ -392,6 +432,12 @@ Note: Do not respond to this error, the bot is not aware of it.`,
       : model.endsWith('16k')
       ? gpt3516kMaxSize
       : gpt35maxSize
+    console.debug(
+      'Truncating history from max tokens',
+      maxTokens,
+      'for model',
+      model
+    )
     const encoding = model.includes('gpt-4') ? gpt4encoding : gpt35encoding
     const systemMessage = assert(
       messages.at(0),
@@ -401,6 +447,13 @@ Note: Do not respond to this error, the bot is not aware of it.`,
     let tokenCount = REPLY_MAX_TOKENS + 3 // Reply tokens, and reply primed with <|start|>assistant<|message|>.
     tokenCount +=
       encoding.encode(systemMessage.content ?? '').length + tokensPerMessage // System message
+
+    console.debug(
+      'Max tokens:',
+      maxTokens,
+      'Remaining:',
+      maxTokens - tokenCount
+    )
 
     const allowedMessages: MessageBase[] = []
 
@@ -414,8 +467,26 @@ Note: Do not respond to this error, the bot is not aware of it.`,
         tokensPerMessage
 
       if (tokenCount + nextCount > maxTokens) {
+        console.debug(
+          'Max tokens:',
+          maxTokens,
+          'Remaining:',
+          maxTokens - tokenCount,
+          'Stopping with oversized message:',
+          nextCount,
+          'Message:',
+          message
+        )
+
         break
       }
+
+      console.debug(
+        'Max tokens:',
+        maxTokens,
+        'Remaining:',
+        maxTokens - tokenCount
+      )
 
       tokenCount += nextCount
       allowedMessages.unshift(message)
