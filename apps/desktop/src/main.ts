@@ -105,6 +105,13 @@ const menuTemplate: MenuItemConstructorOptions[] = [
         click() {
           BrowserWindow.getFocusedWindow()?.webContents.send('chat:stop')
         }
+      },
+      {
+        label: 'Clear history',
+        accelerator: 'CmdOrCtrl+K',
+        click() {
+          BrowserWindow.getFocusedWindow()?.webContents.send('chat:clear')
+        }
       }
     ]
   },
@@ -222,6 +229,13 @@ app.on('ready', () => {
   ipcMain.on('chat:stop', (event, chatId) =>
     chatController.abortMessageForChat(chatId)
   )
+  ipcMain.on('chat:clear', (event, chatId) => {
+    chatController.abortMessageForChat(chatId)
+    clearChatHistory(chatId)
+    BrowserWindow.getAllWindows().forEach(window =>
+      window.webContents.send('message:deleted', chatId)
+    )
+  })
   ipcMain.handle('chats:create', () => createChat())
   ipcMain.handle('chats:list', listChats)
   ipcMain.handle('chats:rename', (event, chatId, name) =>

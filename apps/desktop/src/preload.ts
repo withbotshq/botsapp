@@ -79,6 +79,11 @@ const api = {
     return () => ipcRenderer.removeListener('chat:message', callback)
   },
 
+  onClearChat: (callback: (event: IpcRendererEvent) => void): (() => void) => {
+    ipcRenderer.on('chat:clear', callback)
+    return () => ipcRenderer.removeListener('chat:clear', callback)
+  },
+
   onStopChat: (callback: (event: IpcRendererEvent) => void): (() => void) => {
     ipcRenderer.on('chat:stop', callback)
     return () => ipcRenderer.removeListener('chat:stop', callback)
@@ -86,6 +91,10 @@ const api = {
 
   stopChat: (chatId: number): void => {
     ipcRenderer.send('chat:stop', chatId)
+  },
+
+  clearChat: (chatId: number): void => {
+    ipcRenderer.send('chat:clear', chatId)
   },
 
   // Context menus

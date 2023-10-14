@@ -86,6 +86,14 @@ export const Main: FC = () => {
   }, [queryClient])
 
   useEffect(() => {
+    const onClearChat = () => {
+      if (currentChatId) api.clearChat(currentChatId)
+    }
+
+    return api.onClearChat(onClearChat)
+  }, [currentChatId])
+
+  useEffect(() => {
     const onStopChat = () => {
       if (currentChatId) api.stopChat(currentChatId)
     }
