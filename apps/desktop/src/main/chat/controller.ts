@@ -9,6 +9,7 @@ import {
 import {z} from 'zod'
 import {config} from '../config/config'
 import {createMessage, getChat, listMessages} from '../db/db'
+import {readEvents} from './event-reader'
 import {FunctionController} from './function-controller'
 
 const gpt35encoding = encoding_for_model('gpt-3.5-turbo')
@@ -66,6 +67,15 @@ const CompletionChunk = z.object({
 })
 
 type CompletionChunk = z.infer<typeof CompletionChunk>
+
+const CompletionChunkError = z.object({
+  error: z.object({
+    message: z.string(),
+    type: z.string()
+  })
+})
+
+type CompletionChunkError = z.infer<typeof CompletionChunkError>
 
 type PartialMessage = {
   abortController: AbortController
@@ -251,87 +261,89 @@ Note: Do not respond to this error, the bot is not aware of it.`,
       return
     }
 
-    const bodyReader = assert(resp.body).getReader()
-    const decoder = new TextDecoder()
-
     let functionCall: FunctionChoice['delta']['function_call'] | null = null
-
     let didSetPartial = false
+
+    const stream = readEvents(assert(resp.body))
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      let value: Uint8Array | undefined
-      let done: boolean | undefined
-      try {
-        const read = await bodyReader.read()
-        value = read.value
-        done = read.done
-      } catch (err) {
-        if (partialMessage.abortController.signal.aborted) {
-          return
+      const streamField = await stream.next()
+
+      if (streamField.done) {
+        if (streamField.value.error) {
+          if (streamField.value.error.name === 'AbortError') {
+            console.debug('Aborted message for chat', message.chatId)
+            return
+          }
+
+          throw streamField.value.error
         }
+        break
       }
 
-      if (done) break
+      const field = streamField.value
+      const parseResult = CompletionChunk.safeParse(field)
 
-      const chunk = decoder.decode(value)
-      const lines = chunk
-        .split('\n\n')
-        .map(line => line.slice('data: '.length).trim())
-        .filter(Boolean)
+      if (!parseResult.success) {
+        const parsedError = CompletionChunkError.safeParse(field)
 
-      for (const line of lines) {
-        if (line === '[DONE]') {
-          break
-        }
+        if (parsedError.success) {
+          const errorMessage = createMessage(
+            message.chatId,
+            'system',
+            `Received an error from OpenAI:
+\`\`\`text
+${parsedError.data.error.message}
+\`\`\`
 
-        let parsedLine: unknown
-
-        try {
-          parsedLine = JSON.parse(line)
-        } catch (err) {
-          console.error('Error parsing JSON:', line)
-          throw err
-        }
-
-        const parseResult = CompletionChunk.safeParse(parsedLine)
-
-        if (!parseResult.success) {
-          throw new Error(`Error parsing completion chunk: ${line}`)
-        }
-
-        const chunk = parseResult.data
-        const choice = chunk.choices.at(0)
-
-        if (choice && isContentChoice(choice)) {
-          if (!didSetPartial) {
-            this.#partialMessages.set(message.chatId, partialMessage)
-            didSetPartial = true
-          }
-
-          partialMessage.chunks.push(choice.delta.content)
+Note: Do not respond to this error, the bot is not aware of it.`,
+            {clientOnly: true}
+          )
 
           this.#windows.forEach(window => {
-            window.webContents.send(
-              'chat:message-chunk',
-              message.chatId,
-              choice.delta.content
-            )
+            window.webContents.send('chat:message', errorMessage)
           })
+
+          return
         }
 
-        if (choice && isFunctionChoice(choice)) {
-          if (!functionCall) {
-            functionCall = {name: '', arguments: ''}
-          }
+        throw new Error(
+          `Error parsing completion chunk: ${JSON.stringify(field)}`
+        )
+      }
 
-          if (choice.delta.function_call.name) {
-            functionCall.name = choice.delta.function_call.name
-          }
+      const chunk = parseResult.data
+      const choice = chunk.choices.at(0)
 
-          if (choice.delta.function_call.arguments) {
-            functionCall.arguments += choice.delta.function_call.arguments
-          }
+      if (choice && isContentChoice(choice)) {
+        if (!didSetPartial) {
+          this.#partialMessages.set(message.chatId, partialMessage)
+          didSetPartial = true
+        }
+
+        partialMessage.chunks.push(choice.delta.content)
+
+        this.#windows.forEach(window => {
+          window.webContents.send(
+            'chat:message-chunk',
+            message.chatId,
+            choice.delta.content
+          )
+        })
+      }
+
+      if (choice && isFunctionChoice(choice)) {
+        if (!functionCall) {
+          functionCall = {name: '', arguments: ''}
+        }
+
+        if (choice.delta.function_call.name) {
+          functionCall.name = choice.delta.function_call.name
+        }
+
+        if (choice.delta.function_call.arguments) {
+          functionCall.arguments += choice.delta.function_call.arguments
         }
       }
     }
