@@ -2,6 +2,7 @@ import {encoding_for_model} from '@dqbd/tiktoken'
 import {assert} from '@jclem/assert'
 import {Message, MessageBase} from '@withbotshq/shared/schema'
 import {BrowserWindow} from 'electron'
+import {functionsTokensEstimate} from 'openai-chat-tokens'
 import {
   ChatCompletionCreateParamsBase,
   ChatCompletionMessageParam
@@ -143,11 +144,26 @@ export class ChatController {
 
     console.debug('Responding to message', message.id, 'with model', model)
 
+    const allFns = await fns.loadFunctions()
+    const completionFns = (chat.config?.functions ?? []).map(dir => {
+      const completionFn = assert(
+        allFns.find(fn => fn.dir === dir),
+        `No function named "${dir}"`
+      )
+      return completionFn
+    })
+
+    let consumedTokens = 0
+    if (completionFns.length > 0) {
+      consumedTokens = functionsTokensEstimate(completionFns)
+    }
+
     // Includes the new message already.
     const [messageHistory, tokenCount, wasTruncated] =
       this.#truncateMessageHistory(
         chat.config?.model?.key ?? config.model.key,
-        [systemMessage, ...listMessages(message.chatId, {onlyServer: true})]
+        [systemMessage, ...listMessages(message.chatId, {onlyServer: true})],
+        consumedTokens
       )
 
     if (wasTruncated) {
@@ -165,15 +181,6 @@ export class ChatController {
       abortController: new AbortController(),
       chunks: []
     }
-
-    const allFns = await fns.loadFunctions()
-    const completionFns = (chat.config?.functions ?? []).map(dir => {
-      const completionFn = assert(
-        allFns.find(fn => fn.dir === dir),
-        `No function named "${dir}"`
-      )
-      return completionFn
-    })
 
     function formatMessage(message: MessageBase): ChatCompletionMessageParam {
       const msg: ChatCompletionMessageParam = {
@@ -436,7 +443,8 @@ Note: Do not respond to this error, the bot is not aware of it.`,
 
   #truncateMessageHistory(
     model: string,
-    messages: MessageBase[]
+    messages: MessageBase[],
+    consumedTokens: number
   ): [messages: MessageBase[], tokenCount: number, wasTruncated: boolean] {
     const tokensPerMessage = model === 'gpt-4' ? 3 : 4
     const maxTokens = model.includes('gpt-4')
@@ -458,7 +466,9 @@ Note: Do not respond to this error, the bot is not aware of it.`,
 
     let tokenCount = REPLY_MAX_TOKENS + 3 // Reply tokens, and reply primed with <|start|>assistant<|message|>.
     tokenCount +=
-      encoding.encode(systemMessage.content ?? '').length + tokensPerMessage // System message
+      consumedTokens +
+      encoding.encode(systemMessage.content ?? '').length +
+      tokensPerMessage // System message
 
     console.debug(
       'Max tokens:',

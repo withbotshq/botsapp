@@ -68,6 +68,7 @@
     "decompress": "^4",
     "electron-squirrel-startup": "^1",
     "openai": "^4.12.1",
+    "openai-chat-tokens": "^0.2.8",
     "react": "^18",
     "react-dom": "^18",
     "update-electron-app": "^2",
