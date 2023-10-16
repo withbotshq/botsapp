@@ -1,5 +1,10 @@
 import {encoding_for_model} from '@dqbd/tiktoken'
 import {assert} from '@jclem/assert'
+import {
+  OpenAIAPIError,
+  OpenAIStreamError,
+  createChatCompletion
+} from '@withbotshq/openai/openai'
 import {Message, MessageBase} from '@withbotshq/shared/schema'
 import {BrowserWindow} from 'electron'
 import {functionsTokensEstimate} from 'openai-chat-tokens'
@@ -10,7 +15,6 @@ import {
 import {z} from 'zod'
 import {config} from '../config/config'
 import {createMessage, getChat, listMessages} from '../db/db'
-import {readEvents} from './event-reader'
 import {FunctionController} from './function-controller'
 
 const gpt35encoding = encoding_for_model('gpt-3.5-turbo')
@@ -56,27 +60,6 @@ const FunctionChoice = z.object({
 })
 
 type FunctionChoice = z.infer<typeof FunctionChoice>
-
-const CompletionChunk = z.object({
-  id: z.string(),
-  object: z.literal('chat.completion.chunk'),
-  created: z.number(),
-  model: z.string(),
-  choices: z.array(
-    z.union([FunctionChoice, RoleChoice, ContentChoice, StopChoice])
-  )
-})
-
-type CompletionChunk = z.infer<typeof CompletionChunk>
-
-const CompletionChunkError = z.object({
-  error: z.object({
-    message: z.string(),
-    type: z.string()
-  })
-})
-
-type CompletionChunkError = z.infer<typeof CompletionChunkError>
 
 type PartialMessage = {
   abortController: AbortController
@@ -217,203 +200,136 @@ export class ChatController {
 
     console.debug('MESSAGES: ', JSON.stringify(body.messages, null, '\t'))
 
-    // TODO: Handle no API key being set, yet.
-    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${assert(config.openAIAPIKey)}`
-      },
-      signal: partialMessage.abortController.signal,
-      body: JSON.stringify(body)
+    const result = createChatCompletion(body, {
+      key: assert(config.openAIAPIKey)
     })
 
-    if (!resp.ok) {
-      let errorMessage: Message
-
-      if (resp.headers.get('content-type')?.includes('application/json')) {
-        const errorJson = await resp.json()
-        errorMessage = createMessage(
-          message.chatId,
-          'system',
-          `Received an error from the OpenAI API: \`${resp.status} ${
-            resp.statusText
-          }\`:
-\`\`\`json
-${JSON.stringify(errorJson, null, '\t')}
-\`\`\`
-
-Note: Do not respond to this error, the bot is not aware of it.`,
-          {clientOnly: true}
-        )
-      } else {
-        const errorText = await resp.text()
-        errorMessage = createMessage(
-          message.chatId,
-          'system',
-          `Received an error from the OpenAI API: \`${resp.status} ${resp.statusText}\`:
-\`\`\`text
-${errorText}
-\`\`\`
-
-Note: Do not respond to this error, the bot is not aware of it.`,
-          {clientOnly: true}
-        )
-      }
-
-      this.#windows.forEach(window => {
-        window.webContents.send('chat:message', errorMessage)
-      })
-
-      return
-    }
-
-    let functionCall: FunctionChoice['delta']['function_call'] | null = null
     let didSetPartial = false
 
-    const stream = readEvents(assert(resp.body))
-
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const streamField = await stream.next()
-
-      if (streamField.done) {
-        if (streamField.value.error) {
-          if (streamField.value.error.name === 'AbortError') {
-            console.debug('Aborted message for chat', message.chatId)
-            return
-          }
-
-          throw streamField.value.error
-        }
-        break
+    for await (const part of result) {
+      if (!part.ok && part.error instanceof OpenAIAPIError) {
+        this.#handleAPIError(part.error, message)
+        return
+      } else if (!part.ok && part.error instanceof OpenAIStreamError) {
+        this.#handleStreamError(part.error, message)
+        return
+      } else if (!part.ok && part.error.name === 'AbortError') {
+        console.debug('Aborted message for chat', message.chatId)
+        return
+      } else if (!part.ok) {
+        throw part.error
       }
 
-      const field = streamField.value
-      const parseResult = CompletionChunk.safeParse(field)
+      if (part.value.type === 'content') {
+        const content = part.value.content
 
-      if (!parseResult.success) {
-        const parsedError = CompletionChunkError.safeParse(field)
+        partialMessage.chunks.push(content)
 
-        if (parsedError.success) {
-          const errorMessage = createMessage(
-            message.chatId,
-            'system',
-            `Received an error from OpenAI:
-\`\`\`text
-${parsedError.data.error.message}
-\`\`\`
-
-Note: Do not respond to this error, the bot is not aware of it.`,
-            {clientOnly: true}
-          )
-
-          this.#windows.forEach(window => {
-            window.webContents.send('chat:message', errorMessage)
-          })
-
-          return
-        }
-
-        throw new Error(
-          `Error parsing completion chunk: ${JSON.stringify(field)}`
-        )
-      }
-
-      const chunk = parseResult.data
-      const choice = chunk.choices.at(0)
-
-      if (choice && isContentChoice(choice)) {
         if (!didSetPartial) {
           this.#partialMessages.set(message.chatId, partialMessage)
           didSetPartial = true
         }
 
-        partialMessage.chunks.push(choice.delta.content)
-
         this.#windows.forEach(window => {
-          window.webContents.send(
-            'chat:message-chunk',
-            message.chatId,
-            choice.delta.content
-          )
+          window.webContents.send('chat:message-chunk', message.chatId, content)
         })
       }
 
-      if (choice && isFunctionChoice(choice)) {
-        if (!functionCall) {
-          functionCall = {name: '', arguments: ''}
-        }
+      if (part.value.type === 'function') {
+        const {name, args} = part.value
+        console.debug('invoke', name, 'with', JSON.stringify(args, null, '\t'))
+        const result = await fns.invokeFunction(name, args, update => {
+          const message = createMessage(chat.id, 'assistant', update, {
+            clientOnly: true
+          })
 
-        if (choice.delta.function_call.name) {
-          functionCall.name = choice.delta.function_call.name
-        }
+          this.#windows.forEach(window => {
+            window.webContents.send('chat:message', message)
+          })
+        })
 
-        if (choice.delta.function_call.arguments) {
-          functionCall.arguments += choice.delta.function_call.arguments
-        }
-      }
-    }
+        console.debug(
+          'Got a result, which is',
+          this.#countTokens(model, JSON.stringify(result)),
+          'tokens.'
+        )
 
-    if (functionCall) {
-      const name = assert(functionCall.name)
-      const argsRaw = assert(functionCall.arguments)
-
-      let args: unknown
-
-      try {
-        args = JSON.parse(argsRaw)
-      } catch (err) {
-        console.error('Error parsing JSON:', argsRaw)
-        throw err
-      }
-
-      console.debug('invoke', name, 'with', functionCall.arguments)
-
-      const result = await fns.invokeFunction(name, args, update => {
-        const message = createMessage(chat.id, 'assistant', update, {
-          clientOnly: true
+        const asstMsg = createMessage(chat.id, 'assistant', null, {
+          name,
+          function_call: {name, arguments: JSON.stringify(args)}
         })
 
         this.#windows.forEach(window => {
-          window.webContents.send('chat:message', message)
+          window.webContents.send('chat:message', asstMsg)
         })
-      })
 
-      console.debug(
-        'Got a result, which is',
-        this.#countTokens(model, JSON.stringify(result)),
-        'tokens.'
-      )
+        const message2 = createMessage(
+          chat.id,
+          'function',
+          JSON.stringify(result),
+          {
+            name
+          }
+        )
 
-      const asstMsg = createMessage(chat.id, 'assistant', null, {
-        name,
-        function_call: {name, arguments: JSON.stringify(args)}
-      })
+        this.#windows.forEach(window => {
+          window.webContents.send('chat:message', message2)
+        })
 
-      this.#windows.forEach(window => {
-        window.webContents.send('chat:message', asstMsg)
-      })
-
-      const message2 = createMessage(
-        chat.id,
-        'function',
-        JSON.stringify(result),
-        {
-          name
-        }
-      )
-
-      this.#windows.forEach(window => {
-        window.webContents.send('chat:message', message2)
-      })
-
-      await this.sendMessage(message2, fns)
-
-      return
+        await this.sendMessage(message2, fns)
+      }
     }
 
-    this.#completePartialMessage(message.chatId)
+    if (this.#partialMessages.has(message.chatId)) {
+      this.#completePartialMessage(message.chatId)
+    }
+  }
+
+  #handleAPIError(err: OpenAIAPIError, message: Message) {
+    let errHighlightLang = 'text'
+    if (
+      err.response.headers.get('content-type')?.includes('application/json')
+    ) {
+      errHighlightLang = 'json'
+    }
+
+    const errorMessage = createMessage(
+      message.chatId,
+      'system',
+      `Received an error from the OpenAI API: \`${err.response.status} ${
+        err.response.statusText
+      }\`:
+\`\`\`${errHighlightLang}
+${JSON.stringify(err.message, null, '\t')}
+\`\`\`
+
+Note: Do not respond to this error, the bot is not aware of it.`,
+      {clientOnly: true}
+    )
+
+    this.#windows.forEach(window => {
+      window.webContents.send('chat:message', errorMessage)
+    })
+
+    return
+  }
+
+  #handleStreamError(err: OpenAIStreamError, message: Message) {
+    const errorMessage = createMessage(
+      message.chatId,
+      'system',
+      `Received an error from OpenAI:
+\`\`\`text
+${err.message}
+\`\`\`
+
+Note: Do not respond to this error, the bot is not aware of it.`,
+      {clientOnly: true}
+    )
+
+    this.#windows.forEach(window => {
+      window.webContents.send('chat:message', errorMessage)
+    })
   }
 
   #completePartialMessage(chatId: number, opts: {abort?: boolean} = {}) {

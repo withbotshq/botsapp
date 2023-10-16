@@ -63,6 +63,7 @@
     "@tanstack/react-query": "^4",
     "@withbotshq/shared": "*",
     "@withbotshq/ui": "*",
+    "@withbotshq/openai": "*",
     "class-variance-authority": "^0.7",
     "date-fns": "^2",
     "decompress": "^4",
