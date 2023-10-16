@@ -141,11 +141,28 @@ export class ChatController {
       consumedTokens = functionsTokensEstimate(completionFns)
     }
 
+    // If the new message is not a "user" message (it may be a "function"
+    // message) copy the most recent user message to the end of the list so that
+    // it's never omitted.
+    const allMessages = listMessages(message.chatId, {onlyServer: true})
+    const lastMessage = allMessages.at(-1)
+
+    if (lastMessage?.role !== 'user') {
+      const lastUserMessage = allMessages
+        .slice()
+        .reverse()
+        .find(msg => msg.role === 'user')
+
+      if (lastUserMessage) {
+        allMessages.push(lastUserMessage)
+      }
+    }
+
     // Includes the new message already.
     const [messageHistory, tokenCount, wasTruncated] =
       this.#truncateMessageHistory(
         chat.config?.model?.key ?? config.model.key,
-        [systemMessage, ...listMessages(message.chatId, {onlyServer: true})],
+        [systemMessage, ...allMessages],
         consumedTokens
       )
 
