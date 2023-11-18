@@ -1,9 +1,0 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-html,
-body {
-  @apply bg-zinc-50;
-  @apply text-zinc-800;
-}
