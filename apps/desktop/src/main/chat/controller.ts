@@ -1,4 +1,3 @@
-import {encoding_for_model} from '@dqbd/tiktoken'
 import {assert} from '@jclem/assert'
 import {
   OpenAIAPIError,
@@ -7,6 +6,7 @@ import {
 } from '@withbotshq/openai/openai'
 import {Message, MessageBase} from '@withbotshq/shared/schema'
 import {BrowserWindow} from 'electron'
+import {TiktokenModel, encodingForModel} from 'js-tiktoken'
 import {functionsTokensEstimate} from 'openai-chat-tokens'
 import {
   ChatCompletionCreateParamsBase,
@@ -17,8 +17,6 @@ import {config} from '../config/config'
 import {createMessage, getChat, listMessages} from '../db/db'
 import {FunctionController} from './function-controller'
 
-const gpt35encoding = encoding_for_model('gpt-3.5-turbo')
-const gpt4encoding = encoding_for_model('gpt-4')
 const gpt35maxSize = 4096
 const gpt3516kMaxSize = 16384
 const gpt4maxSize = 8192
@@ -378,7 +376,7 @@ Note: Do not respond to this error, the bot is not aware of it.`,
       'for model',
       model
     )
-    const encoding = model.includes('gpt-4') ? gpt4encoding : gpt35encoding
+    const encoding = encodingForModel(model as TiktokenModel)
     const systemMessage = assert(
       messages.at(0),
       'No system message passed to #truncateMessageHistory'
