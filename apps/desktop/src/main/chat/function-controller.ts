@@ -16,8 +16,6 @@ const CompletionFunction = z.object({
 
 export type CompletionFunction = z.infer<typeof CompletionFunction>
 
-declare const __non_webpack_require__: NodeRequire
-
 export class FunctionController {
   readonly #basePath: string
 
@@ -40,8 +38,8 @@ export class FunctionController {
       throw new Error(`No function named "${name}"`)
     }
 
-    const mod = __non_webpack_require__(fn.path)
-    delete __non_webpack_require__.cache[fn.path] // Ensure we get a fresh copy each time (in case the function is being actively developed)
+    const mod = require(fn.path) // eslint-disable-line @typescript-eslint/no-var-requires
+    delete require.cache[fn.path] // Ensure we get a fresh copy each time (in case the function is being actively developed)
     return mod.handler(args, callback)
   }
 

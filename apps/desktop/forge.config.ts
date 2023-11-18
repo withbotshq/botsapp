@@ -3,10 +3,7 @@ dotenv.config()
 
 import {utils} from '@electron-forge/core'
 import {MakerZIP} from '@electron-forge/maker-zip'
-import {WebpackPlugin} from '@electron-forge/plugin-webpack'
 import {ForgeConfig} from '@electron-forge/shared-types'
-import {mainConfig} from './webpack/main.config'
-import {rendererConfig} from './webpack/renderer.config'
 
 const config: ForgeConfig = {
   buildIdentifier: process.env.BETA ? 'beta' : 'stable',
@@ -22,24 +19,28 @@ const config: ForgeConfig = {
   rebuildConfig: {},
   makers: [new MakerZIP({}, ['darwin'])],
   plugins: [
-    new WebpackPlugin({
-      port: 9090,
-      loggerPort: 9091,
-      mainConfig,
-      renderer: {
-        config: rendererConfig,
-        entryPoints: [
+    {
+      name: '@electron-forge/plugin-vite',
+      config: {
+        build: [
           {
-            html: './src/renderer/index.html',
-            js: './src/renderer.tsx',
+            entry: './src/main.ts',
+            config: 'vite.main.config.mjs'
+          },
+          {
+            entry: './src/preload.ts',
+            config: 'vite.preload.config.mjs'
+          }
+        ],
+
+        renderer: [
+          {
             name: 'main_window',
-            preload: {
-              js: './src/preload.ts'
-            }
+            config: 'vite.renderer.config.mjs'
           }
         ]
       }
-    })
+    }
   ],
   publishers: [
     {
@@ -73,7 +74,6 @@ function notarizeMaybe() {
   // TODO: Assert?
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   config.packagerConfig!.osxNotarize = {
-    tool: 'notarytool',
     appleApiKey: process.env.APPLE_API_KEY,
     appleApiKeyId: process.env.APPLE_API_KEY_ID,
     appleApiIssuer: process.env.APPLE_API_ISSUER

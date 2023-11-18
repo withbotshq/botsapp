@@ -7,7 +7,6 @@
     "*.css": "tailwindcss"
   },
   "files.exclude": {
-    ".webpack": true,
     "**/.DS_Store": true,
     "**/.git": true,
     "**/.hg": true,

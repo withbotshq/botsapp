@@ -1,3 +1,4 @@
 node_modules/
 .nx/
 nx-cloud.env
+.vite/

@@ -39,8 +39,8 @@ import {
   toggleChatFunction
 } from './main/db/db'
 
-declare const MAIN_WINDOW_WEBPACK_ENTRY: string
-declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string
+declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
+declare const MAIN_WINDOW_VITE_NAME: string
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -64,14 +64,20 @@ const createWindow = () => {
     minHeight: 600,
     minWidth: 800,
     webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
+      preload: path.join(__dirname, 'preload.js')
     },
     titleBarStyle: 'hidden',
     trafficLightPosition: {x: 14, y: 14},
     vibrancy: 'sidebar'
   })
 
-  window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    window.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
+  } else {
+    window.loadFile(
+      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
+    )
+  }
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
@@ -80,10 +86,6 @@ const createWindow = () => {
   chatController.addBrowserWindow(window)
 
   window.webContents.on('will-navigate', (event, url) => {
-    if (url === MAIN_WINDOW_WEBPACK_ENTRY) {
-      return
-    }
-
     event.preventDefault()
     shell.openExternal(url)
   })
