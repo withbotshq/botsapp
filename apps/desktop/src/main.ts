@@ -12,7 +12,7 @@ import {
 } from 'electron'
 import fs from 'node:fs'
 import path from 'node:path'
-import updateElectron from 'update-electron-app'
+import {updateElectronApp} from 'update-electron-app'
 import {ChatController} from './main/chat/controller'
 import {FunctionController} from './main/chat/function-controller'
 import {
@@ -377,7 +377,7 @@ app.on('open-file', (event, path) => {
   }
 })
 
-updateElectron()
+updateElectronApp()
 
 async function openBotfile(filePath: string) {
   const botFile = await botfileFromPath(filePath)

@@ -4,7 +4,7 @@
   "dependencies": {
     "@clerk/nextjs": "^4",
     "@withbotshq/ui": "*",
-    "next": "^13",
+    "next": "^14",
     "react": "^18",
     "react-dom": "^18",
     "tailwindcss": "^3"
@@ -14,7 +14,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10",
-    "eslint-config-next": "^13.5.4",
+    "eslint-config-next": "^14",
     "konk": "*",
     "postcss": "^8",
     "typescript": "^5"

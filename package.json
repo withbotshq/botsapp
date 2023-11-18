@@ -35,7 +35,7 @@
     "eslint-plugin-react": "^7",
     "eslint-plugin-react-hooks": "^4",
     "konk": "*",
-    "nx": "^16",
+    "nx": "^17",
     "nx-cloud": "^16",
     "prettier": "^3",
     "prettier-plugin-tailwindcss": "^0.5"
