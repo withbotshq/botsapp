@@ -1,5 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {Chat} from '../../../../shared/schema'
+import {Chat} from '@withbotshq/shared/schema'
 import {formatDistanceToNowStrict} from 'date-fns'
 import {IpcRendererEvent} from 'electron'
 import {KeyboardEventHandler, useEffect, useState} from 'react'
