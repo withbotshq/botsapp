@@ -7,8 +7,8 @@ const colors = require('tailwindcss/colors')
 module.exports = {
   content: [
     './index.html',
-    './src/renderer/**/*.{ts,tsx}',
-    '../../libs/ui/**/*.{ts,tsx}'
+    './src/desktop/src/renderer/**/*.{ts,tsx}',
+    './src/ui/**/*.{ts,tsx}'
   ],
   theme: {
     fontSize: {

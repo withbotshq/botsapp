@@ -1,9 +1,9 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-import {utils} from '@electron-forge/core'
-import {MakerZIP} from '@electron-forge/maker-zip'
-import {ForgeConfig} from '@electron-forge/shared-types'
+import { utils } from '@electron-forge/core'
+import { MakerZIP } from '@electron-forge/maker-zip'
+import { ForgeConfig } from '@electron-forge/shared-types'
 
 const config: ForgeConfig = {
   buildIdentifier: process.env.BETA ? 'beta' : 'stable',
@@ -12,9 +12,9 @@ const config: ForgeConfig = {
       beta: 'app.beta.bots',
       stable: 'app.bots'
     }) as unknown as string,
-    icon: 'icons/bots.icns',
+    icon: 'src/desktop/icons/bots.icns',
     osxSign: {},
-    extendInfo: 'Info.plist'
+    extendInfo: 'src/desktop/Info.plist'
   },
   rebuildConfig: {},
   makers: [new MakerZIP({}, ['darwin'])],
@@ -24,11 +24,11 @@ const config: ForgeConfig = {
       config: {
         build: [
           {
-            entry: './src/main.ts',
+            entry: './src/desktop/src/main.ts',
             config: 'vite.main.config.mjs'
           },
           {
-            entry: './src/preload.ts',
+            entry: './src/desktop/src/preload.ts',
             config: 'vite.preload.config.mjs'
           }
         ],

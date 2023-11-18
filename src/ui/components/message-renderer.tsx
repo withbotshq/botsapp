@@ -1,4 +1,4 @@
-import {Message} from '@withbotshq/shared/schema'
+import {Message} from '../../shared/schema'
 import {FC} from 'react'
 import ReactMarkdown from 'react-markdown'
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'

@@ -3,8 +3,8 @@ import {
   OpenAIAPIError,
   OpenAIStreamError,
   createChatCompletion
-} from '@withbotshq/openai/openai'
-import {Message, MessageBase} from '@withbotshq/shared/schema'
+} from '../../../../openai/openai'
+import {Message, MessageBase} from '../../../../shared/schema'
 import {BrowserWindow} from 'electron'
 import {TiktokenModel, encodingForModel} from 'js-tiktoken'
 import {functionsTokensEstimate} from 'openai-chat-tokens'
@@ -351,7 +351,7 @@ Note: Do not respond to this error, the bot is not aware of it.`,
   }
 
   #countTokens(model: string, text: string): number {
-    const encoding = model.includes('gpt-4') ? gpt4encoding : gpt35encoding
+    const encoding = encodingForModel(model as TiktokenModel)
     const tokenCount = encoding.encode(text).length
     return tokenCount
   }
