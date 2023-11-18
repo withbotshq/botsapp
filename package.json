@@ -1,7 +1,13 @@
 {
   "name": "root",
   "description": "An app to make personalized AI bots and chat with them",
-  "version": "0.1.14",
+  "productName": "Bots",
+  "version": "0.1.17",
+  "main": "./.vite/build/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/withbotshq/botsapp.git"
+  },
   "contributors": [
     {
       "name": "Jonathan Clem",
@@ -18,26 +24,84 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
     "check": "konk run c -cgL -n'check:*'",
     "check:format": "nx format:check",
     "check:lint": "nx run-many -t lint",
     "fix": "nx format:write",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
   },
-  "workspaces": [
-    "apps/*",
-    "libs/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "libs/*"
+    ],
+    "nohoist": [
+      "desktop/**"
+    ]
+  },
+  "dependencies": {
+    "@jclem/assert": "^2",
+    "@readme/openapi-parser": "^2",
+    "@tanstack/react-query": "^5",
+    "class-variance-authority": "^0.7",
+    "date-fns": "^2",
+    "decompress": "^4",
+    "electron-squirrel-startup": "^1",
+    "openai": "^4.12.1",
+    "openai-chat-tokens": "^0.2.8",
+    "react": "^18",
+    "react-dom": "^18",
+    "update-electron-app": "^3",
+    "util": "^0.12",
+    "yaml": "^2",
+    "zod": "^3",
+    "@jclem/result": "^3.0.1",
+    "react-markdown": "^9",
+    "react-syntax-highlighter": "^15",
+    "remark-gfm": "^4"
+  },
   "devDependencies": {
+    "@electron-forge/cli": "^7",
+    "@electron-forge/maker-deb": "^7",
+    "@electron-forge/maker-rpm": "^7",
+    "@electron-forge/maker-squirrel": "^7",
+    "@electron-forge/maker-zip": "^7",
+    "@electron-forge/plugin-vite": "^7.1.0",
+    "@electron-forge/publisher-github": "^7",
+    "@electron-forge/shared-types": "^7",
+    "@electron/rebuild": "^3",
+    "@types/better-sqlite3": "^7",
+    "@types/decompress": "^4",
+    "@types/react-dom": "^18",
+    "@types/react-syntax-highlighter": "^15",
+    "@types/react": "^18",
+    "@types/sql.js": "^1",
     "@typescript-eslint/eslint-plugin": "^6",
     "@typescript-eslint/parser": "^6",
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10",
+    "css-loader": "^6",
+    "dotenv": "^16",
+    "electron": "^27",
     "eslint-config-prettier": "^9",
-    "eslint-plugin-react": "^7",
     "eslint-plugin-react-hooks": "^4",
+    "eslint-plugin-react": "^7",
     "konk": "*",
-    "nx": "^17",
+    "node-loader": "^2",
     "nx-cloud": "^16",
+    "openapi-types": "^12",
+    "postcss-loader": "^7",
+    "postcss": "^8",
+    "prettier-plugin-tailwindcss": "^0.5",
     "prettier": "^3",
-    "prettier-plugin-tailwindcss": "^0.5"
+    "style-loader": "^3",
+    "tailwindcss": "^3",
+    "ts-loader": "^9",
+    "typescript": "^5"
   }
 }
