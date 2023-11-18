@@ -1,6 +1,6 @@
 import {assert} from '@jclem/assert'
-import {BotsFile} from '../../../../shared/botsfile'
-import {Chat, Message, VisibleMessage} from '../../../../shared/schema'
+import {BotsFile} from '@withbotshq/shared/botsfile'
+import {Chat, Message, VisibleMessage} from '@withbotshq/shared/schema'
 import {app} from 'electron'
 import fs from 'fs'
 import path from 'path'

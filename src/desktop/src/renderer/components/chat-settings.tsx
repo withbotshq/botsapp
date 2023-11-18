@@ -1,5 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {Chat} from '../../../../shared/schema'
+import {Chat} from '@withbotshq/shared/schema'
 import {FC} from 'react'
 import {useConfigModel, useConfigTemperature} from '../hooks/use-config'
 import {Button} from './button'

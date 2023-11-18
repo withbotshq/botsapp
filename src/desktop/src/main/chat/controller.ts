@@ -3,8 +3,8 @@ import {
   OpenAIAPIError,
   OpenAIStreamError,
   createChatCompletion
-} from '../../../../openai/openai'
-import {Message, MessageBase} from '../../../../shared/schema'
+} from '@withbotshq/openai/openai'
+import {Message, MessageBase} from '@withbotshq/shared/schema'
 import {BrowserWindow} from 'electron'
 import {TiktokenModel, encodingForModel} from 'js-tiktoken'
 import {functionsTokensEstimate} from 'openai-chat-tokens'

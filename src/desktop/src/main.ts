@@ -1,5 +1,5 @@
 import {assert} from '@jclem/assert'
-import {botfileFromPath} from '../../shared/botsfile'
+import {botfileFromPath} from '@withbotshq/shared/botsfile'
 import {
   BrowserWindow,
   Menu,

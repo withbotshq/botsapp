@@ -1,6 +1,6 @@
 import {assert} from '@jclem/assert'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import type {Chat, Message} from '../../../../shared/schema'
+import type {Chat, Message} from '@withbotshq/shared/schema'
 import {IpcRendererEvent} from 'electron'
 import {FC, useEffect, useState} from 'react'
 import {useConfigModel} from '../hooks/use-config'
