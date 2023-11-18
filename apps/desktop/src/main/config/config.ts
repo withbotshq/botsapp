@@ -7,7 +7,8 @@ import {readJSONFile, writeJSONFile} from '../fsutil'
 export const modelTitles = {
   'gpt-3.5-turbo': 'GPT-3.5 Turbo',
   'gpt-3.5-turbo-16k': 'GPT-3.5 Turbo (16k)',
-  'gpt-4': 'GPT-4'
+  'gpt-4': 'GPT-4',
+  'gpt-4-1106-preview': 'GPT-4 Turbo'
 }
 
 const Config = z.object({

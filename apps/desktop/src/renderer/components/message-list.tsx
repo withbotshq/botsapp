@@ -74,6 +74,7 @@ const modelClass = cva(['flex-none h-6 w-6 rounded-full'], {
   variants: {
     modelKey: {
       'gpt-4': 'bg-black',
+      'gpt-4-1106-preview': 'bg-black',
       default: 'bg-[#10A37F]'
     }
   },
@@ -101,7 +102,10 @@ function MessageListItem({message, modelKey, isPartialMessage}: MessageProps) {
       ) : (
         <div
           className={modelClass({
-            modelKey: modelKey === 'gpt-4' ? modelKey : undefined
+            modelKey:
+              modelKey === 'gpt-4' || modelKey === 'gpt-4-1106-preview'
+                ? modelKey
+                : undefined
           })}
         >
           <OpenAIIcon />

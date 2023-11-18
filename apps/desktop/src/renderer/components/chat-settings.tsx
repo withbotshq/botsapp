@@ -96,6 +96,7 @@ const ChatSettings: FC<Props> = props => {
             <option value="gpt-3.5-turbo">GPT-3.5-Turbo</option>
             <option value="gpt-3.5-turbo-16k">GPT-3.5-Turbo (16k)</option>
             <option value="gpt-4">GPT-4</option>
+            <option value="gpt-4-1106-preview">GPT-4 Turbo</option>
           </select>
         </div>
 
@@ -139,6 +140,7 @@ const ChatSettings: FC<Props> = props => {
               <option value="gpt-3.5-turbo">GPT-3.5-Turbo</option>
               <option value="gpt-3.5-turbo-16k">GPT-3.5-Turbo (16k)</option>
               <option value="gpt-4">GPT-4</option>
+              <option value="gpt-4-1106-preview">GPT-4 Turbo</option>
             </select>
           </div>
 

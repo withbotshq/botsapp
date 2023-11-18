@@ -22,6 +22,7 @@ const gpt4encoding = encoding_for_model('gpt-4')
 const gpt35maxSize = 4096
 const gpt3516kMaxSize = 16384
 const gpt4maxSize = 8192
+const gpt4turboMaxSize = 128_000
 const REPLY_MAX_TOKENS = 1024
 
 const RoleChoice = z.object({
@@ -363,11 +364,14 @@ Note: Do not respond to this error, the bot is not aware of it.`,
     consumedTokens: number
   ): [messages: MessageBase[], tokenCount: number, wasTruncated: boolean] {
     const tokensPerMessage = model === 'gpt-4' ? 3 : 4
-    const maxTokens = model.includes('gpt-4')
-      ? gpt4maxSize
-      : model.endsWith('16k')
-      ? gpt3516kMaxSize
-      : gpt35maxSize
+    const maxTokens =
+      model === 'gpt-4-1106-preview'
+        ? gpt4turboMaxSize
+        : model.includes('gpt-4')
+          ? gpt4maxSize
+          : model.endsWith('16k')
+            ? gpt3516kMaxSize
+            : gpt35maxSize
     console.debug(
       'Truncating history from max tokens',
       maxTokens,
