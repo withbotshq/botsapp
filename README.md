@@ -59,6 +59,6 @@ $ open /Applications/Bots.app
 ```sh
 $ git clone git@github.com:withbotshq/botsapp.git
 $ cd botsapp
-$ npm install
-$ npx nx start desktop
+$ npm ci
+$ npx start
 ```
